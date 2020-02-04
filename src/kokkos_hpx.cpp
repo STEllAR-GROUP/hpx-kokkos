@@ -2,7 +2,6 @@
 
 #include <hpx/hpx_main.hpp>
 #include <hpx/include/compute.hpp>
-#include <hpx/include/iostreams.hpp>
 #include <hpx/include/parallel_for_each.hpp>
 #include <hpx/include/parallel_for_loop.hpp>
 #include <hpx/include/parallel_reduce.hpp>
@@ -17,10 +16,8 @@
 // backends and policies).
 
 int hpx_main(int argc, char **argv) {
-  using namespace hpx::compute::kokkos;
-
   {
-    kokkos::runtime_guard k(argc, argv);
+    hpx::compute::kokkos::runtime_guard k(argc, argv);
 
     std::size_t n = 10;
 
@@ -28,13 +25,13 @@ int hpx_main(int argc, char **argv) {
     // allocated on memory space of the default device (i.e. GPU if available,
     // otherwise host).
     std::cout << "constructing views" << std::endl;
-    kokkos::View<double *> a(kokkos::ViewAllocateWithoutInitializing("a"), n);
-    kokkos::View<double *> b(kokkos::ViewAllocateWithoutInitializing("b"), n);
-    kokkos::View<double *> c(kokkos::ViewAllocateWithoutInitializing("c"), n);
+    hpx::compute::kokkos::View<double *> a(hpx::compute::kokkos::ViewAllocateWithoutInitializing("a"), n);
+    hpx::compute::kokkos::View<double *> b(hpx::compute::kokkos::ViewAllocateWithoutInitializing("b"), n);
+    hpx::compute::kokkos::View<double *> c(hpx::compute::kokkos::ViewAllocateWithoutInitializing("c"), n);
     std::cout << "done constructing views" << std::endl;
 
     // Create a Kokkos executor which forwards to Kokkos' DefaultExecutionSpace.
-    auto exec = kokkos::default_executor();
+    auto exec = hpx::compute::kokkos::default_executor();
     auto pol = hpx::parallel::execution::par.on(exec);
     auto pol_task = hpx::parallel::execution::par(hpx::parallel::execution::task).on(exec);
     hpx::compute::cuda::target t(0);
@@ -58,14 +55,14 @@ int hpx_main(int argc, char **argv) {
     std::cout << "for_loop spawned" << std::endl;
 
     // Can interleave normal HPX functionality with Kokkos functionality.
-    kokkos::View<double *, kokkos::HostSpace> d(kokkos::ViewAllocateWithoutInitializing("d"), n);
+    hpx::compute::kokkos::View<double *, hpx::compute::kokkos::HostSpace> d(hpx::compute::kokkos::ViewAllocateWithoutInitializing("d"), n);
     std::cout << "hpx for_loop on host" << std::endl;
     auto g1 = hpx::parallel::for_loop(
         hpx::parallel::execution::par(hpx::parallel::execution::task), 0, n,
         [] HPX_HOST_DEVICE (std::size_t i) { d[i] = std::sin(double(i)); });
     std::cout << "for_loop spawned" << std::endl;
 
-    kokkos::View<double *, kokkos::DeviceSpace> e(kokkos::ViewAllocateWithoutInitializing("e"), n);
+    hpx::compute::kokkos::View<double *, hpx::compute::kokkos::DeviceSpace> e(hpx::compute::kokkos::ViewAllocateWithoutInitializing("e"), n);
     std::cout << "hpx for_loop on device" << std::endl;
     auto g2 = hpx::parallel::for_loop(
         hpx::parallel::execution::par(hpx::parallel::execution::task).on(hpx::compute::cuda::default_executor(t)), 0, n,
@@ -82,8 +79,8 @@ int hpx_main(int argc, char **argv) {
     // CUDA device.
     double result = 0.0;
     std::cout << "kokkos reduce" << std::endl;
-    kokkos::parallel_reduce(
-        kokkos::RangePolicy<kokkos::DefaultExecutionSpace>(0, n),
+    hpx::compute::kokkos::parallel_reduce(
+        hpx::compute::kokkos::RangePolicy<hpx::compute::kokkos::DefaultExecutionSpace>(0, n),
         KOKKOS_LAMBDA(std::size_t i, double &update) { update += c[i]; },
         result);
 
