@@ -5,24 +5,17 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef HPX_COMPUTE_KOKKOS_UTILS_HPP
-#define HPX_COMPUTE_KOKKOS_UTILS_HPP
+/// \file Imports Kokkos functionality into the hpx::kokkos namespace.
+
+#ifndef HPX_KOKKOS_IMPORT_HPP
+#define HPX_KOKKOS_IMPORT_HPP
 
 #include <Kokkos_Core.hpp>
 
 namespace hpx {
-namespace compute {
 namespace kokkos {
-/// RAII guard for initializing and finalizing the Kokkos runtime.
-struct runtime_guard {
-  template <typename... Args> runtime_guard(Args &&... args) {
-    Kokkos::initialize(std::forward<Args>(args)...);
-  }
-
-  ~runtime_guard() { Kokkos::finalize(); }
-};
+using namespace Kokkos;
 } // namespace kokkos
-} // namespace compute
 } // namespace hpx
 
 #endif
