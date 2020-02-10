@@ -114,6 +114,33 @@ int main(int argc, char **argv) {
     std::cout << "done" << std::endl;
     std::cout << "separated kernel launch took " << tt << " seconds"
               << std::endl;
+
+    // Asynchronous parallel_reduce
+    std::cout << "launching two asynchronous parallel_reduces on different "
+                 "instances... "
+              << std::flush;
+    Kokkos::View<double> sum("sum");
+    hpx::future<void> f5 = hpx::kokkos::parallel_reduce_async(
+        hpx::kokkos::RangePolicy<>(exec1, 0, n),
+        KOKKOS_LAMBDA(int const &i, double &x) {
+          for (std::size_t j = 0; j < 10000; ++j) {
+            x += sqrt(pow(a(i), i * j / 7.0));
+          }
+        },
+        sum);
+
+    Kokkos::View<double> prod("prod");
+    hpx::future<void> f6 = hpx::kokkos::parallel_reduce_async(
+        hpx::kokkos::RangePolicy<>(exec2, 0, n),
+        KOKKOS_LAMBDA(int const &i, double &x) {
+          for (std::size_t j = 0; j < 10000; ++j) {
+            x *= sqrt(pow(d(i), i * j * 3));
+          }
+        },
+        prod);
+
+    hpx::wait_all(f5, f6);
+    std::cout << "done" << std::endl;
   }
 
   return hpx::finalize();
