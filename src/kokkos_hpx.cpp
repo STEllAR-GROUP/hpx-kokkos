@@ -22,6 +22,29 @@ struct kernel {
   }
 };
 
+struct scan_kernel {
+  Kokkos::View<double *> a;
+
+  scan_kernel(Kokkos::View<double *> a) : a(a) {}
+
+  KOKKOS_INLINE_FUNCTION
+  void operator()(const int i, double &update, const bool final_pass) const {
+    for (std::size_t j = 0; j < 1000; j++) {
+      update += sin(pow(a(i), j * 13));
+    }
+  }
+
+  KOKKOS_INLINE_FUNCTION
+  void init(double &update) const { update = 0.0; }
+
+  KOKKOS_INLINE_FUNCTION
+  void join(double &update, const double &input) const {
+    for (std::size_t j = 0; j < 1000; j++) {
+      update += sin(pow(input, j * 13));
+    }
+  }
+};
+
 int main(int argc, char **argv) {
   {
     hpx::kokkos::ScopeGuard g(argc, argv);
@@ -101,6 +124,7 @@ int main(int argc, char **argv) {
     // behaviour can be changed in Kokkos.
     auto exec1 = hpx::kokkos::make_execution_space<>();
     auto exec2 = hpx::kokkos::make_execution_space<>();
+    auto exec3 = hpx::kokkos::make_execution_space<>();
 
     hpx::future<void> f3 = hpx::kokkos::parallel_for_async(
         hpx::kokkos::RangePolicy<>(exec1, 0, n), k1);
@@ -141,6 +165,17 @@ int main(int argc, char **argv) {
 
     hpx::wait_all(f5, f6);
     std::cout << "done" << std::endl;
+
+    // All together
+    hpx::future<void> f7 = hpx::kokkos::parallel_for_async(
+        hpx::kokkos::RangePolicy<>(exec1, 0, n), k1);
+    hpx::future<void> f8 = hpx::kokkos::parallel_for_async(
+        hpx::kokkos::RangePolicy<>(exec2, 0, n), k2);
+    hpx::future<void> f9 = hpx::kokkos::parallel_scan_async(
+        hpx::kokkos::RangePolicy<>(exec3, 0, n), scan_kernel(f));
+    hpx::future<void> f10 = hpx::kokkos::parallel_scan_async(
+        hpx::kokkos::RangePolicy<>(exec1, 0, n), scan_kernel(a));
+    hpx::wait_all(f7, f8, f9, f10);
   }
 
   return hpx::finalize();
