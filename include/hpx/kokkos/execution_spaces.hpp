@@ -22,30 +22,35 @@ ExecutionSpace make_execution_space() {
   return {};
 }
 
+#if defined(KOKKOS_ENABLE_CUDA)
 namespace detail {
-// TODO: These streams are never destroyed.
-std::vector<cudaStream_t> initialize_streams(std::size_t const num_streams) {
-  std::vector<cudaStream_t> streams(num_streams);
-  for (auto &s : streams) {
-    cudaError_t error =
-        cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
+// TODO: The streams are never destroyed.
+std::vector<Kokkos::Cuda>
+initialize_instances(std::size_t const num_instances) {
+  std::vector<Kokkos::Cuda> instances;
+  instances.reserve(num_instances);
+  for (std::size_t i = 0; i < num_instances; ++i) {
+    cudaStream_t s;
+    cudaError_t error = cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
     if (error != cudaSuccess) {
       HPX_THROW_EXCEPTION(
-          kernel_error, "hpx::kokkos::detail::initialize_streams",
+          kernel_error, "hpx::kokkos::detail::initialize_instances",
           std::string("cudaStreamCreate failed: ") + cudaGetErrorString(error));
     }
+    instances.emplace_back(s);
   }
-  return streams;
+  return instances;
 }
 } // namespace detail
 
 template <> Kokkos::Cuda make_execution_space<Kokkos::Cuda>() {
-  static constexpr std::size_t num_streams = 3;
-  static thread_local std::size_t current_stream = 0;
-  static thread_local std::vector<cudaStream_t> streams =
-      detail::initialize_streams(num_streams);
-  return {streams[current_stream++ % num_streams]};
+  static constexpr std::size_t num_instances = 10;
+  static thread_local std::size_t current_instance = 0;
+  static thread_local std::vector<Kokkos::Cuda> instances =
+      detail::initialize_instances(num_instances);
+  return instances[current_instance++ % num_instances];
 }
+#endif
 } // namespace kokkos
 } // namespace hpx
 
