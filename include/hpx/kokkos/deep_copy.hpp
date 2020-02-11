@@ -10,7 +10,7 @@
 #ifndef HPX_KOKKOS_DEEP_COPY_HPP
 #define HPX_KOKKOS_DEEP_COPY_HPP
 
-#include <hpx/kokkos/util.hpp>
+#include <hpx/kokkos/future.hpp>
 
 namespace hpx {
 namespace kokkos {

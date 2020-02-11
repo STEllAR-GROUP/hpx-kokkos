@@ -33,8 +33,6 @@ template <typename ExecutionSpace> struct get_future {
 
 template <> struct get_future<Kokkos::Cuda> {
   template <typename E> static hpx::future<void> call(E &&inst) {
-    // NOTE: 0 is the device. This is probably not correct on multi-GPU
-    // systems.
     printf("getting future from stream %x\n", inst.cuda_stream());
     return hpx::compute::cuda::get_future(inst.cuda_stream());
   }
@@ -44,6 +42,15 @@ template <> struct get_future<Kokkos::Cuda> {
 // functionality is not there yet in the HPX backend (it only stores a
 // single (non-shared) future, which can't be accessed).
 } // namespace detail
+
+/// Make a future for a particular execution space instance. This might be
+/// useful for functions that don't have *_async overloads yet but take an
+/// execution space instance for asynchronous execution.
+template <typename ExecutionSpace = Kokkos::DefaultExecutionSpace>
+hpx::future<void> make_execution_space_future(ExecutionSpace &&inst) {
+  return detail::get_future<ExecutionSpace>::call(
+      std::forward<ExecutionSpace>(inst));
+}
 } // namespace kokkos
 } // namespace hpx
 
