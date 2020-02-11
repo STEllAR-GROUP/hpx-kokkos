@@ -8,13 +8,10 @@
 /// \file Forwarding header. Includes all Kokkos helper functionality. Typically
 /// applications should include this header only.
 
-#ifndef HPX_KOKKOS_HPP
-#define HPX_KOKKOS_HPP
+#pragma once
 
 #include <hpx/kokkos/deep_copy.hpp>
 #include <hpx/kokkos/execution_spaces.hpp>
 #include <hpx/kokkos/future.hpp>
 #include <hpx/kokkos/import.hpp>
 #include <hpx/kokkos/parallel.hpp>
-
-#endif

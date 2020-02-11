@@ -8,8 +8,7 @@
 /// \file Contains utilities for dealing with Kokkos execution spaces and HPX
 /// futures.
 
-#ifndef HPX_KOKKOS_UTIL_HPP
-#define HPX_KOKKOS_UTIL_HPP
+#pragma once
 
 #include <hpx/compute/cuda/target.hpp>
 #include <hpx/include/future.hpp>
@@ -53,5 +52,3 @@ hpx::future<void> make_execution_space_future(ExecutionSpace &&inst) {
 }
 } // namespace kokkos
 } // namespace hpx
-
-#endif

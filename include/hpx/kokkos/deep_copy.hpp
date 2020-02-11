@@ -7,8 +7,7 @@
 
 /// \file Contains wrappers for Kokkos deep copy functions that return futures.
 
-#ifndef HPX_KOKKOS_DEEP_COPY_HPP
-#define HPX_KOKKOS_DEEP_COPY_HPP
+#pragma once
 
 #include <hpx/kokkos/future.hpp>
 
@@ -25,5 +24,3 @@ hpx::future<void> deep_copy_async(ExecutionSpace &&space, Args &&... args) {
 }
 } // namespace kokkos
 } // namespace hpx
-
-#endif

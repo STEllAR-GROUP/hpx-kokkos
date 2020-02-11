@@ -8,8 +8,7 @@
 /// \file Contains wrappers to create Kokkos execution space instances. Some may
 /// be specialized for a particular execution space.
 
-#ifndef HPX_KOKKOS_EXECUTION_SPACES_HPP
-#define HPX_KOKKOS_EXECUTION_SPACES_HPP
+#pragma once
 
 #include <hpx/include/compute.hpp>
 
@@ -53,5 +52,3 @@ template <> Kokkos::Cuda make_execution_space<Kokkos::Cuda>() {
 #endif
 } // namespace kokkos
 } // namespace hpx
-
-#endif

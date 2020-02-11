@@ -8,8 +8,7 @@
 /// \file Contains wrappers for Kokkos parallel dispatch functions that return
 /// futures.
 
-#ifndef HPX_KOKKOS_PARALLEL_HPP
-#define HPX_KOKKOS_PARALLEL_HPP
+#pragma once
 
 #include <hpx/include/compute.hpp>
 
@@ -109,5 +108,3 @@ hpx::future<void> parallel_scan_async(std::string const &label,
 }
 } // namespace kokkos
 } // namespace hpx
-
-#endif

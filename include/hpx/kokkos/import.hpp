@@ -7,8 +7,7 @@
 
 /// \file Imports Kokkos functionality into the hpx::kokkos namespace.
 
-#ifndef HPX_KOKKOS_IMPORT_HPP
-#define HPX_KOKKOS_IMPORT_HPP
+#pragma once
 
 #include <Kokkos_Core.hpp>
 
@@ -17,5 +16,3 @@ namespace kokkos {
 using namespace Kokkos;
 } // namespace kokkos
 } // namespace hpx
-
-#endif
