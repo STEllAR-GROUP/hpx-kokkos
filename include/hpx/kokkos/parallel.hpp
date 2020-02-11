@@ -20,7 +20,7 @@ namespace hpx {
 namespace kokkos {
 template <typename ExecutionPolicy, typename... Args,
           typename Enable = typename std::enable_if<
-              Kokkos::Impl::is_execution_policy<ExecutionPolicy>::value>::type>
+              Kokkos::is_execution_policy<ExecutionPolicy>::value>::type>
 hpx::future<void> parallel_for_async(ExecutionPolicy &&policy,
                                      Args &&... args) {
   printf("calling parallel_for_async with execution policy\n");
@@ -50,7 +50,7 @@ hpx::future<void> parallel_for_async(std::string const &label,
 
 template <typename ExecutionPolicy, typename... Args,
           typename Enable = typename std::enable_if<
-              Kokkos::Impl::is_execution_policy<ExecutionPolicy>::value>::type>
+              Kokkos::is_execution_policy<ExecutionPolicy>::value>::type>
 hpx::future<void> parallel_reduce_async(ExecutionPolicy &&policy,
                                         Args &&... args) {
   printf("calling parallel_reduce_async with execution policy\n");
@@ -80,7 +80,7 @@ hpx::future<void> parallel_reduce_async(std::string const &label,
 
 template <typename ExecutionPolicy, typename... Args,
           typename Enable = typename std::enable_if<
-              Kokkos::Impl::is_execution_policy<ExecutionPolicy>::value>::type>
+              Kokkos::is_execution_policy<ExecutionPolicy>::value>::type>
 hpx::future<void> parallel_scan_async(ExecutionPolicy &&policy,
                                       Args &&... args) {
   printf("calling parallel_scan_async with execution policy\n");
