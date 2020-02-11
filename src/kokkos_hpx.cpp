@@ -119,18 +119,14 @@ int main(int argc, char **argv) {
                  "instances... "
               << std::flush;
     t.restart();
-    // Creating a new execution space based on a stream synchronizes with the
-    // full device. TODO: Cache execution space instances or see if this
-    // behaviour can be changed in Kokkos.
-    auto exec1 = hpx::kokkos::make_execution_space<>();
-    auto exec2 = hpx::kokkos::make_execution_space<>();
-    auto exec3 = hpx::kokkos::make_execution_space<>();
 
     hpx::future<void> f3 = hpx::kokkos::parallel_for_async(
-        hpx::kokkos::RangePolicy<>(exec1, 0, n), k1);
+        hpx::kokkos::RangePolicy<>(hpx::kokkos::make_execution_space(), 0, n),
+        k1);
 
     hpx::future<void> f4 = hpx::kokkos::parallel_for_async(
-        hpx::kokkos::RangePolicy<>(exec2, 0, n), k2);
+        hpx::kokkos::RangePolicy<>(hpx::kokkos::make_execution_space(), 0, n),
+        k2);
 
     std::cout << "returned... " << std::flush;
     hpx::wait_all(f3, f4);
@@ -145,7 +141,7 @@ int main(int argc, char **argv) {
               << std::flush;
     Kokkos::View<double> sum("sum");
     hpx::future<void> f5 = hpx::kokkos::parallel_reduce_async(
-        hpx::kokkos::RangePolicy<>(exec1, 0, n),
+        hpx::kokkos::RangePolicy<>(hpx::kokkos::make_execution_space(), 0, n),
         KOKKOS_LAMBDA(int const &i, double &x) {
           for (std::size_t j = 0; j < 10000; ++j) {
             x += sqrt(pow(a(i), i * j / 7.0));
@@ -155,7 +151,7 @@ int main(int argc, char **argv) {
 
     Kokkos::View<double> prod("prod");
     hpx::future<void> f6 = hpx::kokkos::parallel_reduce_async(
-        hpx::kokkos::RangePolicy<>(exec2, 0, n),
+        hpx::kokkos::RangePolicy<>(hpx::kokkos::make_execution_space(), 0, n),
         KOKKOS_LAMBDA(int const &i, double &x) {
           for (std::size_t j = 0; j < 10000; ++j) {
             x *= sqrt(pow(d(i), i * j * 3));
@@ -168,13 +164,20 @@ int main(int argc, char **argv) {
 
     // All together
     hpx::future<void> f7 = hpx::kokkos::parallel_for_async(
-        hpx::kokkos::RangePolicy<>(exec1, 0, n), k1);
+        hpx::kokkos::RangePolicy<>(hpx::kokkos::make_execution_space(), 0, n),
+        k1);
     hpx::future<void> f8 = hpx::kokkos::parallel_for_async(
-        hpx::kokkos::RangePolicy<>(exec2, 0, n), k2);
+        hpx::kokkos::RangePolicy<>(hpx::kokkos::make_execution_space(), 0, n),
+        k2);
+
+    // TODO: The parallel_scans don't seem to launch until the parallel_fors
+    // have finished. Kokkos or device limitation?
     hpx::future<void> f9 = hpx::kokkos::parallel_scan_async(
-        hpx::kokkos::RangePolicy<>(exec3, 0, n), scan_kernel(f));
+        hpx::kokkos::RangePolicy<>(hpx::kokkos::make_execution_space(), 0, n),
+        scan_kernel(f));
     hpx::future<void> f10 = hpx::kokkos::parallel_scan_async(
-        hpx::kokkos::RangePolicy<>(exec1, 0, n), scan_kernel(a));
+        hpx::kokkos::RangePolicy<>(hpx::kokkos::make_execution_space(), 0, n),
+        scan_kernel(a));
     hpx::wait_all(f7, f8, f9, f10);
   }
 
