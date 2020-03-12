@@ -15,8 +15,8 @@ namespace hpx {
 namespace kokkos {
 // TODO: Do we need more overloads here?
 template <typename ExecutionSpace, typename... Args,
-          typename Enable = typename std::enable_if<
-              Kokkos::is_execution_space<ExecutionSpace>::value>::type>
+          typename Enable = typename std::enable_if<Kokkos::is_execution_space<
+              typename std::decay<ExecutionSpace>::type>::value>::type>
 hpx::future<void> deep_copy_async(ExecutionSpace &&space, Args &&... args) {
   Kokkos::deep_copy(space, std::forward<Args>(args)...);
   return detail::get_future<ExecutionSpace>::call(
