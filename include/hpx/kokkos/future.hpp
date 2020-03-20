@@ -19,7 +19,7 @@ namespace hpx {
 namespace kokkos {
 namespace detail {
 template <typename ExecutionSpace> struct get_future {
-  template <typename E> static hpx::future<void> call(E &&inst) {
+  template <typename E> static hpx::shared_future<void> call(E &&inst) {
     // The best we can do generically at the moment is to fence on the
     // instance and return a ready future. It would be nice to be able to
     // attach a callback to any execution space instance to trigger future
@@ -31,22 +31,27 @@ template <typename ExecutionSpace> struct get_future {
 };
 
 template <> struct get_future<Kokkos::Cuda> {
-  template <typename E> static hpx::future<void> call(E &&inst) {
+  template <typename E> static hpx::shared_future<void> call(E &&inst) {
     printf("getting future from stream %x\n", inst.cuda_stream());
     return hpx::compute::cuda::get_future(inst.cuda_stream());
   }
 };
 
-// TODO: We *can* specialize for Kokkos::HPX. However, the correct
-// functionality is not there yet in the HPX backend (it only stores a
-// single (non-shared) future, which can't be accessed).
+#if KOKKOS_VERSION >= 30000
+template <> struct get_future<Kokkos::Experimental::HPX> {
+  template <typename E> static hpx::shared_future<void> call(E &&inst) {
+    printf("getting future from HPX instance %x\n", inst.impl_instance_id());
+    return inst.impl_get_future();
+  }
+};
+#endif
 } // namespace detail
 
 /// Make a future for a particular execution space instance. This might be
 /// useful for functions that don't have *_async overloads yet but take an
 /// execution space instance for asynchronous execution.
 template <typename ExecutionSpace = Kokkos::DefaultExecutionSpace>
-hpx::future<void> make_execution_space_future(ExecutionSpace &&inst) {
+hpx::shared_future<void> make_execution_space_future(ExecutionSpace &&inst) {
   return detail::get_future<ExecutionSpace>::call(
       std::forward<ExecutionSpace>(inst));
 }
