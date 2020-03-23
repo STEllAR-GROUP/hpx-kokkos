@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.3.2)
+cmake_minimum_required(VERSION 3.13)
 
-project(kokkos_hpx_interop CXX)
+project(HPXKokkos CXX)
 
 find_package(HPX REQUIRED)
 find_package(Kokkos REQUIRED)
@@ -21,9 +21,28 @@ kokkos_check(DEVICES HPX)
 kokkos_check(OPTIONS HPX_ASYNC_DISPATCH)
 
 # Main target provided by this project
-add_library(kokkos_hpx_interop INTERFACE)
-target_include_directories(kokkos_hpx_interop INTERFACE ${PROJECT_SOURCE_DIR}/include)
+add_library(hpx_kokkos INTERFACE)
+target_include_directories(hpx_kokkos
+  INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>)
+target_link_libraries(hpx_kokkos INTERFACE HPX::hpx Kokkos::kokkos)
+
+include(GNUInstallDirs)
+install(
+  TARGETS hpx_kokkos
+  EXPORT HPXKokkos)
+install(
+  EXPORT HPXKokkos
+  FILE HPXKokkosTargets.cmake
+  NAMESPACE HPXKokkos::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/HPXKokkos)
+install(
+  DIRECTORY include/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(
+  FILES cmake/HPXKokkosConfig.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/HPXKokkos)
 
 # Examples using this project
-add_hpx_executable(kokkos_hpx SOURCES src/kokkos_hpx.cpp)
-target_link_libraries(kokkos_hpx PRIVATE Kokkos::kokkos kokkos_hpx_interop)
+add_executable(hpx_kokkos_test EXCLUDE_FROM_ALL src/hpx_kokkos_test.cpp)
+target_link_libraries(hpx_kokkos_test PRIVATE hpx_kokkos)
