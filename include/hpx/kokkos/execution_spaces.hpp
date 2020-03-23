@@ -52,8 +52,10 @@ template <> Kokkos::Cuda make_execution_space<Kokkos::Cuda>() {
 #endif
 
 #if defined(KOKKOS_ENABLE_HPX) && KOKKOS_VERSION >= 30000
-template <> Kokkos::Experimental::HPX make_execution_space<Kokkos::Experimental::HPX>() {
-  return Kokkos::Experimental::HPX(Kokkos::Experimental::HPX::instance_mode::independent);
+template <>
+Kokkos::Experimental::HPX make_execution_space<Kokkos::Experimental::HPX>() {
+  return Kokkos::Experimental::HPX(
+      Kokkos::Experimental::HPX::instance_mode::independent);
 }
 #endif
 } // namespace kokkos
