@@ -52,7 +52,7 @@ template <> struct get_future<Kokkos::Experimental::HPX> {
 /// execution space instance for asynchronous execution.
 template <typename ExecutionSpace = Kokkos::DefaultExecutionSpace>
 hpx::shared_future<void> make_execution_space_future(ExecutionSpace &&inst) {
-  return detail::get_future<ExecutionSpace>::call(
+  return detail::get_future<typename std::decay<ExecutionSpace>::type>::call(
       std::forward<ExecutionSpace>(inst));
 }
 } // namespace kokkos
