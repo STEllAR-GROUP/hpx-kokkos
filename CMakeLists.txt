@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 project(HPXKokkos CXX)
 
-find_package(HPX REQUIRED)
-find_package(Kokkos REQUIRED)
+find_package(HPX 1.4.1 REQUIRED)
+find_package(Kokkos 3.0.0 REQUIRED)
 
 # Check that Kokkos and HPX options are consistent.
 if(Kokkos_ENABLE_CUDA)
