@@ -30,14 +30,17 @@ template <typename ExecutionSpace> struct get_future {
   }
 };
 
+#if defined(KOKKOS_ENABLE_CUDA)
 template <> struct get_future<Kokkos::Cuda> {
   template <typename E> static hpx::shared_future<void> call(E &&inst) {
     printf("getting future from stream %x\n", inst.cuda_stream());
     return hpx::compute::cuda::get_future(inst.cuda_stream());
   }
 };
+#endif
 
-#if KOKKOS_VERSION >= 30000
+#if defined(KOKKOS_ENABLE_HPX) && KOKKOS_VERSION >= 30000 &&                   \
+    defined(KOKKOS_ENABLE_HPX_ASYNC_DISPATCH)
 template <> struct get_future<Kokkos::Experimental::HPX> {
   template <typename E> static hpx::shared_future<void> call(E &&inst) {
     printf("getting future from HPX instance %x\n", inst.impl_instance_id());
