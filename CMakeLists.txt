@@ -1,9 +1,15 @@
+# Copyright (c) 2019-2020 ETH Zurich
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 cmake_minimum_required(VERSION 3.13)
 
 project(HPXKokkos CXX)
 
-find_package(HPX 1.4.1 REQUIRED)
-find_package(Kokkos 3.0.0 REQUIRED)
+# Dependencies
+find_package(HPX 1.5.0 REQUIRED)
+find_package(Kokkos REQUIRED)
 
 # Check that Kokkos and HPX options are consistent.
 if(Kokkos_ENABLE_CUDA)
@@ -43,6 +49,5 @@ install(
   FILES cmake/HPXKokkosConfig.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/HPXKokkos)
 
-# Examples using this project
-add_executable(hpx_kokkos_test EXCLUDE_FROM_ALL src/hpx_kokkos_test.cpp)
-target_link_libraries(hpx_kokkos_test PRIVATE hpx_kokkos)
+# Handle tests
+add_subdirectory(tests)

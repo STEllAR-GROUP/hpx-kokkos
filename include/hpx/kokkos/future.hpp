@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (c) 2020 Mikael Simberg
+//  Copyright (c) 2020 ETH Zurich
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -10,7 +10,9 @@
 
 #pragma once
 
-#include <hpx/compute/cuda/target.hpp>
+#include <hpx/kokkos/detail/logging.hpp>
+
+#include <hpx/include/compute.hpp>
 #include <hpx/include/future.hpp>
 
 #include <Kokkos_Core.hpp>
@@ -25,7 +27,7 @@ template <typename ExecutionSpace> struct get_future {
     // attach a callback to any execution space instance to trigger future
     // completion.
     inst.fence();
-    printf("getting generic ready future after fencing\n");
+    HPX_KOKKOS_DETAIL_LOG("getting generic ready future after fencing");
     return hpx::make_ready_future();
   }
 };
@@ -33,7 +35,7 @@ template <typename ExecutionSpace> struct get_future {
 #if defined(KOKKOS_ENABLE_CUDA)
 template <> struct get_future<Kokkos::Cuda> {
   template <typename E> static hpx::shared_future<void> call(E &&inst) {
-    printf("getting future from stream %x\n", inst.cuda_stream());
+    HPX_KOKKOS_DETAIL_LOG("getting future from stream %p", inst.cuda_stream());
     return hpx::compute::cuda::get_future(inst.cuda_stream());
   }
 };
@@ -43,7 +45,8 @@ template <> struct get_future<Kokkos::Cuda> {
     defined(KOKKOS_ENABLE_HPX_ASYNC_DISPATCH)
 template <> struct get_future<Kokkos::Experimental::HPX> {
   template <typename E> static hpx::shared_future<void> call(E &&inst) {
-    printf("getting future from HPX instance %x\n", inst.impl_instance_id());
+    HPX_KOKKOS_DETAIL_LOG("getting future from HPX instance %x",
+                          inst.impl_instance_id());
     return inst.impl_get_future();
   }
 };
