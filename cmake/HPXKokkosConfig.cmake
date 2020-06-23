@@ -4,6 +4,4 @@ include(CMakeFindDependencyMacro)
 find_dependency(HPX 1.5.0 REQUIRED)
 find_dependency(Kokkos REQUIRED)
 
-if(NOT TARGET HPXKokkos::hpx_kokkos)
-  include("${HPXKokkos_CMAKE_DIR}/HPXKokkosTargets.cmake")
-endif()
+include("${HPXKokkos_CMAKE_DIR}/HPXKokkosTargets.cmake")
