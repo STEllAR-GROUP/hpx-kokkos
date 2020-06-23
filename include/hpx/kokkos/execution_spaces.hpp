@@ -21,6 +21,9 @@ ExecutionSpace make_execution_space() {
   return {};
 }
 
+template <typename ExecutionSpace>
+struct is_execution_space_independent : std::false_type {};
+
 #if defined(KOKKOS_ENABLE_CUDA)
 namespace detail {
 // TODO: The streams are never destroyed.
@@ -49,6 +52,9 @@ template <> Kokkos::Cuda make_execution_space<Kokkos::Cuda>() {
       detail::initialize_instances(num_instances);
   return instances[current_instance++ % num_instances];
 }
+
+template <>
+struct is_execution_space_independent<Kokkos::Cuda> : std::true_type {};
 #endif
 
 #if defined(KOKKOS_ENABLE_HPX) && KOKKOS_VERSION >= 30000
@@ -57,6 +63,10 @@ Kokkos::Experimental::HPX make_execution_space<Kokkos::Experimental::HPX>() {
   return Kokkos::Experimental::HPX(
       Kokkos::Experimental::HPX::instance_mode::independent);
 }
+
+template <>
+struct is_execution_space_independent<Kokkos::Experimental::HPX>
+    : std::true_type {};
 #endif
 } // namespace kokkos
 } // namespace hpx
