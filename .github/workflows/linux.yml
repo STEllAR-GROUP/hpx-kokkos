@@ -1,0 +1,50 @@
+# Copyright (c) 2020 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+name: Linux CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: stellargroup/hpx:dev
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      shell: bash
+      run: |
+          mkdir -p /tmp/kokkos-develop
+          cd /tmp/kokkos-develop
+          git clone https://github.com/kokkos/kokkos.git
+          mkdir -p build
+          cd build
+          cmake \
+              ../kokkos \
+              -GNinja \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DKokkos_ENABLE_HPX=ON \
+              -DKokkos_ENABLE_HPX_ASYNC_DISPATCH=ON
+          ninja install
+    - name: Configure
+      shell: bash
+      run: |
+          cmake \
+              . \
+              -Bbuild \
+              -GNinja \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DHPX_KOKKOS_ENABLE_TESTS=ON
+    - name: Build
+      shell: bash
+      run: |
+          cmake --build build --target tests
+    - name: Test
+      shell: bash
+      run: |
+          cd build
+          ctest --output-on-failure
