@@ -1,7 +1,7 @@
 # HPX/Kokkos interoperability library
 
 WARNING: This repo is work in progress and should not be relied on for
-anything.
+anything. Please read the [known limitations](#known-limitations).
 
 ## What?
 
@@ -36,26 +36,29 @@ In your CMake configuration, add `find_package(HPXKokkos REQUIRED)` and link
 your targets to `HPXKokkos::hpx_kokkos`. Finally, include `hpx/kokkos.hpp` in
 your code.
 
+Tests can be enabled with the CMake option `HPX_KOKKOS_ENABLE_TESTS`.
+
 # Requirements
 
 - CMake version 3.13 or newer
 - HPX version 1.5.0 or newer
-- Kokkos version 3.1.0 or newer (TODO: check which version has HPX updates)
+- Kokkos version 3.2.0 or newer
   - The build should have `Kokkos_ENABLE_HPX_ASYNC_DISPATCH=ON`
 
 For CUDA support HPX and Kokkos should be built with CUDA support. See their
-respective documentation for enabling CUDA support. The library can be used
-with other Kokkos execution spaces, but only the HPX and CUDA backends are
-currently asynchronous. HIP support is planned.
+respective documentation for enabling CUDA support. CUDA support requires
+`Kokkos_ENABLE_CUDA_LAMBDA=ON`. The library can be used with other Kokkos
+execution spaces, but only the HPX and CUDA backends are currently
+asynchronous. HIP support is planned.
 
 # API
 
 The only supported header is `hpx/kokkos.hpp`. All other headers may change
 without notice.
 
-The following follow the same API as the corresponding Kokkos functions. All
-execution spaces except HPX and CUDA are currently blocking and only return
-ready futures.
+The following functions follow the same API as the corresponding Kokkos
+functions. All execution spaces except HPX and CUDA are currently blocking and
+only return ready futures.
 
 ```
 namespace hpx { namespace kokkos {
@@ -85,23 +88,44 @@ class serial_executor;
 }}
 ```
 
-The following is a helper function for creating execution spaces that are
-independent. It is allowed to return the same execution space instance on
-subsequent invocations.
+The following is a helper function for creating execution space instances that
+are independent. It is allowed to return the same execution space instance on
+subsequent invocations. For CUDA it returns execution space instances that have
+different streams. For HPX it returns execution space instances with different
+internal futures.
 
 ```
 namespace hpx { namespace kokkos {
-template <typename ExecutionSpace>
+template <typename ExecutionSpace = Kokkos::DefaultExecutionSpace>
 ExecutionSpace make_execution_space();
 }}
 ```
 
 ## Known limitations
 
+The following are known limitations of the library. If one of them is
+particularly important for your use case, please open an issue and we'll
+prioritize getting it fixed for you.
+
 - Compilation with `nvcc` is likely not to work. Prefer `clang` for compiling
   CUDA code.
-- Only the HPX and CUDA execution spaces are asynchronous
-- Not all HPX parallel algorithms can be used with the Kokkos executors;
-  currently tested algorithms are:
+- Only the HPX and CUDA execution spaces are asynchronous. Parallel algorithms
+  with other execution spaces always block and return a ready future (where
+  appropriate).
+- Not all HPX parallel algorithms can be used with the Kokkos executors. Most
+  embarassingly data-parallel algorithms are likely to work. Currently tested
+  algorithms are:
   - `hpx::for_each`
-- The Kokkos executors do not support continuations (`then_execute` and `bulk_then_execute`)
+  - `hpx::for_loop`
+  - `hpx::transform`
+- The Kokkos executors do not support continuations (`then_execute` and
+  `bulk_then_execute`). One can instead call the required function from a host
+  continuation.
+- `Kokkos::View` construction and destruction (when reference count goes to
+  zero) are generally blocking operations and this library does not currently
+  try to solve this problem. Workarounds are: create all required views upfront
+  or use unmanaged views and handle allocation and deallocation manually.
+- `bulk_async_execute` uses a `Kokkos::View` internally which leads to blocking
+  the full execution space when the bulk task is finished. The HPX or Kokkos
+  parallel algorithms do not have this problem inherently, but care must still be
+  taken with user-defined views to avoid blocking (see previous limitation).
