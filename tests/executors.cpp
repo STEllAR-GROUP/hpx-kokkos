@@ -87,7 +87,10 @@ template <typename Executor> void test(Executor &&exec) {
 int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
   test(hpx::kokkos::default_executor{});
-  test(hpx::kokkos::host_executor{});
+  if (!std::is_same<hpx::kokkos::default_executor,
+                    hpx::kokkos::default_host_executor>::value) {
+    test(hpx::kokkos::default_host_executor{});
+  }
   Kokkos::finalize();
 
   return hpx::kokkos::detail::report_errors();
