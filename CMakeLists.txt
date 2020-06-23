@@ -50,4 +50,8 @@ install(
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/HPXKokkos)
 
 # Handle tests
-add_subdirectory(tests)
+option(HPX_KOKKOS_ENABLE_TESTS "Enable tests." OFF)
+if(HPX_KOKKOS_ENABLE_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
