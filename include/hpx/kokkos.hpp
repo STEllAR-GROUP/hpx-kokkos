@@ -16,3 +16,4 @@
 #include <hpx/kokkos/future.hpp>
 #include <hpx/kokkos/import.hpp>
 #include <hpx/kokkos/parallel.hpp>
+#include <hpx/kokkos/view.hpp>
