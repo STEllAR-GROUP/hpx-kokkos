@@ -36,7 +36,7 @@ template <typename ExecutionSpace> struct get_future {
 template <> struct get_future<Kokkos::Cuda> {
   template <typename E> static hpx::shared_future<void> call(E &&inst) {
     HPX_KOKKOS_DETAIL_LOG("getting future from stream %p", inst.cuda_stream());
-    return hpx::compute::cuda::get_future(inst.cuda_stream());
+    return hpx::cuda::detail::get_future_with_callback(inst.cuda_stream());
   }
 };
 #endif
