@@ -12,8 +12,8 @@
 
 #include <hpx/kokkos/detail/logging.hpp>
 
-#include <hpx/include/compute.hpp>
-#include <hpx/include/future.hpp>
+#include <hpx/future.hpp>
+#include <hpx/modules/async_cuda.hpp>
 
 #include <Kokkos_Core.hpp>
 
@@ -33,10 +33,19 @@ template <typename ExecutionSpace> struct get_future {
 };
 
 #if defined(KOKKOS_ENABLE_CUDA)
+#if !defined(HPX_KOKKOS_CUDA_FUTURE_TYPE)
+#define HPX_KOKKOS_CUDA_FUTURE_TYPE callback
+#endif
 template <> struct get_future<Kokkos::Cuda> {
   template <typename E> static hpx::shared_future<void> call(E &&inst) {
     HPX_KOKKOS_DETAIL_LOG("getting future from stream %p", inst.cuda_stream());
-    return hpx::cuda::detail::get_future_with_callback(inst.cuda_stream());
+#if HPX_KOKKOS_CUDA_FUTURE_TYPE == callback
+    return hpx::cuda::experimental::detail::get_future_with_callback(inst.cuda_stream());
+#elif HPX_KOKKOS_CUDA_FUTURE_TYPE == event
+    return hpx::cuda::experimental::detail::get_future_with_event(inst.cuda_stream());
+#else
+#error "HPX_KOKKOS_CUDA_FUTURE_TYPE is invalid (must be callback or event)"
+#endif
   }
 };
 #endif
