@@ -9,7 +9,10 @@ A header-only library for HPX/Kokkos interoperability. It provides:
 
 - `async` versions of `Kokkos::parallel_for`, `parallel_reduce`, and `parallel_scan`
 - `async` version of `Kokkos::deep_copy`
-- Kokkos executors that forward work to corresponding Kokkos execution spaces
+- HPX executors that forward work to corresponding Kokkos execution spaces
+- A HPX execution policy that forwards work to corresponding Kokkos execution
+  spaces for use with HPX parallel algorithms
+- HPX parallel algorithm specializations for the execution policy above
 
 ## How?
 
@@ -36,14 +39,16 @@ In your CMake configuration, add `find_package(HPXKokkos REQUIRED)` and link
 your targets to `HPXKokkos::hpx_kokkos`. Finally, include `hpx/kokkos.hpp` in
 your code.
 
-Tests can be enabled with the CMake option `HPX_KOKKOS_ENABLE_TESTS`.
+Tests can be enabled with the CMake option `HPX_KOKKOS_ENABLE_TESTS`. All tests
+can be built with the `tests` build target. The tests use `ctest`.
 
 # Requirements
 
 - CMake version 3.13 or newer
 - HPX version 1.5.0 or newer
 - Kokkos version 3.2.0 or newer
-  - The build should have `Kokkos_ENABLE_HPX_ASYNC_DISPATCH=ON`
+  - The build should have `Kokkos_ENABLE_HPX=ON` and
+    `Kokkos_ENABLE_HPX_ASYNC_DISPATCH=ON`
 
 For CUDA support HPX and Kokkos should be built with CUDA support. See their
 respective documentation for enabling CUDA support. CUDA support requires
@@ -101,7 +106,7 @@ ExecutionSpace make_execution_space();
 }}
 ```
 
-## Known limitations
+## Known issues and limitations
 
 The following are known limitations of the library. If one of them is
 particularly important for your use case, please open an issue and we'll
@@ -112,20 +117,16 @@ prioritize getting it fixed for you.
 - Only the HPX and CUDA execution spaces are asynchronous. Parallel algorithms
   with other execution spaces always block and return a ready future (where
   appropriate).
-- Not all HPX parallel algorithms can be used with the Kokkos executors. Most
-  embarassingly data-parallel algorithms are likely to work. Currently tested
-  algorithms are:
-  - `hpx::for_each`
-  - `hpx::for_loop`
-  - `hpx::transform`
-- The Kokkos executors do not support continuations (`then_execute` and
-  `bulk_then_execute`). One can instead call the required function from a host
-  continuation.
+- Not all HPX parallel algorithms can be used with the Kokkos executors.
+  Currently the only available algorithms are `hpx::for_each` and
+  `hpx::reduce`.
 - `Kokkos::View` construction and destruction (when reference count goes to
   zero) are generally blocking operations and this library does not currently
   try to solve this problem. Workarounds are: create all required views upfront
   or use unmanaged views and handle allocation and deallocation manually.
-- `bulk_async_execute` uses a `Kokkos::View` internally which leads to blocking
-  the full execution space when the bulk task is finished. The HPX or Kokkos
-  parallel algorithms do not have this problem inherently, but care must still be
-  taken with user-defined views to avoid blocking (see previous limitation).
+- `terminate called after throwing an instance of 'std::runtime_error' what():
+  Kokkos allocation "InternalScratchFlags" is being deallocated after
+  Kokkos::finalize was called`: this is mostly harmless, but will nevertheless
+  be fixed. It is caused by a set of thread-local Kokkos execution space
+  instances being freed at program termination, after `Kokkos::finalize` has been
+  called.

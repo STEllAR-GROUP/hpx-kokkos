@@ -1,16 +1,14 @@
-///////////////////////////////////////////////////////////////////////////////
-//  Copyright (c) 2019-2020 Mikael Simberg
+//  Copyright (c) 2019-2020 ETH Zurich
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-///////////////////////////////////////////////////////////////////////////////
 
-/// \file Contains wrappers for Kokkos parallel dispatch functions that return
-/// futures.
+/// \file Contains wrappers for Kokkos parallel algorithms that return futures.
 
 #pragma once
 
 #include <hpx/kokkos/detail/logging.hpp>
+#include <hpx/kokkos/future.hpp>
 
 #include <hpx/include/compute.hpp>
 
@@ -19,6 +17,7 @@
 
 namespace hpx {
 namespace kokkos {
+// Asynchronous versions of Kokkos algorithms
 template <typename ExecutionPolicy, typename... Args,
           typename Enable = typename std::enable_if<
               Kokkos::is_execution_policy<ExecutionPolicy>::value>::type>

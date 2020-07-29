@@ -14,6 +14,8 @@
 #include <hpx/kokkos/execution_spaces.hpp>
 #include <hpx/kokkos/executors.hpp>
 #include <hpx/kokkos/future.hpp>
+#include <hpx/kokkos/hpx_algorithms.hpp>
 #include <hpx/kokkos/import.hpp>
-#include <hpx/kokkos/parallel.hpp>
+#include <hpx/kokkos/kokkos_algorithms.hpp>
+#include <hpx/kokkos/policy.hpp>
 #include <hpx/kokkos/view.hpp>

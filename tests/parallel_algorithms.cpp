@@ -10,123 +10,166 @@
 
 #include <hpx/kokkos.hpp>
 
-#include <boost/range/irange.hpp>
+#include <hpx/algorithm.hpp>
 #include <hpx/hpx_main.hpp>
-#include <hpx/include/parallel_algorithm.hpp>
-#include <hpx/include/parallel_transform.hpp>
-
-template <typename Executor> void test_for_loop(Executor &&exec) {
-  int const n = 43;
-
-  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> for_loop_result_host(
-      "for_loop_result_host", n);
-  Kokkos::View<int *, typename std::decay<Executor>::type::execution_space>
-      for_loop_result("for_loop_result", n);
-  for (std::size_t i = 0; i < n; ++i) {
-    for_loop_result_host(i) = 0;
-  }
-  Kokkos::deep_copy(for_loop_result, for_loop_result_host);
-
-  hpx::parallel::for_loop(
-      hpx::parallel::execution::par.on(exec), 0, n,
-      KOKKOS_LAMBDA(int i) { for_loop_result(i) = i; });
-  Kokkos::deep_copy(for_loop_result_host, for_loop_result);
-  for (std::size_t i = 0; i < n; ++i) {
-    HPX_KOKKOS_DETAIL_TEST(for_loop_result_host(i) == i);
-  }
-
-  for (std::size_t i = 0; i < n; ++i) {
-    for_loop_result_host(i) = 0;
-  }
-  Kokkos::deep_copy(for_loop_result, for_loop_result_host);
-
-  auto f = hpx::parallel::for_loop(
-      hpx::parallel::execution::par(hpx::parallel::execution::task).on(exec), 0,
-      n, KOKKOS_LAMBDA(int i) { for_loop_result(i) = i; });
-  f.get();
-  Kokkos::deep_copy(for_loop_result_host, for_loop_result);
-  for (std::size_t i = 0; i < n; ++i) {
-    HPX_KOKKOS_DETAIL_TEST(for_loop_result_host(i) == i);
-  }
-}
+#include <hpx/numeric.hpp>
 
 template <typename Executor> void test_for_each(Executor &&exec) {
   int const n = 43;
 
-  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> for_each_index_host(
-      "for_each_index_host", n);
+  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> for_each_data_host(
+      "for_each_data_host", n);
   Kokkos::View<int *, typename std::decay<Executor>::type::execution_space>
-      for_each_index("for_each_index", n);
+      for_each_data("for_each_data", n);
   for (std::size_t i = 0; i < n; ++i) {
-    for_each_index_host(i) = i;
+    for_each_data_host(i) = i;
   }
-  Kokkos::deep_copy(for_each_index, for_each_index_host);
+  Kokkos::deep_copy(for_each_data, for_each_data_host);
 
-  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> for_each_result_host(
-      "for_each_result_host", n);
-  Kokkos::View<int *, typename std::decay<Executor>::type::execution_space>
-      for_each_result("for_each_result", n);
-  for (std::size_t i = 0; i < n; ++i) {
-    for_each_result_host(i) = 0;
-  }
-  Kokkos::deep_copy(for_each_result, for_each_result_host);
+  hpx::for_each(
+      hpx::kokkos::kokkos_policy{}.on(exec), for_each_data.data(),
+      for_each_data.data() + for_each_data.size(),
+      KOKKOS_LAMBDA(int &x) { x *= 2; });
 
-  hpx::parallel::for_each(
-      hpx::parallel::execution::par.on(exec), for_each_index.data(),
-      for_each_index.data() + for_each_result.size(),
-      KOKKOS_LAMBDA(int i) { for_each_result(i) = i; });
-  Kokkos::deep_copy(for_each_result_host, for_each_result);
-  for (std::size_t i = 0; i < n; ++i) {
-    HPX_KOKKOS_DETAIL_TEST(for_each_result_host(i) == i);
-  }
+  Kokkos::deep_copy(for_each_data_host, for_each_data);
 
   for (std::size_t i = 0; i < n; ++i) {
-    for_each_result_host(i) = 0;
+    HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == 2 * i);
   }
-  Kokkos::deep_copy(for_each_result, for_each_result_host);
 
-  auto f = hpx::parallel::for_each(
-      hpx::parallel::execution::par(hpx::parallel::execution::task).on(exec),
-      for_each_index.data(), for_each_index.data() + for_each_result.size(),
-      KOKKOS_LAMBDA(int i) { for_each_result(i) = i; });
+  auto f = hpx::for_each(
+      hpx::kokkos::kokkos_policy{}(hpx::execution::task).on(exec),
+      for_each_data.data(), for_each_data.data() + for_each_data.size(),
+      KOKKOS_LAMBDA(int &x) { x *= 3; });
+
   f.get();
-  Kokkos::deep_copy(for_each_result_host, for_each_result);
+
+  Kokkos::deep_copy(for_each_data_host, for_each_data);
+
   for (std::size_t i = 0; i < n; ++i) {
-    HPX_KOKKOS_DETAIL_TEST(for_each_result_host(i) == i);
+    HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == 3 * 2 * i);
+  }
+
+  auto f2 = hpx::for_each(
+      hpx::kokkos::kokkos_policy{}(hpx::execution::task).on(exec),
+      hpx::util::make_counting_iterator<>(0),
+      hpx::util::make_counting_iterator<>(n),
+      KOKKOS_LAMBDA(int i) { for_each_data(i) = i; });
+
+  f2.get();
+
+  Kokkos::deep_copy(for_each_data_host, for_each_data);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == i);
   }
 }
 
-template <typename Executor> void test_transform(Executor &&exec) {
+void test_for_each_default() {
   int const n = 43;
 
-  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> transform_result_host(
-      "transform_result_host", n);
-  Kokkos::View<int *, typename std::decay<Executor>::type::execution_space>
-      transform_result("transform_result", n);
+  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> for_each_data_host(
+      "for_each_data_host", n);
+  Kokkos::View<int *, Kokkos::DefaultExecutionSpace> for_each_data(
+      "for_each_data", n);
   for (std::size_t i = 0; i < n; ++i) {
-    transform_result_host(i) = i;
+    for_each_data_host(i) = i;
   }
-  Kokkos::deep_copy(transform_result, transform_result_host);
+  Kokkos::deep_copy(for_each_data, for_each_data_host);
 
-  hpx::parallel::transform(
-      hpx::parallel::execution::par.on(exec), transform_result.data(),
-      transform_result.data() + transform_result.size(),
-      transform_result.data(), KOKKOS_LAMBDA(int i) { return i + 1; });
-  Kokkos::deep_copy(transform_result_host, transform_result);
+  hpx::for_each(
+      hpx::kokkos::kokkos_policy{}, for_each_data.data(),
+      for_each_data.data() + for_each_data.size(),
+      KOKKOS_LAMBDA(int &x) { x *= 2; });
+
+  Kokkos::deep_copy(for_each_data_host, for_each_data);
+
   for (std::size_t i = 0; i < n; ++i) {
-    HPX_KOKKOS_DETAIL_TEST(transform_result_host(i) == (i + 1));
+    HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == 2 * i);
   }
 
-  auto f = hpx::parallel::transform(
-      hpx::parallel::execution::par(hpx::parallel::execution::task).on(exec),
-      transform_result.data(),
-      transform_result.data() + transform_result.size(),
-      transform_result.data(), KOKKOS_LAMBDA(int i) { return i + 1; });
+  auto f = hpx::for_each(
+      hpx::kokkos::kokkos_policy{}(hpx::execution::task), for_each_data.data(),
+      for_each_data.data() + for_each_data.size(),
+      KOKKOS_LAMBDA(int &x) { x *= 3; });
+
   f.get();
-  Kokkos::deep_copy(transform_result_host, transform_result);
+
+  Kokkos::deep_copy(for_each_data_host, for_each_data);
+
   for (std::size_t i = 0; i < n; ++i) {
-    HPX_KOKKOS_DETAIL_TEST(transform_result_host(i) == (i + 2));
+    HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == 3 * 2 * i);
   }
+
+  auto f2 = hpx::for_each(
+      hpx::kokkos::kokkos_policy{}(hpx::execution::task),
+      hpx::util::make_counting_iterator<>(0),
+      hpx::util::make_counting_iterator<>(n),
+      KOKKOS_LAMBDA(int i) { for_each_data(i) = i; });
+
+  f2.get();
+
+  Kokkos::deep_copy(for_each_data_host, for_each_data);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == i);
+  }
+}
+
+template <typename Executor> void test_reduce(Executor &&exec) {
+  int const n = 43;
+
+  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> reduce_data_host(
+      "reduce_data_host", n);
+  Kokkos::View<int *, typename std::decay<Executor>::type::execution_space>
+      reduce_data("reduce_data", n);
+  for (std::size_t i = 0; i < n; ++i) {
+    reduce_data_host(i) = i;
+  }
+  Kokkos::deep_copy(reduce_data, reduce_data_host);
+
+  int offset = -3;
+  int result = hpx::reduce(
+      hpx::kokkos::kokkos_policy{}.on(exec), reduce_data.data(),
+      reduce_data.data() + reduce_data.size(), offset,
+      KOKKOS_LAMBDA(int x, int y) { return x + y; });
+
+  HPX_KOKKOS_DETAIL_TEST(result == (offset + (n * (n - 1)) / 2));
+
+  hpx::future<int> f_result = hpx::reduce(
+      hpx::kokkos::kokkos_policy{}(hpx::execution::task).on(exec),
+      reduce_data.data(), reduce_data.data() + reduce_data.size(), offset,
+      KOKKOS_LAMBDA(int x, int y) { return x + y; });
+
+  HPX_KOKKOS_DETAIL_TEST(f_result.get() == (offset + (n * (n - 1)) / 2));
+}
+
+void test_reduce_default() {
+  int const n = 43;
+
+  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> reduce_data_host(
+      "reduce_data_host", n);
+  Kokkos::View<int *, Kokkos::DefaultExecutionSpace> reduce_data("reduce_data",
+                                                                 n);
+  for (std::size_t i = 0; i < n; ++i) {
+    reduce_data_host(i) = i;
+  }
+  Kokkos::deep_copy(reduce_data, reduce_data_host);
+
+  int offset = -3;
+  int result = hpx::reduce(
+      hpx::kokkos::kokkos_policy{}, reduce_data.data(),
+      reduce_data.data() + reduce_data.size(), offset,
+      KOKKOS_LAMBDA(int x, int y) { return x + y; });
+
+  HPX_KOKKOS_DETAIL_TEST(result == (offset + (n * (n - 1)) / 2));
+
+  hpx::future<int> f_result = hpx::reduce(
+      hpx::kokkos::kokkos_policy{}(hpx::execution::task), reduce_data.data(),
+      reduce_data.data() + reduce_data.size(), offset,
+      KOKKOS_LAMBDA(int x, int y) { return x + y; });
+
+  HPX_KOKKOS_DETAIL_TEST(f_result.get() == (offset + (n * (n - 1)) / 2));
 }
 
 template <typename Executor> void test(Executor &&exec) {
@@ -136,9 +179,19 @@ template <typename Executor> void test(Executor &&exec) {
       Kokkos::is_execution_space<typename Executor::execution_space>::value,
       "Executor::execution_space is not a Kokkos execution space");
 
-  test_for_loop(exec);
+  std::cout << "testing executor with execution space \""
+            << exec.instance().name() << "\"" << std::endl;
+
   test_for_each(exec);
-  test_transform(exec);
+  test_reduce(exec);
+}
+
+void test_default() {
+  std::cout << "testing default execution space \""
+            << Kokkos::DefaultExecutionSpace().name() << "\"" << std::endl;
+
+  test_for_each_default();
+  test_reduce_default();
 }
 
 int main(int argc, char *argv[]) {
@@ -148,6 +201,7 @@ int main(int argc, char *argv[]) {
                     hpx::kokkos::default_host_executor>::value) {
     test(hpx::kokkos::default_host_executor{});
   }
+  test_default();
   Kokkos::finalize();
 
   return hpx::kokkos::detail::report_errors();

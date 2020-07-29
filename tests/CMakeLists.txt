@@ -10,7 +10,9 @@ set(_tests
   executors
   kokkos_async_parallel
   parallel_algorithms
+  policy
   view_iterator)
+
 foreach(_test ${_tests})
   set(_test_name ${_test}_test)
   add_executable(${_test_name} EXCLUDE_FROM_ALL ${_test}.cpp)

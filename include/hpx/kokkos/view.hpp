@@ -17,7 +17,6 @@ namespace kokkos {
 // These two functions do no checking of the validity of using v.data()
 // directly as an iterator. They do not take strides, ranks, etc. into account.
 template <typename V> auto view_begin(V const &v) { return v.data(); }
-
 template <typename V> auto view_end(V const &v) { return v.data() + v.size(); }
 } // namespace kokkos
 } // namespace hpx

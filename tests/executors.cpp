@@ -10,7 +10,6 @@
 
 #include <hpx/kokkos.hpp>
 
-#include <boost/range/irange.hpp>
 #include <hpx/hpx_main.hpp>
 #include <hpx/include/parallel_execution.hpp>
 
@@ -46,7 +45,6 @@ template <typename Executor> void test(Executor &&exec) {
 
   // Check bulk execution; all indices should be handled
   std::size_t const n = 43;
-  auto r = boost::irange(std::size_t(0), std::size_t(n));
   Kokkos::View<bool *, Kokkos::DefaultHostExecutionSpace> index_handled_host(
       "index_handled_host", n);
   Kokkos::View<bool *, typename Executor::execution_space> index_handled(
@@ -57,7 +55,7 @@ template <typename Executor> void test(Executor &&exec) {
   Kokkos::deep_copy(index_handled, index_handled_host);
 
   hpx::wait_all(hpx::parallel::execution::bulk_async_execute(
-      exec, KOKKOS_LAMBDA(std::size_t i) { index_handled(i) = true; }, r));
+      exec, KOKKOS_LAMBDA(std::size_t i) { index_handled(i) = true; }, n));
   Kokkos::deep_copy(index_handled_host, index_handled);
   for (std::size_t i = 0; i < n; ++i) {
     HPX_KOKKOS_DETAIL_TEST(index_handled_host(i));
@@ -77,7 +75,7 @@ template <typename Executor> void test(Executor &&exec) {
       KOKKOS_LAMBDA(std::size_t i, int passthrough) {
         argument_passthrough(i) = passthrough;
       },
-      r, 42));
+      n, 42));
   Kokkos::deep_copy(argument_passthrough_host, argument_passthrough);
   for (std::size_t i = 0; i < n; ++i) {
     HPX_KOKKOS_DETAIL_TEST(argument_passthrough_host(i) == 42);
