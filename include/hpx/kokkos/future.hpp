@@ -12,8 +12,12 @@
 
 #include <hpx/kokkos/detail/logging.hpp>
 
+#include <hpx/config.hpp>
 #include <hpx/future.hpp>
+
+#if defined(HPX_WITH_CUDA)
 #include <hpx/modules/async_cuda.hpp>
+#endif
 
 #include <Kokkos_Core.hpp>
 
