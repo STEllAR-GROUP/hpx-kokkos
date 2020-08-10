@@ -5,10 +5,10 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ///////////////////////////////////////////////////////////////////////////////
 
-/// \file Contains wrappers to create Kokkos execution space instances. Some may
-/// be specialized for a particular execution space.
+/// \file Contains instantiations of wrappers to create Kokkos execution space
+/// instances. Some may be specialized for a particular execution space.
 
-#pragma once
+#include <hpx/kokkos/execution_spaces.hpp>
 
 #include <hpx/include/compute.hpp>
 
@@ -16,13 +16,6 @@
 
 namespace hpx {
 namespace kokkos {
-template <typename ExecutionSpace = Kokkos::DefaultExecutionSpace>
-ExecutionSpace make_execution_space() {
-  return {};
-}
-
-template <typename ExecutionSpace>
-struct is_execution_space_independent : std::false_type {};
 
 #if defined(KOKKOS_ENABLE_CUDA)
 namespace detail {
@@ -52,21 +45,7 @@ template <> Kokkos::Cuda make_execution_space<Kokkos::Cuda>() {
       detail::initialize_instances(num_instances);
   return instances[current_instance++ % num_instances];
 }
-
-template <>
-struct is_execution_space_independent<Kokkos::Cuda> : std::true_type {};
-#endif
-
-#if defined(KOKKOS_ENABLE_HPX) && KOKKOS_VERSION >= 30000
-template <>
-Kokkos::Experimental::HPX make_execution_space<Kokkos::Experimental::HPX>() {
-  return Kokkos::Experimental::HPX(
-      Kokkos::Experimental::HPX::instance_mode::independent);
-}
-
-template <>
-struct is_execution_space_independent<Kokkos::Experimental::HPX>
-    : std::true_type {};
 #endif
 } // namespace kokkos
 } // namespace hpx
+

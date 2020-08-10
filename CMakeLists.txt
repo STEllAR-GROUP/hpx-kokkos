@@ -27,11 +27,13 @@ kokkos_check(DEVICES HPX)
 kokkos_check(OPTIONS HPX_ASYNC_DISPATCH)
 
 # Main target provided by this project
-add_library(hpx_kokkos INTERFACE)
+add_library(hpx_kokkos
+  STATIC ${PROJECT_SOURCE_DIR}/src/hpx/kokkos/execution_spaces.cpp)
 target_include_directories(hpx_kokkos
-  INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:include>)
-target_link_libraries(hpx_kokkos INTERFACE HPX::hpx Kokkos::kokkos)
+  PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>)
+target_include_directories(hpx_kokkos
+  INTERFACE $<INSTALL_INTERFACE:include>)
+target_link_libraries(hpx_kokkos PUBLIC HPX::hpx Kokkos::kokkos)
 
 include(GNUInstallDirs)
 install(
@@ -43,8 +45,9 @@ install(
   NAMESPACE HPXKokkos::
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/HPXKokkos)
 install(
-  DIRECTORY include/
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+  DIRECTORY src/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  FILES_MATCHING PATTERN "*.hpp")
 install(
   FILES cmake/HPXKokkosConfig.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/HPXKokkos)
