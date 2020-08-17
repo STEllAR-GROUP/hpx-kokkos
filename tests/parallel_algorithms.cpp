@@ -67,9 +67,7 @@ template <typename Executor> void test_for_each(Executor &&exec) {
 
 template <typename Executor> void test_for_each_range(Executor &&exec) {
   int const n = 43;
-  Kokkos::
-      RangePolicy<typename std::decay<Executor>::type::execution_space> const p(
-          exec.instance(), 0, n);
+  Kokkos::RangePolicy<> const p(0, n);
 
   Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> for_each_data_host(
       "for_each_data_host", n);
@@ -96,9 +94,7 @@ template <typename Executor> void test_for_each_range(Executor &&exec) {
 template <typename Executor> void test_for_each_mdrange(Executor &&exec) {
   int const n = 43;
   int const m = 17;
-  Kokkos::MDRangePolicy<typename std::decay<Executor>::type::execution_space,
-                        Kokkos::Rank<2>> const p(exec.instance(), {0, 0},
-                                                 {n, m});
+  Kokkos::MDRangePolicy<Kokkos::Rank<2>> const p({0, 0}, {n, m});
 
   Kokkos::View<
       int **,

@@ -35,17 +35,54 @@ hpx::shared_future<void> for_each_helper(ExecutionSpace &&instance, IterB first,
       });
 }
 
+template <typename ExecutionSpace, typename F, typename... Args>
+hpx::shared_future<void>
+for_each_kokkos_policy_helper(ExecutionSpace &&instance,
+                              Kokkos::RangePolicy<Args...> const &p, F &&f) {
+
+  return parallel_for_async(
+      Kokkos::Experimental::require(
+          Kokkos::RangePolicy<typename std::decay<ExecutionSpace>::type>(
+              instance, p.begin(), p.end()),
+          Kokkos::Experimental::WorkItemProperty::HintLightWeight),
+      std::forward<F>(f));
+}
+
+template <typename ExecutionSpace, typename F, typename... Args>
+hpx::shared_future<void>
+for_each_kokkos_policy_helper(ExecutionSpace &&instance,
+                              Kokkos::MDRangePolicy<Args...> const &p, F &&f) {
+
+  return parallel_for_async(
+      Kokkos::Experimental::require(
+          Kokkos::MDRangePolicy<
+              typename std::decay<ExecutionSpace>::type,
+              Kokkos::Rank<Kokkos::MDRangePolicy<Args...>::rank>>(
+              instance, p.m_lower, p.m_upper, p.m_tile),
+          Kokkos::Experimental::WorkItemProperty::HintLightWeight),
+      std::forward<F>(f));
+}
+
+template <typename ExecutionSpace, typename F, typename... Args>
+hpx::shared_future<void>
+for_each_kokkos_policy_helper(ExecutionSpace &&instance,
+                              Kokkos::TeamPolicy<Args...> const &p, F &&f) {
+
+  static_assert(
+      sizeof(ExecutionSpace) == 0,
+      "for_each overload cannot currently be used with Kokkos::TeamPolicy");
+  return {};
+}
+
 template <typename ExecutionSpace, typename Range, typename F,
           typename std::enable_if<Kokkos::is_execution_policy<
                                       typename std::decay<Range>::type>::value,
                                   int>::type = 0>
 hpx::shared_future<void> for_each_range_helper(ExecutionSpace &&instance,
                                                Range &&range, F &&f) {
-  return parallel_for_async(
-      Kokkos::Experimental::require(
-          std::forward<Range>(range),
-          Kokkos::Experimental::WorkItemProperty::HintLightWeight),
-      std::forward<F>(f));
+  return for_each_kokkos_policy_helper(std::forward<ExecutionSpace>(instance),
+                                       std::forward<Range>(range),
+                                       std::forward<F>(f));
 }
 
 template <
