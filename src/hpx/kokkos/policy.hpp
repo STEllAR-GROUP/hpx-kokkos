@@ -35,7 +35,7 @@ struct kokkos_task_policy {
     using type = kokkos_task_policy_shim<Executor_, Parameters_>;
   };
 
-  kokkos_task_policy() {}
+  constexpr kokkos_task_policy() {}
 
   kokkos_task_policy
   operator()(hpx::parallel::execution::task_policy_tag) const {
@@ -68,9 +68,7 @@ struct kokkos_task_policy {
                                         std::forward<Parameters>(params)...));
   }
 
-  executor_type &executor() { return exec_; }
-
-  executor_type const &executor() const { return exec_; }
+  executor_type executor() const { return executor_type{}; }
 
   executor_parameters_type &parameters() { return params_; }
   constexpr executor_parameters_type const &parameters() const {
@@ -78,7 +76,6 @@ struct kokkos_task_policy {
   }
 
 private:
-  executor_type exec_{};
   executor_parameters_type params_{};
 };
 
@@ -160,7 +157,7 @@ struct kokkos_policy {
     using type = kokkos_policy_shim<Executor_, Parameters_>;
   };
 
-  kokkos_policy() : exec_{}, params_{} {}
+  constexpr kokkos_policy() {}
 
   kokkos_task_policy
   operator()(hpx::parallel::execution::task_policy_tag) const {
@@ -194,9 +191,7 @@ struct kokkos_policy {
   }
 
 public:
-  executor_type &executor() { return exec_; }
-
-  executor_type const &executor() const { return exec_; }
+  executor_type executor() const { return executor_type{}; }
 
   executor_parameters_type &parameters() { return params_; }
   constexpr executor_parameters_type const &parameters() const {
@@ -204,8 +199,7 @@ public:
   }
 
 private:
-  executor_type exec_;
-  executor_parameters_type params_;
+  executor_parameters_type params_{};
 };
 
 template <typename Executor, typename Parameters>
@@ -275,6 +269,8 @@ private:
   Parameters params_{};
   /// \endcond
 };
+
+static constexpr kokkos_policy kok;
 
 template <typename ExecutionPolicy>
 struct is_kokkos_execution_policy : std::false_type {};

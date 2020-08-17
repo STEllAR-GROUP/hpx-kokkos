@@ -58,7 +58,7 @@ template <typename Executor> void test_hpx_basic(Executor &&exec) {
   {
     hpx::util::high_resolution_timer timer;
     auto f = hpx::for_each(
-        hpx::kokkos::kokkos_policy{}(hpx::execution::task).on(exec), a.data(),
+        hpx::kokkos::kok(hpx::execution::task).on(exec), a.data(),
         a.data() + a.size(), KOKKOS_LAMBDA(int &x) { x = std::sqrt(x) / 3; });
     double t_spawn = timer.elapsed();
     timer.restart();
@@ -73,7 +73,7 @@ template <typename Executor> void test_hpx_basic(Executor &&exec) {
   {
     hpx::util::high_resolution_timer timer;
     auto f = hpx::reduce(
-        hpx::kokkos::kokkos_policy{}(hpx::execution::task).on(exec), a.data(),
+        hpx::kokkos::kok(hpx::execution::task).on(exec), a.data(),
         a.data() + a.size(), 0, KOKKOS_LAMBDA(int x, int y) { return x + y; });
     double t_spawn = timer.elapsed();
     timer.restart();
@@ -123,7 +123,7 @@ void test_hpx_basic_default() {
   // {
   //   hpx::util::high_resolution_timer timer;
   //   auto f = hpx::for_each(
-  //       hpx::kokkos::kokkos_policy{}(hpx::execution::task), a.data(),
+  //       hpx::kokkos::kok(hpx::execution::task), a.data(),
   //       a.data() + a.size(), KOKKOS_LAMBDA(int &x) { x = std::sqrt(x) / 3;
   //       });
   //   double t_spawn = timer.elapsed();
@@ -139,7 +139,7 @@ void test_hpx_basic_default() {
   // {
   //   hpx::util::high_resolution_timer timer;
   //   auto f = hpx::reduce(
-  //       hpx::kokkos::kokkos_policy{}(hpx::execution::task), a.data(),
+  //       hpx::kokkos::kok(hpx::execution::task), a.data(),
   //       a.data() + a.size(), 0, KOKKOS_LAMBDA(int x, int y) { return x + y;
   //       });
   //   double t_spawn = timer.elapsed();
