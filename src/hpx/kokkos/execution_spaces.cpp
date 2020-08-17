@@ -48,4 +48,3 @@ template <> Kokkos::Cuda make_execution_space<Kokkos::Cuda>() {
 #endif
 } // namespace kokkos
 } // namespace hpx
-

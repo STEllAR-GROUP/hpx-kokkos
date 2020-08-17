@@ -65,6 +65,70 @@ template <typename Executor> void test_for_each(Executor &&exec) {
   }
 }
 
+template <typename Executor> void test_for_each_range(Executor &&exec) {
+  int const n = 43;
+  Kokkos::
+      RangePolicy<typename std::decay<Executor>::type::execution_space> const p(
+          exec.instance(), 0, n);
+
+  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> for_each_data_host(
+      "for_each_data_host", n);
+  Kokkos::View<int *, typename std::decay<Executor>::type::execution_space>
+      for_each_data("for_each_data", n);
+  for (std::size_t i = 0; i < n; ++i) {
+    for_each_data_host(i) = 0;
+  }
+  Kokkos::deep_copy(for_each_data, for_each_data_host);
+
+  auto f = hpx::ranges::for_each(
+      hpx::kokkos::kokkos_policy{}(hpx::execution::task).on(exec), p,
+      KOKKOS_LAMBDA(int i) { for_each_data(i) = i; });
+
+  f.get();
+
+  Kokkos::deep_copy(for_each_data_host, for_each_data);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == i);
+  }
+}
+
+template <typename Executor> void test_for_each_mdrange(Executor &&exec) {
+  int const n = 43;
+  int const m = 17;
+  Kokkos::MDRangePolicy<typename std::decay<Executor>::type::execution_space,
+                        Kokkos::Rank<2>> const p(exec.instance(), {0, 0},
+                                                 {n, m});
+
+  Kokkos::View<
+      int **,
+      typename std::decay<Executor>::type::execution_space::array_layout,
+      Kokkos::DefaultHostExecutionSpace>
+      for_each_data_host("for_each_data_host", n, m);
+  Kokkos::View<int **, typename std::decay<Executor>::type::execution_space>
+      for_each_data("for_each_data", n, m);
+  for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t j = 0; j < m; ++j) {
+      for_each_data_host(i, j) = 0;
+    }
+  }
+  Kokkos::deep_copy(for_each_data, for_each_data_host);
+
+  auto f = hpx::ranges::for_each(
+      hpx::kokkos::kokkos_policy{}(hpx::execution::task).on(exec), p,
+      KOKKOS_LAMBDA(int i, int j) { for_each_data(i, j) = i + j; });
+
+  f.get();
+
+  Kokkos::deep_copy(for_each_data_host, for_each_data);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t j = 0; j < m; ++j) {
+      HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i, j) == i + j);
+    }
+  }
+}
+
 void test_for_each_default() {
   int const n = 43;
 
@@ -113,6 +177,64 @@ void test_for_each_default() {
 
   for (std::size_t i = 0; i < n; ++i) {
     HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == i);
+  }
+}
+
+void test_for_each_default_range() {
+  int const n = 43;
+  Kokkos::RangePolicy<> const p(0, n);
+
+  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> for_each_data_host(
+      "for_each_data_host", n);
+  Kokkos::View<int *, Kokkos::DefaultExecutionSpace> for_each_data(
+      "for_each_data", n);
+  for (std::size_t i = 0; i < n; ++i) {
+    for_each_data_host(i) = 0;
+  }
+  Kokkos::deep_copy(for_each_data, for_each_data_host);
+
+  auto f = hpx::ranges::for_each(
+      hpx::kokkos::kokkos_policy{}(hpx::execution::task), p,
+      KOKKOS_LAMBDA(int i) { for_each_data(i) = i; });
+
+  f.get();
+
+  Kokkos::deep_copy(for_each_data_host, for_each_data);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == i);
+  }
+}
+
+void test_for_each_default_mdrange() {
+  int const n = 43;
+  int const m = 17;
+  Kokkos::MDRangePolicy<Kokkos::Rank<2>> const p({0, 0}, {n, m});
+
+  Kokkos::View<int **, typename Kokkos::DefaultExecutionSpace::array_layout,
+               Kokkos::DefaultHostExecutionSpace>
+      for_each_data_host("for_each_data_host", n, m);
+  Kokkos::View<int **, Kokkos::DefaultExecutionSpace> for_each_data(
+      "for_each_data", n, m);
+  for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t j = 0; j < m; ++j) {
+      for_each_data_host(i, j) = 0;
+    }
+  }
+  Kokkos::deep_copy(for_each_data, for_each_data_host);
+
+  auto f = hpx::ranges::for_each(
+      hpx::kokkos::kokkos_policy{}(hpx::execution::task), p,
+      KOKKOS_LAMBDA(int i, int j) { for_each_data(i, j) = i + j; });
+
+  f.get();
+
+  Kokkos::deep_copy(for_each_data_host, for_each_data);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t j = 0; j < m; ++j) {
+      HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i, j) == i + j);
+    }
   }
 }
 
@@ -183,6 +305,8 @@ template <typename Executor> void test(Executor &&exec) {
             << exec.instance().name() << "\"" << std::endl;
 
   test_for_each(exec);
+  test_for_each_range(exec);
+  test_for_each_mdrange(exec);
   test_reduce(exec);
 }
 
@@ -191,6 +315,8 @@ void test_default() {
             << Kokkos::DefaultExecutionSpace().name() << "\"" << std::endl;
 
   test_for_each_default();
+  test_for_each_default_range();
+  test_for_each_default_mdrange();
   test_reduce_default();
 }
 

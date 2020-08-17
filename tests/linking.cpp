@@ -17,4 +17,3 @@ int main(int argc, char *argv[]) {
   HPX_KOKKOS_DETAIL_TEST(true);
   return hpx::kokkos::detail::report_errors();
 }
-

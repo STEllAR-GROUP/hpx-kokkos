@@ -275,6 +275,26 @@ private:
   Parameters params_{};
   /// \endcond
 };
+
+template <typename ExecutionPolicy>
+struct is_kokkos_execution_policy : std::false_type {};
+
+template <>
+struct is_kokkos_execution_policy<hpx::kokkos::kokkos_policy> : std::true_type {
+};
+
+template <typename Executor, typename Parameters>
+struct is_kokkos_execution_policy<
+    hpx::kokkos::kokkos_policy_shim<Executor, Parameters>> : std::true_type {};
+
+template <>
+struct is_kokkos_execution_policy<hpx::kokkos::kokkos_task_policy>
+    : std::true_type {};
+
+template <typename Executor, typename Parameters>
+struct is_kokkos_execution_policy<
+    hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters>>
+    : std::true_type {};
 } // namespace kokkos
 } // namespace hpx
 

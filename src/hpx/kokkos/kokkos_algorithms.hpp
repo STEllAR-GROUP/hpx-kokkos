@@ -19,8 +19,8 @@ namespace hpx {
 namespace kokkos {
 // Asynchronous versions of Kokkos algorithms
 template <typename ExecutionPolicy, typename... Args,
-          typename Enable = typename std::enable_if<
-              Kokkos::is_execution_policy<ExecutionPolicy>::value>::type>
+          typename Enable = typename std::enable_if<Kokkos::is_execution_policy<
+              typename std::decay<ExecutionPolicy>::type>::value>::type>
 hpx::shared_future<void> parallel_for_async(ExecutionPolicy &&policy,
                                             Args &&... args) {
   HPX_KOKKOS_DETAIL_LOG("calling parallel_for_async with execution policy");
