@@ -61,14 +61,15 @@ public:
   }
 
   template <typename F, typename S, typename... Ts>
-  std::vector<hpx::future<void>> bulk_async_execute(F &&f, S const &s,
-                                                    Ts &&... ts) {
+  std::vector<hpx::shared_future<void>> bulk_async_execute(F &&f, S const &s,
+                                                           Ts &&... ts) {
     HPX_KOKKOS_DETAIL_LOG("bulk_async_execute");
     auto ts_pack = hpx::util::make_tuple(std::forward<Ts>(ts)...);
     auto size = hpx::util::size(s);
     auto b = hpx::util::begin(s);
 
-    auto fut = parallel_for_async(
+    std::vector<hpx::shared_future<void>> result;
+    result.push_back(parallel_for_async(
         Kokkos::Experimental::require(
             Kokkos::RangePolicy<ExecutionSpace>(inst, 0, size),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
@@ -78,12 +79,8 @@ public:
               typename hpx::util::detail::fused_index_pack<decltype(
                   ts_pack)>::type;
           detail::invoke_helper(index_pack_type{}, f, *(b + i), ts_pack);
-        });
+        }));
 
-    std::vector<hpx::future<void>> result;
-    // TODO: The empty continuation is only used to get a future from a shared
-    // future.
-    result.push_back(fut.then(hpx::launch::sync, [](auto &&) {}));
     return result;
   }
 
