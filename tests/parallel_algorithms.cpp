@@ -254,7 +254,7 @@ template <typename Executor> void test_reduce(Executor &&exec) {
 
   HPX_KOKKOS_DETAIL_TEST(result == (offset + (n * (n - 1)) / 2));
 
-  hpx::future<int> f_result = hpx::reduce(
+  auto f_result = hpx::reduce(
       hpx::kokkos::kok(hpx::execution::task).on(exec), reduce_data.data(),
       reduce_data.data() + reduce_data.size(), offset,
       KOKKOS_LAMBDA(int x, int y) { return x + y; });
@@ -282,7 +282,7 @@ void test_reduce_default() {
 
   HPX_KOKKOS_DETAIL_TEST(result == (offset + (n * (n - 1)) / 2));
 
-  hpx::future<int> f_result = hpx::reduce(
+  auto f_result = hpx::reduce(
       hpx::kokkos::kok(hpx::execution::task), reduce_data.data(),
       reduce_data.data() + reduce_data.size(), offset,
       KOKKOS_LAMBDA(int x, int y) { return x + y; });

@@ -21,7 +21,7 @@ foreach(_test ${_tests})
   add_executable(${_test_name}
     EXCLUDE_FROM_ALL
     ${_test}.cpp ${${_test}_extra_sources})
-  target_link_libraries(${_test_name} PRIVATE hpx_kokkos HPX::wrap_main)
+  target_link_libraries(${_test_name} PRIVATE hpx_kokkos HPX::hpx HPX::wrap_main)
   add_dependencies(tests ${_test_name})
   add_test(NAME ${_test} COMMAND ${_test_name})
 endforeach()
