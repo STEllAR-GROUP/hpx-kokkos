@@ -27,22 +27,15 @@ kokkos_check(DEVICES HPX)
 kokkos_check(OPTIONS HPX_ASYNC_DISPATCH)
 
 # Main targets provided by this project
-add_library(hpx_kokkos_object
-  OBJECT ${PROJECT_SOURCE_DIR}/src/hpx/kokkos/execution_spaces.cpp)
-target_include_directories(hpx_kokkos_object
-  PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
-  INTERFACE $<INSTALL_INTERFACE:include>)
-target_link_libraries(hpx_kokkos_object PUBLIC HPX::hpx Kokkos::kokkos)
-set_property(TARGET hpx_kokkos_object PROPERTY POSITION_INDEPENDENT_CODE ON)
-
-add_library(hpx_kokkos SHARED $<TARGET_OBJECTS:hpx_kokkos_object>)
-add_library(hpx_kokkos_static STATIC $<TARGET_OBJECTS:hpx_kokkos_object>)
-target_link_libraries(hpx_kokkos PUBLIC hpx_kokkos_object)
-target_link_libraries(hpx_kokkos_static PUBLIC hpx_kokkos_object)
+add_library(hpx_kokkos INTERFACE)
+target_include_directories(hpx_kokkos
+  INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+  $<INSTALL_INTERFACE:include>)
+target_link_libraries(hpx_kokkos INTERFACE HPX::hpx Kokkos::kokkos)
 
 include(GNUInstallDirs)
 install(
-  TARGETS hpx_kokkos_object hpx_kokkos hpx_kokkos_static
+  TARGETS hpx_kokkos
   EXPORT HPXKokkos)
 install(
   EXPORT HPXKokkos

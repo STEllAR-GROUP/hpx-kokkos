@@ -127,13 +127,6 @@ template <typename Executor> struct is_kokkos_executor : std::false_type {};
 
 template <typename ExecutionSpace>
 struct is_kokkos_executor<executor<ExecutionSpace>> : std::true_type {};
-
-template <typename ExecutionSpace = Kokkos::DefaultExecutionSpace>
-hpx::kokkos::executor<typename std::decay<ExecutionSpace>::type>
-make_executor() {
-  return {hpx::kokkos::make_execution_space<
-      typename std::decay<ExecutionSpace>::type>};
-}
 } // namespace kokkos
 } // namespace hpx
 

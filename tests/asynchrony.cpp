@@ -137,12 +137,10 @@ int main(int argc, char *argv[]) {
 
   Kokkos::initialize(argc, argv);
 
-  test(hpx::kokkos::make_execution_space<Kokkos::DefaultExecutionSpace>(), n,
-       repetitions);
+  test(Kokkos::DefaultExecutionSpace(), n, repetitions);
   if (!std::is_same<Kokkos::DefaultExecutionSpace,
                     Kokkos::DefaultHostExecutionSpace>::value) {
-    test(hpx::kokkos::make_execution_space<Kokkos::DefaultHostExecutionSpace>(),
-         n, repetitions);
+    test(Kokkos::DefaultHostExecutionSpace(), n, repetitions);
   }
   test_default(n, repetitions);
   Kokkos::finalize();

@@ -16,6 +16,7 @@
 #include <hpx/kokkos/future.hpp>
 #include <hpx/kokkos/hpx_algorithms.hpp>
 #include <hpx/kokkos/import.hpp>
+#include <hpx/kokkos/instance_helper.hpp>
 #include <hpx/kokkos/kokkos_algorithms.hpp>
 #include <hpx/kokkos/policy.hpp>
 #include <hpx/kokkos/view.hpp>
