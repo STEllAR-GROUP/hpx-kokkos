@@ -9,4 +9,5 @@
 #pragma once
 
 #include <hpx/kokkos/hpx_algorithms_for_each.hpp>
+#include <hpx/kokkos/hpx_algorithms_for_loop.hpp>
 #include <hpx/kokkos/hpx_algorithms_reduce.hpp>

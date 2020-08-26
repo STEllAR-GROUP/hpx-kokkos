@@ -52,20 +52,6 @@ template <typename Executor> void test_for_each(Executor &&exec) {
   for (std::size_t i = 0; i < n; ++i) {
     HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == 3 * 2 * i);
   }
-
-  auto f2 = hpx::for_each(
-      hpx::kokkos::kok(hpx::execution::task).on(exec),
-      hpx::util::make_counting_iterator<>(0),
-      hpx::util::make_counting_iterator<>(n),
-      KOKKOS_LAMBDA(int i) { for_each_data(i) = i; });
-
-  f2.get();
-
-  Kokkos::deep_copy(for_each_data_host, for_each_data);
-
-  for (std::size_t i = 0; i < n; ++i) {
-    HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == i);
-  }
 }
 
 template <typename Executor> void test_for_each_range(Executor &&exec) {
@@ -163,20 +149,6 @@ void test_for_each_default() {
   for (std::size_t i = 0; i < n; ++i) {
     HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == 3 * 2 * i);
   }
-
-  auto f2 = hpx::for_each(
-      hpx::kokkos::kok(hpx::execution::task),
-      hpx::util::make_counting_iterator<>(0),
-      hpx::util::make_counting_iterator<>(n),
-      KOKKOS_LAMBDA(int i) { for_each_data(i) = i; });
-
-  f2.get();
-
-  Kokkos::deep_copy(for_each_data_host, for_each_data);
-
-  for (std::size_t i = 0; i < n; ++i) {
-    HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i) == i);
-  }
 }
 
 void test_for_each_default_range() {
@@ -234,6 +206,75 @@ void test_for_each_default_mdrange() {
     for (std::size_t j = 0; j < m; ++j) {
       HPX_KOKKOS_DETAIL_TEST(for_each_data_host(i, j) == i + j);
     }
+  }
+}
+
+template <typename Executor> void test_for_loop(Executor &&exec) {
+  int const n = 43;
+
+  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> for_loop_data_host(
+      "for_loop_data_host", n);
+  Kokkos::View<int *, typename std::decay<Executor>::type::execution_space>
+      for_loop_data("for_loop_data", n);
+  for (std::size_t i = 0; i < n; ++i) {
+    for_loop_data_host(i) = i;
+  }
+  Kokkos::deep_copy(for_loop_data, for_loop_data_host);
+
+  hpx::for_loop(
+      hpx::kokkos::kok.on(exec), 0, n,
+      KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 2; });
+
+  Kokkos::deep_copy(for_loop_data_host, for_loop_data);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    HPX_KOKKOS_DETAIL_TEST(for_loop_data_host(i) == 2 * i);
+  }
+
+  auto f = hpx::for_loop(
+      hpx::kokkos::kok(hpx::execution::task).on(exec), 0, n,
+      KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 3; });
+
+  f.get();
+
+  Kokkos::deep_copy(for_loop_data_host, for_loop_data);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    HPX_KOKKOS_DETAIL_TEST(for_loop_data_host(i) == 3 * 2 * i);
+  }
+}
+
+void test_for_loop_default() {
+  int const n = 43;
+
+  Kokkos::View<int *, Kokkos::DefaultHostExecutionSpace> for_loop_data_host(
+      "for_loop_data_host", n);
+  Kokkos::View<int *, Kokkos::DefaultExecutionSpace> for_loop_data(
+      "for_loop_data", n);
+  for (std::size_t i = 0; i < n; ++i) {
+    for_loop_data_host(i) = i;
+  }
+  Kokkos::deep_copy(for_loop_data, for_loop_data_host);
+
+  hpx::for_loop(
+      hpx::kokkos::kok, 0, n, KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 2; });
+
+  Kokkos::deep_copy(for_loop_data_host, for_loop_data);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    HPX_KOKKOS_DETAIL_TEST(for_loop_data_host(i) == 2 * i);
+  }
+
+  auto f = hpx::for_loop(
+      hpx::kokkos::kok(hpx::execution::task), 0, n,
+      KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 3; });
+
+  f.get();
+
+  Kokkos::deep_copy(for_loop_data_host, for_loop_data);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    HPX_KOKKOS_DETAIL_TEST(for_loop_data_host(i) == 3 * 2 * i);
   }
 }
 
@@ -306,6 +347,7 @@ template <typename Executor> void test(Executor &&exec) {
   test_for_each(exec);
   test_for_each_range(exec);
   test_for_each_mdrange(exec);
+  test_for_loop(exec);
   test_reduce(exec);
 }
 
@@ -316,6 +358,7 @@ void test_default() {
   test_for_each_default();
   test_for_each_default_range();
   test_for_each_default_mdrange();
+  test_for_loop_default();
   test_reduce_default();
 }
 

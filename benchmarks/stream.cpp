@@ -30,12 +30,11 @@ void print_header() {
 }
 
 template <typename F, typename Step>
-void time_test(std::string const &label, std::string const &step_label,
-               F const &f, Step const &step) {
+void time_test(std::string const &label, F const &f, Step const &step) {
   hpx::util::high_resolution_timer timer;
   f(step);
   std::cout << "stream," << Kokkos::DefaultExecutionSpace().name() << ","
-            << label << "," << step_label << "," << step.a.extent(0) << ","
+            << label << "," << step.name << "," << step.a.extent(0) << ","
             << sizeof(elem_type) << "," << step.num_stores_loads << ","
             << timer.elapsed() << std::endl;
 }
@@ -170,6 +169,7 @@ struct copy_step {
   view_type c;
 
   static constexpr int num_stores_loads = 2;
+  static constexpr char const *name = "copy";
 
   KOKKOS_INLINE_FUNCTION void operator()(int i) const { c[i] = a[i]; }
 };
@@ -180,6 +180,7 @@ struct scale_step {
   view_type c;
 
   static constexpr int num_stores_loads = 2;
+  static constexpr char const *name = "scale";
 
   elem_type scalar = 3.0;
 
@@ -192,6 +193,7 @@ struct add_step {
   view_type c;
 
   static constexpr int num_stores_loads = 3;
+  static constexpr char const *name = "add";
 
   KOKKOS_INLINE_FUNCTION void operator()(int i) const { c[i] = a[i] + b[i]; }
 };
@@ -202,6 +204,7 @@ struct triad_step {
   view_type c;
 
   static constexpr int num_stores_loads = 3;
+  static constexpr char const *name = "triad";
 
   elem_type scalar = 3.0;
 
@@ -218,13 +221,12 @@ template <typename Step> void test_stream_kokkos_fence_impl(Step step) {
 
 void test_stream_kokkos_fence(std::string const &label, view_type a,
                               view_type b, view_type c) {
-  time_test(label, "copy", &test_stream_kokkos_fence_impl<copy_step>,
+  time_test(label, &test_stream_kokkos_fence_impl<copy_step>,
             copy_step{a, b, c});
-  time_test(label, "scale", &test_stream_kokkos_fence_impl<scale_step>,
+  time_test(label, &test_stream_kokkos_fence_impl<scale_step>,
             scale_step{a, b, c});
-  time_test(label, "add", &test_stream_kokkos_fence_impl<add_step>,
-            add_step{a, b, c});
-  time_test(label, "triad", &test_stream_kokkos_fence_impl<triad_step>,
+  time_test(label, &test_stream_kokkos_fence_impl<add_step>, add_step{a, b, c});
+  time_test(label, &test_stream_kokkos_fence_impl<triad_step>,
             triad_step{a, b, c});
 }
 
@@ -236,13 +238,13 @@ template <typename Step> void test_stream_kokkos_future_impl(Step step) {
 
 void test_stream_kokkos_future(std::string const &label, view_type a,
                                view_type b, view_type c) {
-  time_test(label, "copy", &test_stream_kokkos_future_impl<copy_step>,
+  time_test(label, &test_stream_kokkos_future_impl<copy_step>,
             copy_step{a, b, c});
-  time_test(label, "scale", &test_stream_kokkos_future_impl<scale_step>,
+  time_test(label, &test_stream_kokkos_future_impl<scale_step>,
             scale_step{a, b, c});
-  time_test(label, "add", &test_stream_kokkos_future_impl<add_step>,
+  time_test(label, &test_stream_kokkos_future_impl<add_step>,
             add_step{a, b, c});
-  time_test(label, "triad", &test_stream_kokkos_future_impl<triad_step>,
+  time_test(label, &test_stream_kokkos_future_impl<triad_step>,
             triad_step{a, b, c});
 }
 
@@ -255,13 +257,13 @@ template <typename Step> void test_stream_kokkos_async_fence_impl(Step step) {
 
 void test_stream_kokkos_async_fence(std::string const &label, view_type a,
                                     view_type b, view_type c) {
-  time_test(label, "copy", &test_stream_kokkos_async_fence_impl<copy_step>,
+  time_test(label, &test_stream_kokkos_async_fence_impl<copy_step>,
             copy_step{a, b, c});
-  time_test(label, "scale", &test_stream_kokkos_async_fence_impl<scale_step>,
+  time_test(label, &test_stream_kokkos_async_fence_impl<scale_step>,
             scale_step{a, b, c});
-  time_test(label, "add", &test_stream_kokkos_async_fence_impl<add_step>,
+  time_test(label, &test_stream_kokkos_async_fence_impl<add_step>,
             add_step{a, b, c});
-  time_test(label, "triad", &test_stream_kokkos_async_fence_impl<triad_step>,
+  time_test(label, &test_stream_kokkos_async_fence_impl<triad_step>,
             triad_step{a, b, c});
 }
 
@@ -274,13 +276,43 @@ template <typename Step> void test_stream_kokkos_async_future_impl(Step step) {
 
 void test_stream_kokkos_async_future(std::string const &label, view_type a,
                                      view_type b, view_type c) {
-  time_test(label, "copy", &test_stream_kokkos_async_future_impl<copy_step>,
+  time_test(label, &test_stream_kokkos_async_future_impl<copy_step>,
             copy_step{a, b, c});
-  time_test(label, "scale", &test_stream_kokkos_async_future_impl<scale_step>,
+  time_test(label, &test_stream_kokkos_async_future_impl<scale_step>,
             scale_step{a, b, c});
-  time_test(label, "add", &test_stream_kokkos_async_future_impl<add_step>,
+  time_test(label, &test_stream_kokkos_async_future_impl<add_step>,
             add_step{a, b, c});
-  time_test(label, "triad", &test_stream_kokkos_async_future_impl<triad_step>,
+  time_test(label, &test_stream_kokkos_async_future_impl<triad_step>,
+            triad_step{a, b, c});
+}
+
+// Synchronous HPX for_loop.
+template <typename Step> void test_stream_hpx_impl(Step step) {
+  hpx::for_loop(hpx::kokkos::kok, 0, step.a.extent(0), step);
+}
+
+void test_stream_hpx(std::string const &label, view_type a, view_type b,
+                     view_type c) {
+  time_test(label, &test_stream_hpx_impl<copy_step>, copy_step{a, b, c});
+  time_test(label, &test_stream_hpx_impl<scale_step>, scale_step{a, b, c});
+  time_test(label, &test_stream_hpx_impl<add_step>, add_step{a, b, c});
+  time_test(label, &test_stream_hpx_impl<triad_step>, triad_step{a, b, c});
+}
+
+// Asynchronous HPX for_loop.
+template <typename Step> void test_stream_hpx_future_impl(Step step) {
+  hpx::for_loop(hpx::kokkos::kok(hpx::execution::task), 0, step.a.extent(0),
+                step)
+      .get();
+}
+
+void test_stream_hpx_future(std::string const &label, view_type a, view_type b,
+                            view_type c) {
+  time_test(label, &test_stream_hpx_future_impl<copy_step>, copy_step{a, b, c});
+  time_test(label, &test_stream_hpx_future_impl<scale_step>,
+            scale_step{a, b, c});
+  time_test(label, &test_stream_hpx_future_impl<add_step>, add_step{a, b, c});
+  time_test(label, &test_stream_hpx_future_impl<triad_step>,
             triad_step{a, b, c});
 }
 
@@ -312,7 +344,13 @@ void test_stream(int repetitions, int size) {
     test_stream_kokkos_async_future("kokkos_async_future", a, b, c);
     check_results(a, b, c, ah, bh, ch);
 
-    // TODO: HPX algorithms version requires for_loop or transform/copy
+    init(a, b, c, ah, bh, ch);
+    test_stream_hpx("hpx", a, b, c);
+    check_results(a, b, c, ah, bh, ch);
+
+    init(a, b, c, ah, bh, ch);
+    test_stream_hpx_future("hpx_future", a, b, c);
+    check_results(a, b, c, ah, bh, ch);
   }
 }
 
