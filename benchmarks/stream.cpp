@@ -15,6 +15,10 @@
 #include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
 
+#if defined(HPX_HAVE_CUDA)
+#include <hpx/modules/async_cuda.hpp>
+#endif
+
 using elem_type = double;
 using view_type = Kokkos::View<elem_type *>;
 using host_view_type = Kokkos::View<elem_type *>::HostMirror;
@@ -316,6 +320,9 @@ int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
+#if defined(HPX_HAVE_CUDA)
+    hpx::cuda::experimental::enable_user_polling p;
+#endif
     print_header();
     for (int size = 1024; size <= (1024 << 17); size *= 2) {
       test_stream(10, size);

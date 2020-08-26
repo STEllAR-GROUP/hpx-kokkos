@@ -8,11 +8,14 @@
 
 #include "test.hpp"
 
-#include <hpx/kokkos.hpp>
-
 #include <hpx/algorithm.hpp>
 #include <hpx/hpx_main.hpp>
+#include <hpx/kokkos.hpp>
 #include <hpx/numeric.hpp>
+
+#if defined(HPX_HAVE_CUDA)
+#include <hpx/modules/async_cuda.hpp>
+#endif
 
 template <typename Executor> void test_for_each(Executor &&exec) {
   int const n = 43;
@@ -318,12 +321,19 @@ void test_default() {
 
 int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
-  test(hpx::kokkos::default_executor{});
-  if (!std::is_same<hpx::kokkos::default_executor,
-                    hpx::kokkos::default_host_executor>::value) {
-    test(hpx::kokkos::default_host_executor{});
+
+  {
+#if defined(HPX_HAVE_CUDA)
+    hpx::cuda::experimental::enable_user_polling p;
+#endif
+    test(hpx::kokkos::default_executor{});
+    if (!std::is_same<hpx::kokkos::default_executor,
+                      hpx::kokkos::default_host_executor>::value) {
+      test(hpx::kokkos::default_host_executor{});
+    }
+    test_default();
   }
-  test_default();
+
   Kokkos::finalize();
 
   return hpx::kokkos::detail::report_errors();

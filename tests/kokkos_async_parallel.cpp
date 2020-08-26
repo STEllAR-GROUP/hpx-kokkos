@@ -8,10 +8,13 @@
 
 #include "test.hpp"
 
+#include <hpx/chrono.hpp>
 #include <hpx/hpx_main.hpp>
-#include <hpx/include/util.hpp>
-
 #include <hpx/kokkos.hpp>
+
+#if defined(HPX_HAVE_CUDA)
+#include <hpx/modules/async_cuda.hpp>
+#endif
 
 #include <string>
 
@@ -107,11 +110,18 @@ template <typename ExecutionSpace> void test(ExecutionSpace &&inst) {
 
 int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
-  test(Kokkos::DefaultExecutionSpace{});
-  if (!std::is_same<Kokkos::DefaultExecutionSpace,
-                    Kokkos::DefaultHostExecutionSpace>::value) {
-    test(Kokkos::DefaultHostExecutionSpace{});
+
+  {
+#if defined(HPX_HAVE_CUDA)
+    hpx::cuda::experimental::enable_user_polling p;
+#endif
+    test(Kokkos::DefaultExecutionSpace{});
+    if (!std::is_same<Kokkos::DefaultExecutionSpace,
+                      Kokkos::DefaultHostExecutionSpace>::value) {
+      test(Kokkos::DefaultHostExecutionSpace{});
+    }
   }
+
   Kokkos::finalize();
 
   return hpx::kokkos::detail::report_errors();

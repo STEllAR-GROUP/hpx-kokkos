@@ -8,10 +8,13 @@
 
 #include "test.hpp"
 
+#include <hpx/execution.hpp>
+#include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
 
-#include <hpx/hpx_main.hpp>
-#include <hpx/include/parallel_execution.hpp>
+#if defined(HPX_HAVE_CUDA)
+#include <hpx/modules/async_cuda.hpp>
+#endif
 
 #include <atomic>
 #include <cassert>
@@ -84,11 +87,18 @@ template <typename Executor> void test(Executor &&exec) {
 
 int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
-  test(hpx::kokkos::default_executor{});
-  if (!std::is_same<hpx::kokkos::default_executor,
-                    hpx::kokkos::default_host_executor>::value) {
-    test(hpx::kokkos::default_host_executor{});
+
+  {
+#if defined(HPX_HAVE_CUDA)
+    hpx::cuda::experimental::enable_user_polling p;
+#endif
+    test(hpx::kokkos::default_executor{});
+    if (!std::is_same<hpx::kokkos::default_executor,
+                      hpx::kokkos::default_host_executor>::value) {
+      test(hpx::kokkos::default_host_executor{});
+    }
   }
+
   Kokkos::finalize();
 
   return hpx::kokkos::detail::report_errors();

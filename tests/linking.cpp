@@ -9,9 +9,8 @@
 
 #include "test.hpp"
 
-#include <hpx/kokkos.hpp>
-
 #include <hpx/hpx_main.hpp>
+#include <hpx/kokkos.hpp>
 
 int main(int argc, char *argv[]) {
   HPX_KOKKOS_DETAIL_TEST(true);

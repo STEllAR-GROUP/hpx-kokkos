@@ -5,7 +5,7 @@
 
 add_custom_target(benchmarks)
 
-set(_benchmarks overheads overheads_multi_instance stream)
+set(_benchmarks future_overheads overheads overheads_multi_instance stream)
 
 foreach(_benchmark ${_benchmarks})
   set(_benchmark_name ${_benchmark}_benchmark)

@@ -13,6 +13,10 @@
 #include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
 
+#if defined(HPX_HAVE_CUDA)
+#include <hpx/modules/async_cuda.hpp>
+#endif
+
 void print_header() {
   std::cout << "test_name,execution_space,subtest_name,vector_size,launches_"
                "per_test,time"
@@ -149,6 +153,9 @@ int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
+#if defined(HPX_HAVE_CUDA)
+    hpx::cuda::experimental::enable_user_polling p;
+#endif
     print_header();
     hpx::kokkos::kokkos_instance_helper<Kokkos::DefaultExecutionSpace> h;
     test_for_loop(h, 1, 10, 10);

@@ -33,6 +33,16 @@ target_include_directories(hpx_kokkos
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(hpx_kokkos INTERFACE HPX::hpx Kokkos::kokkos)
 
+set(HPX_KOKKOS_CUDA_FUTURE_TYPE "event" CACHE STRING
+  "Type of CUDA futures to use by default (\"event\" or \"callback\").")
+if(HPX_KOKKOS_CUDA_FUTURE_TYPE STREQUAL "event")
+  target_compile_definitions(hpx_kokkos INTERFACE "HPX_KOKKOS_CUDA_FUTURE_TYPE=0")
+elseif(HPX_KOKKOS_CUDA_FUTURE_TYPE STREQUAL "callback")
+  target_compile_definitions(hpx_kokkos INTERFACE "HPX_KOKKOS_CUDA_FUTURE_TYPE=1")
+else()
+  message(FATAL_ERROR "Invalid HPX_KOKKOS_CUDA_FUTURE_TYPE=\"${HPX_KOKKOS_CUDA_FUTURE_TYPE}\" (allowed values are \"event\" and \"callback\")")
+endif()
+
 include(GNUInstallDirs)
 install(
   TARGETS hpx_kokkos
