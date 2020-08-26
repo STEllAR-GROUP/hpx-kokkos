@@ -7,7 +7,8 @@ anything. Please read the [known limitations](#known-limitations).
 
 A header-only library for HPX/Kokkos interoperability. It provides:
 
-- `async` versions of `Kokkos::parallel_for`, `parallel_reduce`, and `parallel_scan`
+- `async` versions of `Kokkos::parallel_for`, `Kokkos::parallel_reduce`, and
+  `Kokkos::parallel_scan`
 - `async` version of `Kokkos::deep_copy`
 - HPX executors that forward work to corresponding Kokkos execution spaces
 - A HPX execution policy that forwards work to corresponding Kokkos execution
@@ -41,6 +42,8 @@ your code.
 
 Tests can be enabled with the CMake option `HPX_KOKKOS_ENABLE_TESTS`. All tests
 can be built with the `tests` build target. The tests use `ctest`.
+`HPX_KOKKOS_ENABLE_BENCHMARKS` enables benchmarks, and they can likewise be
+built using the `benchmarks` target.
 
 # Requirements
 
@@ -93,16 +96,12 @@ class serial_executor;
 }}
 ```
 
-The following is a helper function for creating execution space instances that
-are independent. It is allowed to return the same execution space instance on
-subsequent invocations. For CUDA it returns execution space instances that have
-different streams. For HPX it returns execution space instances with different
-internal futures.
+The following execution policy can be used with parallel algorithms. It uses
+the default Kokkos host execution space, unless customized with `on`.
 
 ```
 namespace hpx { namespace kokkos {
-template <typename ExecutionSpace = Kokkos::DefaultExecutionSpace>
-ExecutionSpace make_execution_space();
+static constexpr kokkos_policy kok;
 }}
 ```
 
@@ -118,15 +117,10 @@ prioritize getting it fixed for you.
   with other execution spaces always block and return a ready future (where
   appropriate).
 - Not all HPX parallel algorithms can be used with the Kokkos executors.
-  Currently the only available algorithms are `hpx::for_each` and
-  `hpx::reduce`.
+  Currently the only available algorithms are `hpx::for_each`, `hpx::for_loop`,
+  and `hpx::reduce`. `hpx::for_loop` only supports integer ranges (no
+  iterators) and no induction or reduction objects.
 - `Kokkos::View` construction and destruction (when reference count goes to
   zero) are generally blocking operations and this library does not currently
   try to solve this problem. Workarounds are: create all required views upfront
   or use unmanaged views and handle allocation and deallocation manually.
-- `terminate called after throwing an instance of 'std::runtime_error' what():
-  Kokkos allocation "InternalScratchFlags" is being deallocated after
-  Kokkos::finalize was called`: this is mostly harmless, but will nevertheless
-  be fixed. It is caused by a set of thread-local Kokkos execution space
-  instances being freed at program termination, after `Kokkos::finalize` has been
-  called.
