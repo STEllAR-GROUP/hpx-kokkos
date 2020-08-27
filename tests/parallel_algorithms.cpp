@@ -242,6 +242,49 @@ template <typename Executor> void test_for_loop(Executor &&exec) {
   for (std::size_t i = 0; i < n; ++i) {
     HPX_KOKKOS_DETAIL_TEST(for_loop_data_host(i) == 3 * 2 * i);
   }
+
+  int const m = 17;
+
+  Kokkos::View<int **, typename std::decay<Executor>::type::execution_space>
+      for_loop_data2("for_loop_data2", n, m);
+  typename Kokkos::View<
+      int **, typename std::decay<Executor>::type::execution_space>::HostMirror
+      for_loop_data_host2("for_loop_data_host2", n, m);
+  for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t j = 0; j < m; ++j) {
+      for_loop_data_host2(i, j) = i * j;
+    }
+  }
+  Kokkos::deep_copy(for_loop_data2, for_loop_data_host2);
+
+  using limit_type = Kokkos::Array<long, 2>;
+
+  hpx::for_loop(
+      hpx::kokkos::kok.on(exec), limit_type({0, 0}), limit_type({n, m}),
+      KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 2; });
+
+  Kokkos::deep_copy(for_loop_data_host2, for_loop_data2);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t j = 0; j < m; ++j) {
+      HPX_KOKKOS_DETAIL_TEST(for_loop_data_host2(i, j) == 2 * i * j);
+    }
+  }
+
+  auto f2 = hpx::for_loop(
+      hpx::kokkos::kok(hpx::execution::task).on(exec), limit_type({0, 0}),
+      limit_type({n, m}),
+      KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 3; });
+
+  f.get();
+
+  Kokkos::deep_copy(for_loop_data_host2, for_loop_data2);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t j = 0; j < m; ++j) {
+      HPX_KOKKOS_DETAIL_TEST(for_loop_data_host2(i, j) == 3 * 2 * i * j);
+    }
+  }
 }
 
 void test_for_loop_default() {
@@ -275,6 +318,48 @@ void test_for_loop_default() {
 
   for (std::size_t i = 0; i < n; ++i) {
     HPX_KOKKOS_DETAIL_TEST(for_loop_data_host(i) == 3 * 2 * i);
+  }
+
+  int const m = 17;
+
+  Kokkos::View<int **, Kokkos::DefaultExecutionSpace> for_loop_data2(
+      "for_loop_data2", n, m);
+  typename Kokkos::View<int **, Kokkos::DefaultExecutionSpace>::HostMirror
+      for_loop_data_host2("for_loop_data_host2", n, m);
+  for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t j = 0; j < m; ++j) {
+      for_loop_data_host2(i, j) = i * j;
+    }
+  }
+  Kokkos::deep_copy(for_loop_data2, for_loop_data_host2);
+
+  using limit_type = Kokkos::Array<long, 2>;
+
+  hpx::for_loop(
+      hpx::kokkos::kok, limit_type({0, 0}), limit_type({n, m}),
+      KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 2; });
+
+  Kokkos::deep_copy(for_loop_data_host2, for_loop_data2);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t j = 0; j < m; ++j) {
+      HPX_KOKKOS_DETAIL_TEST(for_loop_data_host2(i, j) == 2 * i * j);
+    }
+  }
+
+  auto f2 = hpx::for_loop(
+      hpx::kokkos::kok(hpx::execution::task), limit_type({0, 0}),
+      limit_type({n, m}),
+      KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 3; });
+
+  f.get();
+
+  Kokkos::deep_copy(for_loop_data_host2, for_loop_data2);
+
+  for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t j = 0; j < m; ++j) {
+      HPX_KOKKOS_DETAIL_TEST(for_loop_data_host2(i, j) == 3 * 2 * i * j);
+    }
   }
 }
 
