@@ -68,6 +68,13 @@ struct kokkos_task_policy {
                                         std::forward<Parameters>(params)...));
   }
 
+  kokkos_task_policy label(char const *l) const {
+    auto p = *this;
+    p.label_ = l;
+    return p;
+  }
+  char const *label() { return label_; }
+
   executor_type executor() const { return executor_type{}; }
 
   executor_parameters_type &parameters() { return params_; }
@@ -77,6 +84,7 @@ struct kokkos_task_policy {
 
 private:
   executor_parameters_type params_{};
+  char const *label_ = "unnamed kernel";
 };
 
 template <typename Executor, typename Parameters>
@@ -121,6 +129,12 @@ struct kokkos_task_policy_shim : kokkos_task_policy {
         exec_, join_executor_parameters(std::forward<Parameters_>(params)...));
   }
 
+  kokkos_task_policy_shim &label(char const *l) {
+    label_ = l;
+    return *this;
+  }
+  char const *label() { return label_; }
+
   Executor &executor() { return exec_; }
 
   Executor const &executor() const { return exec_; }
@@ -144,6 +158,7 @@ struct kokkos_task_policy_shim : kokkos_task_policy {
 private:
   Executor exec_;
   Parameters params_;
+  char const *label_ = "unnamed kernel";
 };
 
 struct kokkos_policy {
@@ -190,6 +205,13 @@ struct kokkos_policy {
                                         std::forward<Parameters>(params)...));
   }
 
+  kokkos_policy label(char const *l) const {
+    auto p = *this;
+    p.label_ = l;
+    return p;
+  }
+  char const *label() { return label_; }
+
 public:
   executor_type executor() const { return executor_type{}; }
 
@@ -200,6 +222,7 @@ public:
 
 private:
   executor_parameters_type params_{};
+  char const *label_ = "unnamed kernel";
 };
 
 template <typename Executor, typename Parameters>
@@ -244,6 +267,12 @@ struct kokkos_policy_shim : kokkos_policy {
         exec_, join_executor_parameters(std::forward<Parameters_>(params)...));
   }
 
+  kokkos_policy_shim &label(char const *l) {
+    label_ = l;
+    return *this;
+  }
+  char const *label() { return label_; }
+
   Executor &executor() { return exec_; }
 
   Executor const &executor() const { return exec_; }
@@ -267,6 +296,7 @@ struct kokkos_policy_shim : kokkos_policy {
 private:
   Executor exec_{};
   Parameters params_{};
+  char const *label_ = "unnamed kernel";
   /// \endcond
 };
 

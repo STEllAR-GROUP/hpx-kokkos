@@ -50,13 +50,15 @@ using reduce_result_space_t =
 
 template <typename ExecutionSpace, typename IterB, typename IterE, typename T,
           typename F>
-hpx::shared_future<T> reduce_helper(ExecutionSpace &&instance, IterB first,
+hpx::shared_future<T> reduce_helper(char const *label,
+                                    ExecutionSpace &&instance, IterB first,
                                     IterE last, T init, F &&f) {
   Kokkos::View<T,
                reduce_result_space_t<typename std::decay<ExecutionSpace>::type>>
       result(Kokkos::ViewAllocateWithoutInitializing("reduce_result"));
 
   return parallel_reduce_async(
+             label,
              Kokkos::Experimental::require(
                  Kokkos::RangePolicy<ExecutionSpace>(
                      instance, 0, std::distance(first, last)),
@@ -77,8 +79,8 @@ template <typename Iter, typename T, typename F>
 T tag_invoke(hpx::reduce_t, hpx::kokkos::kokkos_policy policy, Iter first,
              Iter last, T init, F &&f) {
 
-  return detail::reduce_helper(policy.executor().instance(), first, last, init,
-                               std::forward<F>(f))
+  return detail::reduce_helper(policy.label(), policy.executor().instance(),
+                               first, last, init, std::forward<F>(f))
       .get();
 }
 
@@ -86,8 +88,8 @@ template <typename Iter, typename T, typename F>
 hpx::shared_future<T> tag_invoke(hpx::reduce_t,
                                  hpx::kokkos::kokkos_task_policy policy,
                                  Iter first, Iter last, T init, F &&f) {
-  return detail::reduce_helper(policy.executor().instance(), first, last, init,
-                               f);
+  return detail::reduce_helper(policy.label(), policy.executor().instance(),
+                               first, last, init, f);
 }
 
 template <typename Executor, typename Parameters, typename Iter, typename T,
@@ -96,8 +98,8 @@ T tag_invoke(hpx::reduce_t,
              hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
              Iter first, Iter last, T init, F &&f) {
 
-  return detail::reduce_helper(policy.executor().instance(), first, last, init,
-                               std::forward<F>(f))
+  return detail::reduce_helper(policy.label(), policy.executor().instance(),
+                               first, last, init, std::forward<F>(f))
       .get();
 }
 
@@ -107,8 +109,8 @@ hpx::shared_future<T>
 tag_invoke(hpx::reduce_t,
            hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
            Iter first, Iter last, T init, F &&f) {
-  return detail::reduce_helper(policy.executor().instance(), first, last, init,
-                               f);
+  return detail::reduce_helper(policy.label(), policy.executor().instance(),
+                               first, last, init, f);
 }
 } // namespace kokkos
 } // namespace hpx

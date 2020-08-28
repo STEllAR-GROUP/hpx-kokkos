@@ -30,7 +30,7 @@ template <typename Executor> void test_for_each(Executor &&exec) {
   Kokkos::deep_copy(for_each_data, for_each_data_host);
 
   hpx::for_each(
-      hpx::kokkos::kok.on(exec), for_each_data.data(),
+      hpx::kokkos::kok.on(exec).label("for_each sync"), for_each_data.data(),
       for_each_data.data() + for_each_data.size(),
       KOKKOS_LAMBDA(int &x) { x *= 2; });
 
@@ -41,8 +41,8 @@ template <typename Executor> void test_for_each(Executor &&exec) {
   }
 
   auto f = hpx::for_each(
-      hpx::kokkos::kok(hpx::execution::task).on(exec), for_each_data.data(),
-      for_each_data.data() + for_each_data.size(),
+      hpx::kokkos::kok(hpx::execution::task).on(exec).label("for_each task"),
+      for_each_data.data(), for_each_data.data() + for_each_data.size(),
       KOKKOS_LAMBDA(int &x) { x *= 3; });
 
   f.get();
@@ -68,8 +68,10 @@ template <typename Executor> void test_for_each_range(Executor &&exec) {
   Kokkos::deep_copy(for_each_data, for_each_data_host);
 
   auto f = hpx::ranges::for_each(
-      hpx::kokkos::kok(hpx::execution::task).on(exec), p,
-      KOKKOS_LAMBDA(int i) { for_each_data(i) = i; });
+      hpx::kokkos::kok(hpx::execution::task)
+          .on(exec)
+          .label("for_each task range"),
+      p, KOKKOS_LAMBDA(int i) { for_each_data(i) = i; });
 
   f.get();
 
@@ -100,8 +102,10 @@ template <typename Executor> void test_for_each_mdrange(Executor &&exec) {
   Kokkos::deep_copy(for_each_data, for_each_data_host);
 
   auto f = hpx::ranges::for_each(
-      hpx::kokkos::kok(hpx::execution::task).on(exec), p,
-      KOKKOS_LAMBDA(int i, int j) { for_each_data(i, j) = i + j; });
+      hpx::kokkos::kok(hpx::execution::task)
+          .on(exec)
+          .label("for_each task mdrange"),
+      p, KOKKOS_LAMBDA(int i, int j) { for_each_data(i, j) = i + j; });
 
   f.get();
 
@@ -127,7 +131,7 @@ void test_for_each_default() {
   Kokkos::deep_copy(for_each_data, for_each_data_host);
 
   hpx::for_each(
-      hpx::kokkos::kok, for_each_data.data(),
+      hpx::kokkos::kok.label("for_each sync default"), for_each_data.data(),
       for_each_data.data() + for_each_data.size(),
       KOKKOS_LAMBDA(int &x) { x *= 2; });
 
@@ -138,8 +142,8 @@ void test_for_each_default() {
   }
 
   auto f = hpx::for_each(
-      hpx::kokkos::kok(hpx::execution::task), for_each_data.data(),
-      for_each_data.data() + for_each_data.size(),
+      hpx::kokkos::kok(hpx::execution::task).label("for_each task default"),
+      for_each_data.data(), for_each_data.data() + for_each_data.size(),
       KOKKOS_LAMBDA(int &x) { x *= 3; });
 
   f.get();
@@ -165,8 +169,9 @@ void test_for_each_default_range() {
   Kokkos::deep_copy(for_each_data, for_each_data_host);
 
   auto f = hpx::ranges::for_each(
-      hpx::kokkos::kok(hpx::execution::task), p,
-      KOKKOS_LAMBDA(int i) { for_each_data(i) = i; });
+      hpx::kokkos::kok(hpx::execution::task)
+          .label("for_each sync default range"),
+      p, KOKKOS_LAMBDA(int i) { for_each_data(i) = i; });
 
   f.get();
 
@@ -195,8 +200,9 @@ void test_for_each_default_mdrange() {
   Kokkos::deep_copy(for_each_data, for_each_data_host);
 
   auto f = hpx::ranges::for_each(
-      hpx::kokkos::kok(hpx::execution::task), p,
-      KOKKOS_LAMBDA(int i, int j) { for_each_data(i, j) = i + j; });
+      hpx::kokkos::kok(hpx::execution::task)
+          .label("for_each task default mdrange"),
+      p, KOKKOS_LAMBDA(int i, int j) { for_each_data(i, j) = i + j; });
 
   f.get();
 
@@ -222,7 +228,7 @@ template <typename Executor> void test_for_loop(Executor &&exec) {
   Kokkos::deep_copy(for_loop_data, for_loop_data_host);
 
   hpx::for_loop(
-      hpx::kokkos::kok.on(exec), 0, n,
+      hpx::kokkos::kok.on(exec).label("for_loop sync"), 0, n,
       KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 2; });
 
   Kokkos::deep_copy(for_loop_data_host, for_loop_data);
@@ -232,8 +238,8 @@ template <typename Executor> void test_for_loop(Executor &&exec) {
   }
 
   auto f = hpx::for_loop(
-      hpx::kokkos::kok(hpx::execution::task).on(exec), 0, n,
-      KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 3; });
+      hpx::kokkos::kok(hpx::execution::task).on(exec).label("for_loop task"), 0,
+      n, KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 3; });
 
   f.get();
 
@@ -260,7 +266,8 @@ template <typename Executor> void test_for_loop(Executor &&exec) {
   using limit_type = Kokkos::Array<long, 2>;
 
   hpx::for_loop(
-      hpx::kokkos::kok.on(exec), limit_type({0, 0}), limit_type({n, m}),
+      hpx::kokkos::kok.on(exec).label("for_loop sync md"), limit_type({0, 0}),
+      limit_type({n, m}),
       KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 2; });
 
   Kokkos::deep_copy(for_loop_data_host2, for_loop_data2);
@@ -272,8 +279,8 @@ template <typename Executor> void test_for_loop(Executor &&exec) {
   }
 
   auto f2 = hpx::for_loop(
-      hpx::kokkos::kok(hpx::execution::task).on(exec), limit_type({0, 0}),
-      limit_type({n, m}),
+      hpx::kokkos::kok(hpx::execution::task).on(exec).label("for_loop task md"),
+      limit_type({0, 0}), limit_type({n, m}),
       KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 3; });
 
   f.get();
@@ -300,7 +307,8 @@ void test_for_loop_default() {
   Kokkos::deep_copy(for_loop_data, for_loop_data_host);
 
   hpx::for_loop(
-      hpx::kokkos::kok, 0, n, KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 2; });
+      hpx::kokkos::kok.label("for_loop sync default"), 0, n,
+      KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 2; });
 
   Kokkos::deep_copy(for_loop_data_host, for_loop_data);
 
@@ -309,8 +317,8 @@ void test_for_loop_default() {
   }
 
   auto f = hpx::for_loop(
-      hpx::kokkos::kok(hpx::execution::task), 0, n,
-      KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 3; });
+      hpx::kokkos::kok(hpx::execution::task).label("for_loop task default"), 0,
+      n, KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 3; });
 
   f.get();
 
@@ -336,7 +344,8 @@ void test_for_loop_default() {
   using limit_type = Kokkos::Array<long, 2>;
 
   hpx::for_loop(
-      hpx::kokkos::kok, limit_type({0, 0}), limit_type({n, m}),
+      hpx::kokkos::kok.label("for_loop sync default md"), limit_type({0, 0}),
+      limit_type({n, m}),
       KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 2; });
 
   Kokkos::deep_copy(for_loop_data_host2, for_loop_data2);
@@ -348,8 +357,8 @@ void test_for_loop_default() {
   }
 
   auto f2 = hpx::for_loop(
-      hpx::kokkos::kok(hpx::execution::task), limit_type({0, 0}),
-      limit_type({n, m}),
+      hpx::kokkos::kok(hpx::execution::task).label("for_loop task default md"),
+      limit_type({0, 0}), limit_type({n, m}),
       KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 3; });
 
   f.get();
@@ -377,15 +386,15 @@ template <typename Executor> void test_reduce(Executor &&exec) {
 
   int offset = -3;
   int result = hpx::reduce(
-      hpx::kokkos::kok.on(exec), reduce_data.data(),
+      hpx::kokkos::kok.on(exec).label("reduce sync"), reduce_data.data(),
       reduce_data.data() + reduce_data.size(), offset,
       KOKKOS_LAMBDA(int x, int y) { return x + y; });
 
   HPX_KOKKOS_DETAIL_TEST(result == (offset + (n * (n - 1)) / 2));
 
   auto f_result = hpx::reduce(
-      hpx::kokkos::kok(hpx::execution::task).on(exec), reduce_data.data(),
-      reduce_data.data() + reduce_data.size(), offset,
+      hpx::kokkos::kok(hpx::execution::task).on(exec).label("reduce task"),
+      reduce_data.data(), reduce_data.data() + reduce_data.size(), offset,
       KOKKOS_LAMBDA(int x, int y) { return x + y; });
 
   HPX_KOKKOS_DETAIL_TEST(f_result.get() == (offset + (n * (n - 1)) / 2));
@@ -405,15 +414,15 @@ void test_reduce_default() {
 
   int offset = -3;
   int result = hpx::reduce(
-      hpx::kokkos::kok, reduce_data.data(),
+      hpx::kokkos::kok.label("reduce sync default"), reduce_data.data(),
       reduce_data.data() + reduce_data.size(), offset,
       KOKKOS_LAMBDA(int x, int y) { return x + y; });
 
   HPX_KOKKOS_DETAIL_TEST(result == (offset + (n * (n - 1)) / 2));
 
   auto f_result = hpx::reduce(
-      hpx::kokkos::kok(hpx::execution::task), reduce_data.data(),
-      reduce_data.data() + reduce_data.size(), offset,
+      hpx::kokkos::kok(hpx::execution::task).label("reduce task default"),
+      reduce_data.data(), reduce_data.data() + reduce_data.size(), offset,
       KOKKOS_LAMBDA(int x, int y) { return x + y; });
 
   HPX_KOKKOS_DETAIL_TEST(f_result.get() == (offset + (n * (n - 1)) / 2));

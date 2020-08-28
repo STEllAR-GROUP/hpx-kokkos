@@ -22,9 +22,11 @@ namespace kokkos {
 namespace detail {
 
 template <typename ExecutionSpace, typename IterB, typename IterE, typename F>
-hpx::shared_future<void> for_each_helper(ExecutionSpace &&instance, IterB first,
+hpx::shared_future<void> for_each_helper(char const *label,
+                                         ExecutionSpace &&instance, IterB first,
                                          IterE last, F &&f) {
   return parallel_for_async(
+      label,
       Kokkos::Experimental::require(
           Kokkos::RangePolicy<ExecutionSpace>(instance, 0,
                                               std::distance(first, last)),
@@ -37,10 +39,11 @@ hpx::shared_future<void> for_each_helper(ExecutionSpace &&instance, IterB first,
 
 template <typename ExecutionSpace, typename F, typename... Args>
 hpx::shared_future<void>
-for_each_kokkos_policy_helper(ExecutionSpace &&instance,
+for_each_kokkos_policy_helper(char const *label, ExecutionSpace &&instance,
                               Kokkos::RangePolicy<Args...> const &p, F &&f) {
 
   return parallel_for_async(
+      label,
       Kokkos::Experimental::require(
           Kokkos::RangePolicy<typename std::decay<ExecutionSpace>::type>(
               instance, p.begin(), p.end()),
@@ -50,10 +53,11 @@ for_each_kokkos_policy_helper(ExecutionSpace &&instance,
 
 template <typename ExecutionSpace, typename F, typename... Args>
 hpx::shared_future<void>
-for_each_kokkos_policy_helper(ExecutionSpace &&instance,
+for_each_kokkos_policy_helper(char const *label, ExecutionSpace &&instance,
                               Kokkos::MDRangePolicy<Args...> const &p, F &&f) {
 
   return parallel_for_async(
+      label,
       Kokkos::Experimental::require(
           Kokkos::MDRangePolicy<
               typename std::decay<ExecutionSpace>::type,
@@ -65,7 +69,7 @@ for_each_kokkos_policy_helper(ExecutionSpace &&instance,
 
 template <typename ExecutionSpace, typename F, typename... Args>
 hpx::shared_future<void>
-for_each_kokkos_policy_helper(ExecutionSpace &&instance,
+for_each_kokkos_policy_helper(char const *label, ExecutionSpace &&instance,
                               Kokkos::TeamPolicy<Args...> const &p, F &&f) {
 
   static_assert(
@@ -78,11 +82,12 @@ template <typename ExecutionSpace, typename Range, typename F,
           typename std::enable_if<Kokkos::is_execution_policy<
                                       typename std::decay<Range>::type>::value,
                                   int>::type = 0>
-hpx::shared_future<void> for_each_range_helper(ExecutionSpace &&instance,
+hpx::shared_future<void> for_each_range_helper(char const *label,
+                                               ExecutionSpace &&instance,
                                                Range &&range, F &&f) {
-  return for_each_kokkos_policy_helper(std::forward<ExecutionSpace>(instance),
-                                       std::forward<Range>(range),
-                                       std::forward<F>(f));
+  return for_each_kokkos_policy_helper(
+      label, std::forward<ExecutionSpace>(instance), std::forward<Range>(range),
+      std::forward<F>(f));
 }
 
 template <
@@ -91,9 +96,10 @@ template <
         !Kokkos::is_execution_policy<typename std::decay<Range>::type>::value &&
             hpx::traits::is_range<Range>::value,
         int>::type = 0>
-hpx::shared_future<void> for_each_range_helper(ExecutionSpace &&instance,
+hpx::shared_future<void> for_each_range_helper(char const *label,
+                                               ExecutionSpace &&instance,
                                                Range &&range, F &&f) {
-  return for_each_helper(std::forward<ExecutionSpace>(instance),
+  return for_each_helper(label, std::forward<ExecutionSpace>(instance),
                          hpx::util::begin(range), hpx::util::end(range),
                          std::forward<F>(f));
 }
@@ -104,8 +110,8 @@ template <typename Iter, typename F>
 void tag_invoke(hpx::for_each_t, hpx::kokkos::kokkos_policy policy, Iter first,
                 Iter last, F &&f) {
 
-  detail::for_each_helper(policy.executor().instance(), first, last,
-                          std::forward<F>(f))
+  detail::for_each_helper(policy.label(), policy.executor().instance(), first,
+                          last, std::forward<F>(f))
       .get();
 }
 
@@ -113,7 +119,8 @@ template <typename Iter, typename F>
 hpx::shared_future<void> tag_invoke(hpx::for_each_t,
                                     hpx::kokkos::kokkos_task_policy policy,
                                     Iter first, Iter last, F &&f) {
-  return detail::for_each_helper(policy.executor().instance(), first, last, f);
+  return detail::for_each_helper(policy.label(), policy.executor().instance(),
+                                 first, last, f);
 }
 
 template <typename Executor, typename Parameters, typename Iter, typename F>
@@ -121,8 +128,8 @@ void tag_invoke(hpx::for_each_t,
                 hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
                 Iter first, Iter last, F &&f) {
 
-  detail::for_each_helper(policy.executor().instance(), first, last,
-                          std::forward<F>(f))
+  detail::for_each_helper(policy.label(), policy.executor().instance(), first,
+                          last, std::forward<F>(f))
       .get();
 }
 
@@ -131,7 +138,8 @@ hpx::shared_future<void>
 tag_invoke(hpx::for_each_t,
            hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
            Iter first, Iter last, F &&f) {
-  return detail::for_each_helper(policy.executor().instance(), first, last, f);
+  return detail::for_each_helper(policy.label(), policy.executor().instance(),
+                                 first, last, f);
 }
 
 // For each range overloads for a range
@@ -139,7 +147,7 @@ template <typename Range, typename F>
 void tag_invoke(hpx::ranges::for_each_t, hpx::kokkos::kokkos_policy policy,
                 Range &&r, F &&f) {
 
-  detail::for_each_range_helper(policy.executor().instance(),
+  detail::for_each_range_helper(policy.label(), policy.executor().instance(),
                                 std::forward<Range>(r), std::forward<F>(f))
       .get();
 }
@@ -149,7 +157,7 @@ void tag_invoke(hpx::ranges::for_each_t,
                 hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
                 Range &&r, F &&f) {
 
-  detail::for_each_range_helper(policy.executor().instance(),
+  detail::for_each_range_helper(policy.label(), policy.executor().instance(),
                                 std::forward<Range>(r), std::forward<F>(f));
 }
 
@@ -159,7 +167,8 @@ hpx::shared_future<void> tag_invoke(hpx::ranges::for_each_t,
                                     Range &&r, F &&f) {
 
   return detail::for_each_range_helper(
-      policy.executor().instance(), std::forward<Range>(r), std::forward<F>(f));
+      policy.label(), policy.executor().instance(), std::forward<Range>(r),
+      std::forward<F>(f));
 }
 
 template <typename Executor, typename Parameters, typename Range, typename F>
@@ -169,7 +178,8 @@ tag_invoke(hpx::ranges::for_each_t,
            Range &&r, F &&f) {
 
   return detail::for_each_range_helper(
-      policy.executor().instance(), std::forward<Range>(r), std::forward<F>(f));
+      policy.label(), policy.executor().instance(), std::forward<Range>(r),
+      std::forward<F>(f));
 }
 } // namespace kokkos
 } // namespace hpx
