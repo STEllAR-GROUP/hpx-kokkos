@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <hpx/include/compute.hpp>
-
 #include <Kokkos_Core.hpp>
 
 namespace hpx {

@@ -31,7 +31,7 @@ void print_header() {
 
 template <typename F, typename Step>
 void time_test(std::string const &label, F const &f, Step const &step) {
-  hpx::util::high_resolution_timer timer;
+  hpx::chrono::high_resolution_timer timer;
   f(step);
   std::cout << "stream," << Kokkos::DefaultExecutionSpace().name() << ","
             << label << "," << step.name << "," << step.a.extent(0) << ","

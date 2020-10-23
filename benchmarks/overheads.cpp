@@ -34,7 +34,7 @@ template <typename ExecutionSpace, typename F, typename Views, typename... Args>
 void time_test(std::string const &label, F const &f, ExecutionSpace const &inst,
                Views const &views, int const n, int const launches_per_test,
                Args... args) {
-  hpx::util::high_resolution_timer timer;
+  hpx::chrono::high_resolution_timer timer;
   f(inst, views, n, launches_per_test, std::forward<Args>(args)...);
   std::cout << "overhead," << inst.name() << "," << label << "," << n << ","
             << launches_per_test << "," << timer.elapsed() << std::endl;

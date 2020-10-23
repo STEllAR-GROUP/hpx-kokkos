@@ -29,7 +29,7 @@ struct kokkos_task_policy {
   using executor_parameters_type =
       hpx::parallel::execution::extract_executor_parameters<
           executor_type>::type;
-  using execution_category = hpx::parallel::execution::parallel_execution_tag;
+  using execution_category = hpx::execution::parallel_execution_tag;
 
   template <typename Executor_, typename Parameters_> struct rebind {
     using type = kokkos_task_policy_shim<Executor_, Parameters_>;
@@ -38,7 +38,7 @@ struct kokkos_task_policy {
   constexpr kokkos_task_policy() {}
 
   kokkos_task_policy
-  operator()(hpx::parallel::execution::task_policy_tag) const {
+  operator()(hpx::execution::task_policy_tag) const {
     return *this;
   }
 
@@ -91,7 +91,7 @@ struct kokkos_task_policy_shim : kokkos_task_policy {
   };
 
   kokkos_task_policy_shim
-  operator()(hpx::parallel::execution::task_policy_tag tag) const {
+  operator()(hpx::execution::task_policy_tag tag) const {
     return *this;
   }
 
@@ -151,7 +151,7 @@ struct kokkos_policy {
   using executor_parameters_type =
       hpx::parallel::execution::extract_executor_parameters<
           executor_type>::type;
-  using execution_category = hpx::parallel::execution::parallel_execution_tag;
+  using execution_category = hpx::execution::parallel_execution_tag;
 
   template <typename Executor_, typename Parameters_> struct rebind {
     using type = kokkos_policy_shim<Executor_, Parameters_>;
@@ -160,7 +160,7 @@ struct kokkos_policy {
   constexpr kokkos_policy() {}
 
   kokkos_task_policy
-  operator()(hpx::parallel::execution::task_policy_tag) const {
+  operator()(hpx::execution::task_policy_tag) const {
     return kokkos_task_policy();
   }
 
@@ -214,7 +214,7 @@ struct kokkos_policy_shim : kokkos_policy {
   };
 
   kokkos_task_policy_shim<Executor, Parameters>
-  operator()(hpx::parallel::execution::task_policy_tag) const {
+  operator()(hpx::execution::task_policy_tag) const {
     return kokkos_task_policy_shim<Executor, Parameters>(exec_, params_);
   }
 
@@ -295,8 +295,6 @@ struct is_kokkos_execution_policy<
 } // namespace hpx
 
 namespace hpx {
-namespace parallel {
-namespace execution {
 namespace detail {
 
 template <typename Executor, typename Parameters>
@@ -349,6 +347,4 @@ struct is_async_execution_policy<
     hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters>>
     : std::true_type {};
 } // namespace detail
-} // namespace execution
-} // namespace parallel
 } // namespace hpx

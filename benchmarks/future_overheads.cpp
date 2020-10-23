@@ -29,14 +29,14 @@ void print_result(std::string const &label, ExecutionSpace const &inst,
 
 template <typename ExecutionSpace>
 void test_future_get(ExecutionSpace const &inst) {
-  hpx::util::high_resolution_timer timer;
+  hpx::chrono::high_resolution_timer timer;
   hpx::kokkos::get_future<>(inst).get();
   print_result("future_get", inst, timer.elapsed());
 }
 
 template <typename ExecutionSpace>
 void test_future_then_sync(ExecutionSpace const &inst) {
-  hpx::util::high_resolution_timer timer;
+  hpx::chrono::high_resolution_timer timer;
   auto f = hpx::kokkos::get_future<>(inst);
   f.then(hpx::launch::sync, [&](auto &&f) {
      print_result("future_then_sync", inst, timer.elapsed());
@@ -45,7 +45,7 @@ void test_future_then_sync(ExecutionSpace const &inst) {
 
 template <typename ExecutionSpace>
 void test_future_then_async(ExecutionSpace const &inst) {
-  hpx::util::high_resolution_timer timer;
+  hpx::chrono::high_resolution_timer timer;
   auto f = hpx::kokkos::get_future<>(inst);
   f.then(hpx::launch::async, [&](auto &&f) {
      print_result("future_then_async", inst, timer.elapsed());

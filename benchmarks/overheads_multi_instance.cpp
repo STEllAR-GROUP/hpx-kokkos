@@ -28,7 +28,7 @@ void time_test(std::string const &label, F const &f,
                hpx::kokkos::kokkos_instance_helper<ExecutionSpace> &h,
                Views const &views, int const n, int const launches_per_test,
                Args... args) {
-  hpx::util::high_resolution_timer timer;
+  hpx::chrono::high_resolution_timer timer;
   f(h, views, n, launches_per_test, std::forward<Args>(args)...);
   std::cout << "overhead_multi_instance," << ExecutionSpace().name() << ","
             << label << "," << n << "," << launches_per_test << ","
