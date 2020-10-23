@@ -40,7 +40,7 @@ template <> struct reduce_result_space<Kokkos::Cuda> {
 // HIP memory copies from device to host are asynchronous only to pinned host
 // memory.
 template <> struct reduce_result_space<Kokkos::Experimental::HIP> {
-  using type = Kokkos::HIPHostPinnedSpace;
+  using type = Kokkos::Experimental::HIPHostPinnedSpace;
 };
 #endif
 

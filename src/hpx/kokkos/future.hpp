@@ -15,7 +15,7 @@
 #include <hpx/config.hpp>
 #include <hpx/future.hpp>
 
-#if defined(HPX_HAVE_CUDA)
+#if defined(HPX_HAVE_COMPUTE)
 #include <hpx/modules/async_cuda.hpp>
 #endif
 
@@ -50,6 +50,26 @@ template <> struct get_future<Kokkos::Cuda> {
 #elif HPX_KOKKOS_CUDA_FUTURE_TYPE == 1
     return hpx::cuda::experimental::detail::get_future_with_callback(
         inst.cuda_stream());
+#else
+#error "HPX_KOKKOS_CUDA_FUTURE_TYPE is invalid (must be callback or event)"
+#endif
+  }
+};
+#endif
+
+#if defined(KOKKOS_ENABLE_HIP)
+#if !defined(HPX_KOKKOS_CUDA_FUTURE_TYPE)
+#define HPX_KOKKOS_CUDA_FUTURE_TYPE callback
+#endif
+template <> struct get_future<Kokkos::Experimental::HIP> {
+  template <typename E> static hpx::shared_future<void> call(E &&inst) {
+    HPX_KOKKOS_DETAIL_LOG("getting future from stream %p", inst.hip_stream());
+#if HPX_KOKKOS_CUDA_FUTURE_TYPE == 0
+    return hpx::cuda::experimental::detail::get_future_with_event(
+        inst.hip_stream());
+#elif HPX_KOKKOS_CUDA_FUTURE_TYPE == 1
+    return hpx::cuda::experimental::detail::get_future_with_callback(
+        inst.hip_stream());
 #else
 #error "HPX_KOKKOS_CUDA_FUTURE_TYPE is invalid (must be callback or event)"
 #endif

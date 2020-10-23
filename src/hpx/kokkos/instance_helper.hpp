@@ -34,6 +34,19 @@ template <> inline Kokkos::Cuda make_kokkos_instance<Kokkos::Cuda>() {
 }
 #endif
 
+#if defined(KOKKOS_ENABLE_HIP)
+template <> inline Kokkos::Experimental::HIP make_kokkos_instance<Kokkos::Experimental::HIP>() {
+  cudaStream_t s;
+  cudaError_t error = cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
+  if (error != cudaSuccess) {
+    HPX_THROW_EXCEPTION(
+        kernel_error, "hpx::kokkos::detail::initialize_instances",
+        std::string("cudaStreamCreate failed: ") + cudaGetErrorString(error));
+  }
+  return {s};
+}
+#endif
+
 #if defined(KOKKOS_ENABLE_HPX) && KOKKOS_VERSION >= 30000
 template <>
 inline Kokkos::Experimental::HPX
