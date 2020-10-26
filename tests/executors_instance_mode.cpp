@@ -38,7 +38,7 @@ template <> void test<Kokkos::Experimental::HPX>() {
     hpx::kokkos::executor<Kokkos::Experimental::HPX> exec_independent2{hpx::kokkos::execution_space_mode::independent};
 
     HPX_KOKKOS_DETAIL_TEST(exec_global1.instance().impl_instance_id() == exec_global2.instance().impl_instance_id() );
-    HPX_KOKKOS_DETAIL_TEST(exec_independent1.instance().impl_instance_id() == exec_independent2.instance().impl_instance_id() );
+    HPX_KOKKOS_DETAIL_TEST(exec_independent1.instance().impl_instance_id() != exec_independent2.instance().impl_instance_id() );
 }
 #endif
 
@@ -51,7 +51,7 @@ template <> void test<Kokkos::Cuda>() {
     hpx::kokkos::executor<Kokkos::Cuda> exec_independent2{hpx::kokkos::execution_space_mode::independent};
 
     HPX_KOKKOS_DETAIL_TEST(exec_global1.instance().cuda_stream() == exec_global2.instance().cuda_stream() );
-    HPX_KOKKOS_DETAIL_TEST(exec_independent1.instance().cuda_stream() == exec_independent2.instance().cuda_stream() );
+    HPX_KOKKOS_DETAIL_TEST(exec_independent1.instance().cuda_stream() != exec_independent2.instance().cuda_stream() );
 #endif
 
 #if defined(KOKKOS_ENABLE_HIP)
@@ -63,7 +63,7 @@ template <> void test<Kokkos::Experimental::HIP>() {
     hpx::kokkos::executor<Kokkos::Experimental::HIP> exec_independent2{hpx::kokkos::execution_space_mode::independent};
 
     HPX_KOKKOS_DETAIL_TEST(exec_global1.instance().hip_stream() == exec_global2.instance().hip_stream() );
-    HPX_KOKKOS_DETAIL_TEST(exec_independent1.instance().hip_stream() == exec_independent2.instance().hip_stream() );
+    HPX_KOKKOS_DETAIL_TEST(exec_independent1.instance().hip_stream() != exec_independent2.instance().hip_stream() );
 #endif
 }
 
