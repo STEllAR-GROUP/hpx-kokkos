@@ -45,12 +45,14 @@ template <typename ExecutionSpace, typename Views>
 void test_for_loop_kokkos(ExecutionSpace const &inst, Views const &views,
                           int const n, int const launches_per_test) {
   for (int l = 0; l < launches_per_test; ++l) {
+    // Init-capture not allowed by nvcc, so we initialize a here.
+    auto a = views[l];
     Kokkos::parallel_for(
         Kokkos::Experimental::require(
             Kokkos::RangePolicy<typename std::decay<ExecutionSpace>::type>(
                 inst, 0, n),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
-        [a = views[l]] KOKKOS_IMPL_FUNCTION(int i) { a(i) = i; });
+        [a] KOKKOS_IMPL_FUNCTION(int i) { a(i) = i; });
   }
 
   inst.fence();
@@ -61,12 +63,14 @@ template <typename ExecutionSpace, typename Views>
 void test_for_loop_kokkos_future(ExecutionSpace const &inst, Views const &views,
                                  int const n, int const launches_per_test) {
   for (int l = 0; l < launches_per_test; ++l) {
+    // Init-capture not allowed by nvcc, so we initialize a here.
+    auto a = views[l];
     Kokkos::parallel_for(
         Kokkos::Experimental::require(
             Kokkos::RangePolicy<typename std::decay<ExecutionSpace>::type>(
                 inst, 0, n),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
-        [a = views[l]] KOKKOS_IMPL_FUNCTION(int i) { a(i) = i; });
+        [a] KOKKOS_IMPL_FUNCTION(int i) { a(i) = i; });
   }
 
   hpx::kokkos::get_future<typename std::decay<ExecutionSpace>::type>().get();
@@ -84,12 +88,14 @@ void test_for_loop_kokkos_async(ExecutionSpace const &inst, Views const &views,
   futures.reserve(launches_per_test);
 
   for (int l = 0; l < launches_per_test; ++l) {
+    // Init-capture not allowed by nvcc, so we initialize a here.
+    auto a = views[l];
     futures.push_back(hpx::kokkos::parallel_for_async(
         Kokkos::Experimental::require(
             Kokkos::RangePolicy<typename std::decay<ExecutionSpace>::type>(
                 inst, 0, n),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
-        [a = views[l]] KOKKOS_IMPL_FUNCTION(int i) { a(i) = i; }));
+        [a] KOKKOS_IMPL_FUNCTION(int i) { a(i) = i; }));
   }
 
   switch (s) {
