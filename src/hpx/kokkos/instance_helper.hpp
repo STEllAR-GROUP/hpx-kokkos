@@ -11,51 +11,12 @@
 
 #include <hpx/kokkos/execution_spaces.hpp>
 #include <hpx/kokkos/executors.hpp>
+#include <hpx/kokkos/make_instance.hpp>
 
 #include <Kokkos_Core.hpp>
 
 namespace hpx {
 namespace kokkos {
-namespace detail {
-template <typename ExecutionSpace> ExecutionSpace make_kokkos_instance() {
-  return {};
-}
-
-#if defined(KOKKOS_ENABLE_CUDA)
-template <> inline Kokkos::Cuda make_kokkos_instance<Kokkos::Cuda>() {
-  cudaStream_t s;
-  cudaError_t error = cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
-  if (error != cudaSuccess) {
-    HPX_THROW_EXCEPTION(
-        kernel_error, "hpx::kokkos::detail::initialize_instances",
-        std::string("cudaStreamCreate failed: ") + cudaGetErrorString(error));
-  }
-  return {s};
-}
-#endif
-
-#if defined(KOKKOS_ENABLE_HIP)
-template <> inline Kokkos::Experimental::HIP make_kokkos_instance<Kokkos::Experimental::HIP>() {
-  cudaStream_t s;
-  cudaError_t error = cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
-  if (error != cudaSuccess) {
-    HPX_THROW_EXCEPTION(
-        kernel_error, "hpx::kokkos::detail::initialize_instances",
-        std::string("cudaStreamCreate failed: ") + cudaGetErrorString(error));
-  }
-  return {s};
-}
-#endif
-
-#if defined(KOKKOS_ENABLE_HPX) && KOKKOS_VERSION >= 30000
-template <>
-inline Kokkos::Experimental::HPX
-make_kokkos_instance<Kokkos::Experimental::HPX>() {
-  return {Kokkos::Experimental::HPX::instance_mode::independent};
-}
-#endif
-} // namespace detail
-
 template <typename ExecutionSpace = Kokkos::DefaultExecutionSpace>
 class kokkos_instance_helper {
 public:
@@ -70,7 +31,9 @@ public:
     for (std::size_t t = 0; t < num_threads; ++t) {
       instances[t].reserve(num_instances_per_thread);
       for (std::size_t i = 0; i < num_instances_per_thread; ++i) {
-        instances[t].push_back(detail::make_kokkos_instance<execution_space>());
+        instances[t].push_back(
+            detail::make_independent_execution_space_instance<
+                execution_space>());
       }
     }
   }

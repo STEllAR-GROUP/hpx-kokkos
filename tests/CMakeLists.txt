@@ -8,6 +8,7 @@ add_custom_target(tests)
 set(_tests
   asynchrony
   executors
+  executors_instance_mode
   kokkos_async_parallel
   linking
   parallel_algorithms

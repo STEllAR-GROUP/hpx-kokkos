@@ -11,6 +11,7 @@
 #include <hpx/kokkos/deep_copy.hpp>
 #include <hpx/kokkos/detail/logging.hpp>
 #include <hpx/kokkos/kokkos_algorithms.hpp>
+#include <hpx/kokkos/make_instance.hpp>
 
 #include <hpx/algorithm.hpp>
 #include <hpx/numeric.hpp>
@@ -31,6 +32,11 @@ HPX_HOST_DEVICE void invoke_helper(hpx::util::index_pack<Is...>, F &&f, A &&a,
 }
 } // namespace detail
 
+/// \brief The mode of an executor. Determines whether an executor should be
+/// constructed with the global/default Kokkos execution space instance, or if
+/// it should be independent (when possible).
+enum class execution_space_mode { global, independent };
+
 /// \brief HPX executor wrapping a Kokkos execution space.
 template <typename ExecutionSpace = Kokkos::DefaultExecutionSpace>
 class executor {
@@ -38,7 +44,12 @@ public:
   using execution_space = ExecutionSpace;
   using execution_category = hpx::execution::parallel_execution_tag;
 
-  explicit executor(execution_space const &instance = {}) : inst(instance) {}
+  explicit executor(execution_space_mode mode = execution_space_mode::global)
+      : inst(mode == execution_space_mode::global
+                 ? ExecutionSpace{}
+                 : detail::make_independent_execution_space_instance<
+                       ExecutionSpace>()) {}
+  explicit executor(execution_space const &instance) : inst(instance) {}
 
   execution_space instance() const { return inst; }
 
