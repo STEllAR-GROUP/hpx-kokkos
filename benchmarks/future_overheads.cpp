@@ -11,10 +11,7 @@
 #include <hpx/chrono.hpp>
 #include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
-
-#if defined(HPX_HAVE_CUDA)
-#include <hpx/modules/async_cuda.hpp>
-#endif
+#include <hpx/kokkos/detail/polling_helper.hpp>
 
 void print_header() {
   std::cout << "test_name,execution_space,subtest_name,time" << std::endl;
@@ -56,9 +53,8 @@ int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
-#if defined(HPX_HAVE_CUDA)
-    hpx::cuda::experimental::enable_user_polling p;
-#endif
+    hpx::kokkos::detail::polling_helper p;
+
     print_header();
     for (int r = 1; r <= 100; ++r) {
       test_future_get(Kokkos::DefaultExecutionSpace());

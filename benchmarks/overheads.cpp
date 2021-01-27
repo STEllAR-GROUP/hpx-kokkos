@@ -19,10 +19,7 @@
 #include <hpx/config.hpp>
 #include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
-
-#if defined(HPX_HAVE_CUDA)
-#include <hpx/modules/async_cuda.hpp>
-#endif
+#include <hpx/kokkos/detail/polling_helper.hpp>
 
 void print_header() {
   std::cout << "test_name,execution_space,subtest_name,vector_size,launches_"
@@ -179,9 +176,8 @@ int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
-#if defined(HPX_HAVE_CUDA)
-    hpx::cuda::experimental::enable_user_polling p;
-#endif
+    hpx::kokkos::detail::polling_helper p;
+
     print_header();
     hpx::kokkos::kokkos_instance_helper<> h;
     for (int n = 1; n <= 100000; n *= 10) {

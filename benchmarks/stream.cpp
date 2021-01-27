@@ -14,10 +14,7 @@
 #include <hpx/chrono.hpp>
 #include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
-
-#if defined(HPX_HAVE_CUDA)
-#include <hpx/modules/async_cuda.hpp>
-#endif
+#include <hpx/kokkos/detail/polling_helper.hpp>
 
 using elem_type = double;
 using view_type = Kokkos::View<elem_type *>;
@@ -358,9 +355,8 @@ int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
-#if defined(HPX_HAVE_CUDA)
-    hpx::cuda::experimental::enable_user_polling p;
-#endif
+    hpx::kokkos::detail::polling_helper p;
+
     print_header();
     for (int size = 1024; size <= (1024 << 17); size *= 2) {
       test_stream(10, size);

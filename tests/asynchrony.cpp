@@ -15,11 +15,8 @@
 #include <hpx/algorithm.hpp>
 #include <hpx/chrono.hpp>
 #include <hpx/kokkos.hpp>
+#include <hpx/kokkos/detail/polling_helper.hpp>
 #include <hpx/wrap_main.hpp>
-
-#if defined(HPX_HAVE_COMPUTE)
-#include <hpx/modules/async_cuda.hpp>
-#endif
 
 template <typename ExecutionSpace>
 void test_kokkos_plain(ExecutionSpace &&inst, int const n,
@@ -204,9 +201,7 @@ int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
-#if defined(HPX_HAVE_COMPUTE)
-    hpx::cuda::experimental::enable_user_polling p;
-#endif
+    hpx::kokkos::detail::polling_helper p;
 
     test(Kokkos::DefaultExecutionSpace(), n, repetitions);
     if (!std::is_same<Kokkos::DefaultExecutionSpace,

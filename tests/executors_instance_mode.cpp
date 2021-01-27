@@ -12,6 +12,7 @@
 #include <hpx/execution.hpp>
 #include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
+#include <hpx/kokkos/detail/polling_helper.hpp>
 
 #include <atomic>
 #include <cassert>
