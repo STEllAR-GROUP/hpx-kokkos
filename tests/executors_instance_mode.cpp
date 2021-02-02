@@ -53,6 +53,7 @@ template <> void test<Kokkos::Cuda>() {
 
     HPX_KOKKOS_DETAIL_TEST(exec_global1.instance().cuda_stream() == exec_global2.instance().cuda_stream() );
     HPX_KOKKOS_DETAIL_TEST(exec_independent1.instance().cuda_stream() != exec_independent2.instance().cuda_stream() );
+}
 #endif
 
 #if defined(KOKKOS_ENABLE_HIP)
@@ -65,8 +66,8 @@ template <> void test<Kokkos::Experimental::HIP>() {
 
     HPX_KOKKOS_DETAIL_TEST(exec_global1.instance().hip_stream() == exec_global2.instance().hip_stream() );
     HPX_KOKKOS_DETAIL_TEST(exec_independent1.instance().hip_stream() != exec_independent2.instance().hip_stream() );
-#endif
 }
+#endif
 
 int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);

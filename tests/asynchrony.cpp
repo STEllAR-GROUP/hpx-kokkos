@@ -215,3 +215,13 @@ int main(int argc, char *argv[]) {
 
   return hpx::kokkos::detail::report_errors();
 }
+
+void f(int n)
+{
+    Kokkos::View<int*> a("a", n);
+    hpx::kokkos::default_executor executor(hpx::kokkos::execution_space_mode::independent);
+    auto policy = hpx::kokkos::kok(hpx::execution::task).on(executor);
+
+    hpx::shared_future<void> f = hpx::for_loop(policy, 0, n, KOKKOS_LAMBDA(int i) { a(i) = i; });
+    f.wait();
+}
