@@ -9,7 +9,7 @@ project(HPXKokkos CXX)
 
 # Dependencies
 find_package(HPX 1.5.0 REQUIRED)
-find_package(Kokkos REQUIRED)
+find_package(Kokkos 3.2.0 REQUIRED)
 
 # Check that Kokkos and HPX options are consistent.
 if(Kokkos_ENABLE_CUDA)
