@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.13)
 project(HPXKokkos CXX)
 
 # Dependencies
-find_package(HPX 1.5.0 REQUIRED)
+find_package(HPX 1.6.0 REQUIRED)
 find_package(Kokkos 3.2.0 REQUIRED)
 
 # Check that Kokkos and HPX options are consistent.
