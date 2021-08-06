@@ -3,13 +3,13 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.17)
 
 project(HPXKokkos CXX)
 
 # Dependencies
-find_package(HPX 1.6.0 REQUIRED)
-find_package(Kokkos 3.2.0 REQUIRED)
+find_package(HPX 1.7.0 REQUIRED)
+find_package(Kokkos 3.4.99 REQUIRED)
 
 # Check that Kokkos and HPX options are consistent.
 if(Kokkos_ENABLE_CUDA)
