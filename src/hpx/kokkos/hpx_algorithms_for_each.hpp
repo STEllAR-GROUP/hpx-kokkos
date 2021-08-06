@@ -11,7 +11,8 @@
 #include <hpx/kokkos/detail/logging.hpp>
 #include <hpx/kokkos/policy.hpp>
 
-#include <hpx/algorithm.hpp>
+#include <hpx/local/algorithm.hpp>
+#include <hpx/local/functional.hpp>
 
 #include <Kokkos_Core.hpp>
 
@@ -107,7 +108,7 @@ hpx::shared_future<void> for_each_range_helper(char const *label,
 
 // For each non-range overloads
 template <typename Iter, typename F>
-void tag_invoke(hpx::for_each_t, hpx::kokkos::kokkos_policy policy, Iter first,
+void tag_dispatch(hpx::for_each_t, hpx::kokkos::kokkos_policy policy, Iter first,
                 Iter last, F &&f) {
 
   detail::for_each_helper(policy.label(), policy.executor().instance(), first,
@@ -116,7 +117,7 @@ void tag_invoke(hpx::for_each_t, hpx::kokkos::kokkos_policy policy, Iter first,
 }
 
 template <typename Iter, typename F>
-hpx::shared_future<void> tag_invoke(hpx::for_each_t,
+hpx::shared_future<void> tag_dispatch(hpx::for_each_t,
                                     hpx::kokkos::kokkos_task_policy policy,
                                     Iter first, Iter last, F &&f) {
   return detail::for_each_helper(policy.label(), policy.executor().instance(),
@@ -124,7 +125,7 @@ hpx::shared_future<void> tag_invoke(hpx::for_each_t,
 }
 
 template <typename Executor, typename Parameters, typename Iter, typename F>
-void tag_invoke(hpx::for_each_t,
+void tag_dispatch(hpx::for_each_t,
                 hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
                 Iter first, Iter last, F &&f) {
 
@@ -135,7 +136,7 @@ void tag_invoke(hpx::for_each_t,
 
 template <typename Executor, typename Parameters, typename Iter, typename F>
 hpx::shared_future<void>
-tag_invoke(hpx::for_each_t,
+tag_dispatch(hpx::for_each_t,
            hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
            Iter first, Iter last, F &&f) {
   return detail::for_each_helper(policy.label(), policy.executor().instance(),
@@ -144,7 +145,7 @@ tag_invoke(hpx::for_each_t,
 
 // For each range overloads for a range
 template <typename Range, typename F>
-void tag_invoke(hpx::ranges::for_each_t, hpx::kokkos::kokkos_policy policy,
+void tag_dispatch(hpx::ranges::for_each_t, hpx::kokkos::kokkos_policy policy,
                 Range &&r, F &&f) {
 
   detail::for_each_range_helper(policy.label(), policy.executor().instance(),
@@ -153,7 +154,7 @@ void tag_invoke(hpx::ranges::for_each_t, hpx::kokkos::kokkos_policy policy,
 }
 
 template <typename Executor, typename Parameters, typename Range, typename F>
-void tag_invoke(hpx::ranges::for_each_t,
+void tag_dispatch(hpx::ranges::for_each_t,
                 hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
                 Range &&r, F &&f) {
 
@@ -162,7 +163,7 @@ void tag_invoke(hpx::ranges::for_each_t,
 }
 
 template <typename Range, typename F>
-hpx::shared_future<void> tag_invoke(hpx::ranges::for_each_t,
+hpx::shared_future<void> tag_dispatch(hpx::ranges::for_each_t,
                                     hpx::kokkos::kokkos_task_policy policy,
                                     Range &&r, F &&f) {
 
@@ -173,7 +174,7 @@ hpx::shared_future<void> tag_invoke(hpx::ranges::for_each_t,
 
 template <typename Executor, typename Parameters, typename Range, typename F>
 hpx::shared_future<void>
-tag_invoke(hpx::ranges::for_each_t,
+tag_dispatch(hpx::ranges::for_each_t,
            hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
            Range &&r, F &&f) {
 

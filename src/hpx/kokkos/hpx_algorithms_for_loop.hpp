@@ -47,7 +47,7 @@ hpx::shared_future<void> for_loop_helper(char const *label,
 } // namespace detail
 
 template <typename I, typename F>
-void tag_invoke(hpx::for_loop_t, hpx::kokkos::kokkos_policy policy,
+void tag_dispatch(hpx::for_loop_t, hpx::kokkos::kokkos_policy policy,
                 typename std::decay<I>::type first, I last, F &&f) {
 
   detail::for_loop_helper(policy.label(), policy.executor().instance(), first,
@@ -57,14 +57,14 @@ void tag_invoke(hpx::for_loop_t, hpx::kokkos::kokkos_policy policy,
 
 template <typename I, typename F>
 hpx::shared_future<void>
-tag_invoke(hpx::for_loop_t, hpx::kokkos::kokkos_task_policy policy,
+tag_dispatch(hpx::for_loop_t, hpx::kokkos::kokkos_task_policy policy,
            typename std::decay<I>::type first, I last, F &&f) {
   return detail::for_loop_helper(policy.label(), policy.executor().instance(),
                                  first, last, f);
 }
 
 template <typename Executor, typename Parameters, typename I, typename F>
-void tag_invoke(hpx::for_loop_t,
+void tag_dispatch(hpx::for_loop_t,
                 hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
                 typename std::decay<I>::type first, I last, F &&f) {
 
@@ -75,7 +75,7 @@ void tag_invoke(hpx::for_loop_t,
 
 template <typename Executor, typename Parameters, typename I, typename F>
 hpx::shared_future<void>
-tag_invoke(hpx::for_loop_t,
+tag_dispatch(hpx::for_loop_t,
            hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
            typename std::decay<I>::type first, I last, F &&f) {
   return detail::for_loop_helper(policy.label(), policy.executor().instance(),
@@ -83,7 +83,7 @@ tag_invoke(hpx::for_loop_t,
 }
 
 template <typename I, std::size_t N, typename F>
-void tag_invoke(hpx::for_loop_t, hpx::kokkos::kokkos_policy policy,
+void tag_dispatch(hpx::for_loop_t, hpx::kokkos::kokkos_policy policy,
                 Kokkos::Array<I, N> const &first,
                 Kokkos::Array<I, N> const &last, F &&f) {
 
@@ -93,7 +93,7 @@ void tag_invoke(hpx::for_loop_t, hpx::kokkos::kokkos_policy policy,
 }
 
 template <typename I, std::size_t N, typename F>
-hpx::shared_future<void> tag_invoke(hpx::for_loop_t,
+hpx::shared_future<void> tag_dispatch(hpx::for_loop_t,
                                     hpx::kokkos::kokkos_task_policy policy,
                                     Kokkos::Array<I, N> const &first,
                                     std::initializer_list<I> last, F &&f) {
@@ -103,7 +103,7 @@ hpx::shared_future<void> tag_invoke(hpx::for_loop_t,
 
 template <typename Executor, typename Parameters, typename I, std::size_t N,
           typename F>
-void tag_invoke(hpx::for_loop_t,
+void tag_dispatch(hpx::for_loop_t,
                 hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
                 Kokkos::Array<I, N> const &first,
                 Kokkos::Array<I, N> const &last, F &&f) {
@@ -116,7 +116,7 @@ void tag_invoke(hpx::for_loop_t,
 template <typename Executor, typename Parameters, typename I, std::size_t N,
           typename F>
 hpx::shared_future<void>
-tag_invoke(hpx::for_loop_t,
+tag_dispatch(hpx::for_loop_t,
            hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
            Kokkos::Array<I, N> const &first, Kokkos::Array<I, N> const &last,
            F &&f) {

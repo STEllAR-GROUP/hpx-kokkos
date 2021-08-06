@@ -11,7 +11,8 @@
 #include <hpx/kokkos/detail/logging.hpp>
 #include <hpx/kokkos/policy.hpp>
 
-#include <hpx/algorithm.hpp>
+#include <hpx/local/algorithm.hpp>
+#include <hpx/local/functional.hpp>
 
 #include <Kokkos_Core.hpp>
 
@@ -76,7 +77,7 @@ hpx::shared_future<T> reduce_helper(char const *label,
 
 // Reduce non-range overloads
 template <typename Iter, typename T, typename F>
-T tag_invoke(hpx::reduce_t, hpx::kokkos::kokkos_policy policy, Iter first,
+T tag_dispatch(hpx::reduce_t, hpx::kokkos::kokkos_policy policy, Iter first,
              Iter last, T init, F &&f) {
 
   return detail::reduce_helper(policy.label(), policy.executor().instance(),
@@ -85,7 +86,7 @@ T tag_invoke(hpx::reduce_t, hpx::kokkos::kokkos_policy policy, Iter first,
 }
 
 template <typename Iter, typename T, typename F>
-hpx::shared_future<T> tag_invoke(hpx::reduce_t,
+hpx::shared_future<T> tag_dispatch(hpx::reduce_t,
                                  hpx::kokkos::kokkos_task_policy policy,
                                  Iter first, Iter last, T init, F &&f) {
   return detail::reduce_helper(policy.label(), policy.executor().instance(),
@@ -94,7 +95,7 @@ hpx::shared_future<T> tag_invoke(hpx::reduce_t,
 
 template <typename Executor, typename Parameters, typename Iter, typename T,
           typename F>
-T tag_invoke(hpx::reduce_t,
+T tag_dispatch(hpx::reduce_t,
              hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
              Iter first, Iter last, T init, F &&f) {
 
@@ -106,7 +107,7 @@ T tag_invoke(hpx::reduce_t,
 template <typename Executor, typename Parameters, typename Iter, typename T,
           typename F>
 hpx::shared_future<T>
-tag_invoke(hpx::reduce_t,
+tag_dispatch(hpx::reduce_t,
            hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
            Iter first, Iter last, T init, F &&f) {
   return detail::reduce_helper(policy.label(), policy.executor().instance(),
