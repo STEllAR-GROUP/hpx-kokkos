@@ -20,7 +20,11 @@ jobs:
       run: |
           mkdir -p /tmp/kokkos-develop
           cd /tmp/kokkos-develop
-          git clone https://github.com/kokkos/kokkos.git
+          git clone \
+              --branch hpx-update-deprecations \
+              --single-branch \
+              --depth 1 \
+              https://github.com/msimberg/kokkos.git
           mkdir -p build
           cd build
           cmake \
