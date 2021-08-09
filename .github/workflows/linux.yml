@@ -30,6 +30,7 @@ jobs:
           cmake \
               ../kokkos \
               -GNinja \
+              -DCMAKE_CXX_FLAGS="-Werror" \
               -DCMAKE_BUILD_TYPE=Debug \
               -DKokkos_ENABLE_HPX=ON \
               -DKokkos_ENABLE_HPX_ASYNC_DISPATCH=ON
