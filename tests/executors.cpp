@@ -8,10 +8,10 @@
 
 #include "test.hpp"
 
-#include <hpx/execution.hpp>
-#include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
 #include <hpx/kokkos/detail/polling_helper.hpp>
+#include <hpx/local/execution.hpp>
+#include <hpx/local/init.hpp>
 
 #include <atomic>
 #include <cassert>
@@ -82,7 +82,7 @@ template <typename Executor> void test(Executor &&exec) {
   }
 }
 
-int main(int argc, char *argv[]) {
+int hpx_main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
@@ -96,6 +96,11 @@ int main(int argc, char *argv[]) {
   }
 
   Kokkos::finalize();
+  hpx::local::finalize();
 
   return hpx::kokkos::detail::report_errors();
+}
+
+int main(int argc, char *argv[]) {
+  return hpx::local::init(hpx_main, argc, argv);
 }

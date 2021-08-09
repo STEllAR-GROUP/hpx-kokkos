@@ -13,7 +13,7 @@
 #include <hpx/kokkos/detail/logging.hpp>
 
 #include <hpx/config.hpp>
-#include <hpx/future.hpp>
+#include <hpx/local/future.hpp>
 
 #if defined(HPX_HAVE_COMPUTE)
 #include <hpx/modules/async_cuda.hpp>
