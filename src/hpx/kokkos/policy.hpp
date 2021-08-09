@@ -37,8 +37,7 @@ struct kokkos_task_policy {
 
   constexpr kokkos_task_policy() {}
 
-  kokkos_task_policy
-  operator()(hpx::execution::task_policy_tag) const {
+  kokkos_task_policy operator()(hpx::execution::task_policy_tag) const {
     return *this;
   }
 
@@ -61,7 +60,7 @@ struct kokkos_task_policy {
                 executor_parameters_join<Parameters...>::type>
   typename hpx::parallel::execution::rebind_executor<
       kokkos_task_policy, executor_type, ParametersType>::type
-  with(Parameters &&... params) const {
+  with(Parameters &&...params) const {
     using rebound_type = typename hpx::parallel::execution::rebind_executor<
         kokkos_task_policy, executor_type, ParametersType>::type;
     return rebound_type(executor(), join_executor_parameters(
@@ -122,7 +121,7 @@ struct kokkos_task_policy_shim : kokkos_task_policy {
                 executor_parameters_join<Parameters_...>::type>
   typename hpx::parallel::execution::rebind_executor<
       kokkos_task_policy_shim, executor_type, ParametersType>::type
-  with(Parameters_ &&... params) const {
+  with(Parameters_ &&...params) const {
     using rebound_type = typename hpx::parallel::execution::rebind_executor<
         kokkos_task_policy_shim, executor_type, ParametersType>::type;
     return rebound_type(
@@ -174,8 +173,7 @@ struct kokkos_policy {
 
   constexpr kokkos_policy() {}
 
-  kokkos_task_policy
-  operator()(hpx::execution::task_policy_tag) const {
+  kokkos_task_policy operator()(hpx::execution::task_policy_tag) const {
     return kokkos_task_policy();
   }
 
@@ -198,7 +196,7 @@ struct kokkos_policy {
                 executor_parameters_join<Parameters...>::type>
   typename hpx::parallel::execution::rebind_executor<
       kokkos_policy, executor_type, ParametersType>::type
-  with(Parameters &&... params) const {
+  with(Parameters &&...params) const {
     using rebound_type = typename hpx::parallel::execution::rebind_executor<
         kokkos_policy, executor_type, ParametersType>::type;
     return rebound_type(executor(), join_executor_parameters(
@@ -260,7 +258,7 @@ struct kokkos_policy_shim : kokkos_policy {
                 executor_parameters_join<Parameters_...>::type>
   typename hpx::parallel::execution::rebind_executor<
       kokkos_policy_shim, executor_type, ParametersType>::type
-  with(Parameters_ &&... params) const {
+  with(Parameters_ &&...params) const {
     using rebound_type = typename hpx::parallel::execution::rebind_executor<
         kokkos_policy_shim, executor_type, ParametersType>::type;
     return rebound_type(

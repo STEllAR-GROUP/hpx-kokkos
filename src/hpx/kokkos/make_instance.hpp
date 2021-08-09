@@ -60,4 +60,3 @@ make_independent_execution_space_instance<Kokkos::Experimental::HPX>() {
 } // namespace detail
 } // namespace kokkos
 } // namespace hpx
-

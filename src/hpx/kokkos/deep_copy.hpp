@@ -18,7 +18,7 @@ template <typename ExecutionSpace, typename... Args,
           typename Enable = typename std::enable_if<Kokkos::is_execution_space<
               typename std::decay<ExecutionSpace>::type>::value>::type>
 hpx::shared_future<void> deep_copy_async(ExecutionSpace &&space,
-                                         Args &&... args) {
+                                         Args &&...args) {
   Kokkos::deep_copy(space, std::forward<Args>(args)...);
   return detail::get_future<typename std::decay<ExecutionSpace>::type>::call(
       std::forward<ExecutionSpace>(space));

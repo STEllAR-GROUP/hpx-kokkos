@@ -55,7 +55,7 @@ hpx::shared_future<T> reduce_helper(char const *label,
                                     IterE last, T init, F &&f) {
   Kokkos::View<T,
                reduce_result_space_t<typename std::decay<ExecutionSpace>::type>>
-      result(Kokkos::ViewAllocateWithoutInitializing("reduce_result"));
+      result(Kokkos::view_alloc(Kokkos::WithoutInitializing, "reduce_result"));
 
   return parallel_reduce_async(
              label,
@@ -78,7 +78,6 @@ hpx::shared_future<T> reduce_helper(char const *label,
 template <typename Iter, typename T, typename F>
 T tag_invoke(hpx::reduce_t, hpx::kokkos::kokkos_policy policy, Iter first,
              Iter last, T init, F &&f) {
-
   return detail::reduce_helper(policy.label(), policy.executor().instance(),
                                first, last, init, std::forward<F>(f))
       .get();
@@ -97,7 +96,6 @@ template <typename Executor, typename Parameters, typename Iter, typename T,
 T tag_invoke(hpx::reduce_t,
              hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
              Iter first, Iter last, T init, F &&f) {
-
   return detail::reduce_helper(policy.label(), policy.executor().instance(),
                                first, last, init, std::forward<F>(f))
       .get();
