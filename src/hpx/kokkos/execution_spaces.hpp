@@ -24,7 +24,8 @@ struct is_execution_space_independent<Kokkos::Cuda> : std::true_type {};
 
 #if defined(KOKKOS_ENABLE_HIP)
 template <>
-struct is_execution_space_independent<Kokkos::Experimental::HIP> : std::true_type {};
+struct is_execution_space_independent<Kokkos::Experimental::HIP>
+    : std::true_type {};
 #endif
 
 #if defined(KOKKOS_ENABLE_HPX) && KOKKOS_VERSION >= 30000

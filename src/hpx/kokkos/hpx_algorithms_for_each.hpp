@@ -108,8 +108,8 @@ hpx::shared_future<void> for_each_range_helper(char const *label,
 
 // For each non-range overloads
 template <typename Iter, typename F>
-void tag_dispatch(hpx::for_each_t, hpx::kokkos::kokkos_policy policy, Iter first,
-                Iter last, F &&f) {
+void tag_dispatch(hpx::for_each_t, hpx::kokkos::kokkos_policy policy,
+                  Iter first, Iter last, F &&f) {
 
   detail::for_each_helper(policy.label(), policy.executor().instance(), first,
                           last, std::forward<F>(f))
@@ -118,16 +118,16 @@ void tag_dispatch(hpx::for_each_t, hpx::kokkos::kokkos_policy policy, Iter first
 
 template <typename Iter, typename F>
 hpx::shared_future<void> tag_dispatch(hpx::for_each_t,
-                                    hpx::kokkos::kokkos_task_policy policy,
-                                    Iter first, Iter last, F &&f) {
+                                      hpx::kokkos::kokkos_task_policy policy,
+                                      Iter first, Iter last, F &&f) {
   return detail::for_each_helper(policy.label(), policy.executor().instance(),
                                  first, last, f);
 }
 
 template <typename Executor, typename Parameters, typename Iter, typename F>
 void tag_dispatch(hpx::for_each_t,
-                hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
-                Iter first, Iter last, F &&f) {
+                  hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
+                  Iter first, Iter last, F &&f) {
 
   detail::for_each_helper(policy.label(), policy.executor().instance(), first,
                           last, std::forward<F>(f))
@@ -137,8 +137,8 @@ void tag_dispatch(hpx::for_each_t,
 template <typename Executor, typename Parameters, typename Iter, typename F>
 hpx::shared_future<void>
 tag_dispatch(hpx::for_each_t,
-           hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
-           Iter first, Iter last, F &&f) {
+             hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
+             Iter first, Iter last, F &&f) {
   return detail::for_each_helper(policy.label(), policy.executor().instance(),
                                  first, last, f);
 }
@@ -146,7 +146,7 @@ tag_dispatch(hpx::for_each_t,
 // For each range overloads for a range
 template <typename Range, typename F>
 void tag_dispatch(hpx::ranges::for_each_t, hpx::kokkos::kokkos_policy policy,
-                Range &&r, F &&f) {
+                  Range &&r, F &&f) {
 
   detail::for_each_range_helper(policy.label(), policy.executor().instance(),
                                 std::forward<Range>(r), std::forward<F>(f))
@@ -155,8 +155,8 @@ void tag_dispatch(hpx::ranges::for_each_t, hpx::kokkos::kokkos_policy policy,
 
 template <typename Executor, typename Parameters, typename Range, typename F>
 void tag_dispatch(hpx::ranges::for_each_t,
-                hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
-                Range &&r, F &&f) {
+                  hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
+                  Range &&r, F &&f) {
 
   detail::for_each_range_helper(policy.label(), policy.executor().instance(),
                                 std::forward<Range>(r), std::forward<F>(f));
@@ -164,8 +164,8 @@ void tag_dispatch(hpx::ranges::for_each_t,
 
 template <typename Range, typename F>
 hpx::shared_future<void> tag_dispatch(hpx::ranges::for_each_t,
-                                    hpx::kokkos::kokkos_task_policy policy,
-                                    Range &&r, F &&f) {
+                                      hpx::kokkos::kokkos_task_policy policy,
+                                      Range &&r, F &&f) {
 
   return detail::for_each_range_helper(
       policy.label(), policy.executor().instance(), std::forward<Range>(r),
@@ -175,8 +175,8 @@ hpx::shared_future<void> tag_dispatch(hpx::ranges::for_each_t,
 template <typename Executor, typename Parameters, typename Range, typename F>
 hpx::shared_future<void>
 tag_dispatch(hpx::ranges::for_each_t,
-           hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
-           Range &&r, F &&f) {
+             hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
+             Range &&r, F &&f) {
 
   return detail::for_each_range_helper(
       policy.label(), policy.executor().instance(), std::forward<Range>(r),

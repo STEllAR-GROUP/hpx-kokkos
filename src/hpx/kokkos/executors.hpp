@@ -53,7 +53,7 @@ public:
 
   execution_space instance() const { return inst; }
 
-  template <typename F, typename... Ts> void post(F &&f, Ts &&... ts) {
+  template <typename F, typename... Ts> void post(F &&f, Ts &&...ts) {
     auto ts_pack = hpx::make_tuple(std::forward<Ts>(ts)...);
     parallel_for_async(
         Kokkos::Experimental::require(
@@ -63,7 +63,7 @@ public:
   }
 
   template <typename F, typename... Ts>
-  hpx::shared_future<void> async_execute(F &&f, Ts &&... ts) {
+  hpx::shared_future<void> async_execute(F &&f, Ts &&...ts) {
     auto ts_pack = hpx::make_tuple(std::forward<Ts>(ts)...);
     return parallel_for_async(
         Kokkos::Experimental::require(
@@ -74,7 +74,7 @@ public:
 
   template <typename F, typename S, typename... Ts>
   std::vector<hpx::shared_future<void>> bulk_async_execute(F &&f, S const &s,
-                                                           Ts &&... ts) {
+                                                           Ts &&...ts) {
     HPX_KOKKOS_DETAIL_LOG("bulk_async_execute");
     auto ts_pack = hpx::make_tuple(std::forward<Ts>(ts)...);
     auto size = hpx::util::size(s);

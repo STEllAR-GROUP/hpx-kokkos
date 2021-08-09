@@ -56,7 +56,7 @@ hpx::shared_future<T> reduce_helper(char const *label,
                                     IterE last, T init, F &&f) {
   Kokkos::View<T,
                reduce_result_space_t<typename std::decay<ExecutionSpace>::type>>
-      result(Kokkos::ViewAllocateWithoutInitializing("reduce_result"));
+      result(Kokkos::view_alloc(Kokkos::WithoutInitializing, "reduce_result"));
 
   return parallel_reduce_async(
              label,
@@ -78,7 +78,7 @@ hpx::shared_future<T> reduce_helper(char const *label,
 // Reduce non-range overloads
 template <typename Iter, typename T, typename F>
 T tag_dispatch(hpx::reduce_t, hpx::kokkos::kokkos_policy policy, Iter first,
-             Iter last, T init, F &&f) {
+               Iter last, T init, F &&f) {
 
   return detail::reduce_helper(policy.label(), policy.executor().instance(),
                                first, last, init, std::forward<F>(f))
@@ -87,8 +87,8 @@ T tag_dispatch(hpx::reduce_t, hpx::kokkos::kokkos_policy policy, Iter first,
 
 template <typename Iter, typename T, typename F>
 hpx::shared_future<T> tag_dispatch(hpx::reduce_t,
-                                 hpx::kokkos::kokkos_task_policy policy,
-                                 Iter first, Iter last, T init, F &&f) {
+                                   hpx::kokkos::kokkos_task_policy policy,
+                                   Iter first, Iter last, T init, F &&f) {
   return detail::reduce_helper(policy.label(), policy.executor().instance(),
                                first, last, init, f);
 }
@@ -96,8 +96,8 @@ hpx::shared_future<T> tag_dispatch(hpx::reduce_t,
 template <typename Executor, typename Parameters, typename Iter, typename T,
           typename F>
 T tag_dispatch(hpx::reduce_t,
-             hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
-             Iter first, Iter last, T init, F &&f) {
+               hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
+               Iter first, Iter last, T init, F &&f) {
 
   return detail::reduce_helper(policy.label(), policy.executor().instance(),
                                first, last, init, std::forward<F>(f))
@@ -108,8 +108,8 @@ template <typename Executor, typename Parameters, typename Iter, typename T,
           typename F>
 hpx::shared_future<T>
 tag_dispatch(hpx::reduce_t,
-           hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
-           Iter first, Iter last, T init, F &&f) {
+             hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
+             Iter first, Iter last, T init, F &&f) {
   return detail::reduce_helper(policy.label(), policy.executor().instance(),
                                first, last, init, f);
 }
