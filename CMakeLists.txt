@@ -13,8 +13,7 @@ find_package(Kokkos 3.4.99 REQUIRED)
 
 # Check that Kokkos and HPX options are consistent.
 if(Kokkos_ENABLE_CUDA)
-  kokkos_check(OPTIONS CUDA_LAMBDA)
-  kokkos_check(OPTIONS CUDA_CONSTEXPR)
+  kokkos_check(OPTIONS CUDA_LAMBDA CUDA_LAMBDA)
   if(NOT HPX_WITH_CUDA)
     message(FATAL_ERROR "Kokkos was built with CUDA support, HPX was not")
   endif()
@@ -24,8 +23,7 @@ else()
   endif()
 endif()
 
-kokkos_check(DEVICES HPX)
-kokkos_check(OPTIONS HPX_ASYNC_DISPATCH)
+kokkos_check(DEVICES HPX OPTIONS HPX_ASYNC_DISPATCH)
 
 # Main targets provided by this project
 add_library(hpx_kokkos INTERFACE)
