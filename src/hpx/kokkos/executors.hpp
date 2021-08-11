@@ -80,8 +80,7 @@ public:
     auto size = hpx::util::size(s);
     auto b = hpx::util::begin(s);
 
-    std::vector<hpx::shared_future<void>> result;
-    result.push_back(parallel_for_async(
+    return {parallel_for_async(
         Kokkos::Experimental::require(
             Kokkos::RangePolicy<ExecutionSpace>(inst, 0, size),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
@@ -91,9 +90,7 @@ public:
               typename hpx::util::detail::fused_index_pack<decltype(
                   ts_pack)>::type;
           detail::invoke_helper(index_pack_type{}, f, *(b + i), ts_pack);
-        }));
-
-    return result;
+        })};
   }
 
   template <typename Parameters, typename F>
