@@ -202,6 +202,7 @@ int hpx_main(int argc, char *argv[]) {
 
   {
     hpx::kokkos::detail::polling_helper p;
+    (void)p;
 
     test(Kokkos::DefaultExecutionSpace(), n, repetitions);
     if (!std::is_same<Kokkos::DefaultExecutionSpace,

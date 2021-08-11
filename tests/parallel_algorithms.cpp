@@ -458,6 +458,7 @@ int hpx_main(int argc, char *argv[]) {
 
   {
     hpx::kokkos::detail::polling_helper p;
+    (void)p;
 
     test(hpx::kokkos::default_executor{});
     if (!std::is_same<hpx::kokkos::default_executor,
