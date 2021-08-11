@@ -110,6 +110,7 @@ int main(int argc, char *argv[]) {
 
   {
     hpx::kokkos::detail::polling_helper p;
+    (void)p;
 
     test(Kokkos::DefaultExecutionSpace{});
     if (!std::is_same<Kokkos::DefaultExecutionSpace,
