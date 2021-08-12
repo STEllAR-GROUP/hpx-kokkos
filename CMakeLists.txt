@@ -17,6 +17,8 @@ find_package(HPX 1.7.0 REQUIRED)
 find_package(Kokkos 3.4.99 REQUIRED)
 
 # Check that Kokkos and HPX options are consistent.
+kokkos_check(DEVICES HPX OPTIONS HPX_ASYNC_DISPATCH)
+
 if(Kokkos_ENABLE_CUDA)
   kokkos_check(OPTIONS CUDA_LAMBDA CUDA_LAMBDA)
   if(NOT HPX_WITH_CUDA)
@@ -28,7 +30,19 @@ else()
   endif()
 endif()
 
-kokkos_check(DEVICES HPX OPTIONS HPX_ASYNC_DISPATCH)
+if(Kokkos_ENABLE_HIP)
+  if(NOT HPX_WITH_HIP)
+    message(FATAL_ERROR "Kokkos was built with HIP support, HPX was not")
+  endif()
+else()
+  if(HPX_WITH_HIP)
+    message(FATAL_ERROR "HPX was built with HIP support, Kokkos was not")
+  endif()
+endif()
+
+if(HPX_WITH_HIP OR Kokkos_ENABLE_HIP)
+  message(WARNING "HIP support in experimental in HPX, Kokkos, and HPX-Kokkos")
+endif()
 
 # Main targets provided by this project
 add_library(hpx_kokkos INTERFACE)
