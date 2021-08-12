@@ -72,7 +72,7 @@ struct kokkos_task_policy {
     p.label_ = l;
     return p;
   }
-  char const *label() { return label_; }
+  char const *label() const { return label_; }
 
   executor_type executor() const { return executor_type{}; }
 
@@ -132,7 +132,7 @@ struct kokkos_task_policy_shim : kokkos_task_policy {
     label_ = l;
     return *this;
   }
-  char const *label() { return label_; }
+  char const *label() const { return label_; }
 
   Executor &executor() { return exec_; }
 
@@ -208,7 +208,7 @@ struct kokkos_policy {
     p.label_ = l;
     return p;
   }
-  char const *label() { return label_; }
+  char const *label() const { return label_; }
 
 public:
   executor_type executor() const { return executor_type{}; }
@@ -269,7 +269,7 @@ struct kokkos_policy_shim : kokkos_policy {
     label_ = l;
     return *this;
   }
-  char const *label() { return label_; }
+  char const *label() const { return label_; }
 
   Executor &executor() { return exec_; }
 
