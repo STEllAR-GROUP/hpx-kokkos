@@ -76,42 +76,14 @@ hpx::shared_future<T> reduce_helper(char const *label,
 } // namespace detail
 
 // Reduce non-range overloads
-template <typename Iter, typename T, typename F>
-T tag_dispatch(hpx::reduce_t, hpx::kokkos::kokkos_policy policy, Iter first,
-               Iter last, T init, F &&f) {
-
-  return detail::reduce_helper(policy.label(), policy.executor().instance(),
-                               first, last, init, std::forward<F>(f))
-      .get();
-}
-
-template <typename Iter, typename T, typename F>
-hpx::shared_future<T> tag_dispatch(hpx::reduce_t,
-                                   hpx::kokkos::kokkos_task_policy policy,
-                                   Iter first, Iter last, T init, F &&f) {
-  return detail::reduce_helper(policy.label(), policy.executor().instance(),
-                               first, last, init, f);
-}
-
-template <typename Executor, typename Parameters, typename Iter, typename T,
-          typename F>
-T tag_dispatch(hpx::reduce_t,
-               hpx::kokkos::kokkos_policy_shim<Executor, Parameters> policy,
-               Iter first, Iter last, T init, F &&f) {
-
-  return detail::reduce_helper(policy.label(), policy.executor().instance(),
-                               first, last, init, std::forward<F>(f))
-      .get();
-}
-
-template <typename Executor, typename Parameters, typename Iter, typename T,
-          typename F>
-hpx::shared_future<T>
-tag_dispatch(hpx::reduce_t,
-             hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters> policy,
-             Iter first, Iter last, T init, F &&f) {
-  return detail::reduce_helper(policy.label(), policy.executor().instance(),
-                               first, last, init, f);
+template <typename ExecutionPolicy, typename Iter, typename T, typename F,
+          typename Enable = std::enable_if_t<
+              is_kokkos_execution_policy<std::decay_t<ExecutionPolicy>>::value>>
+auto tag_dispatch(hpx::reduce_t, ExecutionPolicy &&policy, Iter first,
+                  Iter last, T init, F &&f) {
+  return detail::get_policy_result<ExecutionPolicy>::call(
+      detail::reduce_helper(policy.label(), policy.executor().instance(), first,
+                            last, init, std::forward<F>(f)));
 }
 } // namespace kokkos
 } // namespace hpx

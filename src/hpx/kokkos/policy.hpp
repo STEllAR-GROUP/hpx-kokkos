@@ -319,6 +319,38 @@ template <typename Executor, typename Parameters>
 struct is_kokkos_execution_policy<
     hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters>>
     : std::true_type {};
+
+namespace detail {
+template <typename ExecutionPolicy, typename Enable = void>
+struct get_policy_result;
+
+template <typename ExecutionPolicy>
+struct get_policy_result<ExecutionPolicy,
+                         std::enable_if_t<is_async_execution_policy<
+                             std::decay_t<ExecutionPolicy>>::value>> {
+  static_assert(
+      is_kokkos_execution_policy<std::decay_t<ExecutionPolicy>>::value,
+      "get_policy_result can only be used with Kokkos execution policies");
+
+  template <typename Future>
+  static constexpr decltype(auto) call(Future &&future) {
+    return std::forward<Future>(future);
+  }
+};
+
+template <typename ExecutionPolicy>
+struct get_policy_result<ExecutionPolicy,
+                         std::enable_if_t<!is_async_execution_policy<
+                             std::decay_t<ExecutionPolicy>>::value>> {
+  static_assert(
+      is_kokkos_execution_policy<std::decay_t<ExecutionPolicy>>::value,
+      "get_policy_result can only be used with Kokkos execution policies");
+
+  template <typename Future> static constexpr auto call(Future &&future) {
+    return std::forward<Future>(future).get();
+  }
+};
+} // namespace detail
 } // namespace kokkos
 } // namespace hpx
 
