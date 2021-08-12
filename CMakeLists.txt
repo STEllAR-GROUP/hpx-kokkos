@@ -3,17 +3,24 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.17)
 
 project(HPXKokkos CXX)
 
+set(HPX_KOKKOS_VERSION_MAJOR 0)
+set(HPX_KOKKOS_VERSION_MINOR 0)
+set(HPX_KOKKOS_VERSION_PATCH 1)
+set(HPX_KOKKOS_VERSION_STRING "${HPX_KOKKOS_VERSION_MAJOR}.${HPX_KOKKOS_VERSION_MINOR}.${HPX_KOKKOS_VERSION_PATCH}.")
+
 # Dependencies
-find_package(HPX 1.6.0 REQUIRED)
-find_package(Kokkos 3.2.0 REQUIRED)
+find_package(HPX 1.7.0 REQUIRED)
+find_package(Kokkos 3.4.99 REQUIRED)
 
 # Check that Kokkos and HPX options are consistent.
+kokkos_check(DEVICES HPX OPTIONS HPX_ASYNC_DISPATCH)
+
 if(Kokkos_ENABLE_CUDA)
-  kokkos_check(OPTIONS CUDA_LAMBDA)
+  kokkos_check(OPTIONS CUDA_LAMBDA CUDA_LAMBDA)
   if(NOT HPX_WITH_CUDA)
     message(FATAL_ERROR "Kokkos was built with CUDA support, HPX was not")
   endif()
@@ -23,8 +30,19 @@ else()
   endif()
 endif()
 
-kokkos_check(DEVICES HPX)
-kokkos_check(OPTIONS HPX_ASYNC_DISPATCH)
+if(Kokkos_ENABLE_HIP)
+  if(NOT HPX_WITH_HIP)
+    message(FATAL_ERROR "Kokkos was built with HIP support, HPX was not")
+  endif()
+else()
+  if(HPX_WITH_HIP)
+    message(FATAL_ERROR "HPX was built with HIP support, Kokkos was not")
+  endif()
+endif()
+
+if(HPX_WITH_HIP OR Kokkos_ENABLE_HIP)
+  message(WARNING "HIP support in experimental in HPX, Kokkos, and HPX-Kokkos")
+endif()
 
 # Main targets provided by this project
 add_library(hpx_kokkos INTERFACE)

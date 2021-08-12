@@ -12,8 +12,8 @@
 #include <hpx/kokkos/detail/logging.hpp>
 #include <hpx/kokkos/executors.hpp>
 
-#include <hpx/execution.hpp>
-#include <hpx/future.hpp>
+#include <hpx/local/execution.hpp>
+#include <hpx/local/future.hpp>
 
 namespace hpx {
 namespace kokkos {
@@ -37,8 +37,7 @@ struct kokkos_task_policy {
 
   constexpr kokkos_task_policy() {}
 
-  kokkos_task_policy
-  operator()(hpx::execution::task_policy_tag) const {
+  kokkos_task_policy operator()(hpx::execution::task_policy_tag) const {
     return *this;
   }
 
@@ -61,7 +60,7 @@ struct kokkos_task_policy {
                 executor_parameters_join<Parameters...>::type>
   typename hpx::parallel::execution::rebind_executor<
       kokkos_task_policy, executor_type, ParametersType>::type
-  with(Parameters &&... params) const {
+  with(Parameters &&...params) const {
     using rebound_type = typename hpx::parallel::execution::rebind_executor<
         kokkos_task_policy, executor_type, ParametersType>::type;
     return rebound_type(executor(), join_executor_parameters(
@@ -73,7 +72,7 @@ struct kokkos_task_policy {
     p.label_ = l;
     return p;
   }
-  char const *label() { return label_; }
+  char const *label() const { return label_; }
 
   executor_type executor() const { return executor_type{}; }
 
@@ -122,7 +121,7 @@ struct kokkos_task_policy_shim : kokkos_task_policy {
                 executor_parameters_join<Parameters_...>::type>
   typename hpx::parallel::execution::rebind_executor<
       kokkos_task_policy_shim, executor_type, ParametersType>::type
-  with(Parameters_ &&... params) const {
+  with(Parameters_ &&...params) const {
     using rebound_type = typename hpx::parallel::execution::rebind_executor<
         kokkos_task_policy_shim, executor_type, ParametersType>::type;
     return rebound_type(
@@ -133,7 +132,7 @@ struct kokkos_task_policy_shim : kokkos_task_policy {
     label_ = l;
     return *this;
   }
-  char const *label() { return label_; }
+  char const *label() const { return label_; }
 
   Executor &executor() { return exec_; }
 
@@ -174,8 +173,7 @@ struct kokkos_policy {
 
   constexpr kokkos_policy() {}
 
-  kokkos_task_policy
-  operator()(hpx::execution::task_policy_tag) const {
+  kokkos_task_policy operator()(hpx::execution::task_policy_tag) const {
     return kokkos_task_policy();
   }
 
@@ -198,7 +196,7 @@ struct kokkos_policy {
                 executor_parameters_join<Parameters...>::type>
   typename hpx::parallel::execution::rebind_executor<
       kokkos_policy, executor_type, ParametersType>::type
-  with(Parameters &&... params) const {
+  with(Parameters &&...params) const {
     using rebound_type = typename hpx::parallel::execution::rebind_executor<
         kokkos_policy, executor_type, ParametersType>::type;
     return rebound_type(executor(), join_executor_parameters(
@@ -210,7 +208,7 @@ struct kokkos_policy {
     p.label_ = l;
     return p;
   }
-  char const *label() { return label_; }
+  char const *label() const { return label_; }
 
 public:
   executor_type executor() const { return executor_type{}; }
@@ -260,7 +258,7 @@ struct kokkos_policy_shim : kokkos_policy {
                 executor_parameters_join<Parameters_...>::type>
   typename hpx::parallel::execution::rebind_executor<
       kokkos_policy_shim, executor_type, ParametersType>::type
-  with(Parameters_ &&... params) const {
+  with(Parameters_ &&...params) const {
     using rebound_type = typename hpx::parallel::execution::rebind_executor<
         kokkos_policy_shim, executor_type, ParametersType>::type;
     return rebound_type(
@@ -271,7 +269,7 @@ struct kokkos_policy_shim : kokkos_policy {
     label_ = l;
     return *this;
   }
-  char const *label() { return label_; }
+  char const *label() const { return label_; }
 
   Executor &executor() { return exec_; }
 
@@ -321,6 +319,38 @@ template <typename Executor, typename Parameters>
 struct is_kokkos_execution_policy<
     hpx::kokkos::kokkos_task_policy_shim<Executor, Parameters>>
     : std::true_type {};
+
+namespace detail {
+template <typename ExecutionPolicy, typename Enable = void>
+struct get_policy_result;
+
+template <typename ExecutionPolicy>
+struct get_policy_result<ExecutionPolicy,
+                         std::enable_if_t<is_async_execution_policy<
+                             std::decay_t<ExecutionPolicy>>::value>> {
+  static_assert(
+      is_kokkos_execution_policy<std::decay_t<ExecutionPolicy>>::value,
+      "get_policy_result can only be used with Kokkos execution policies");
+
+  template <typename Future>
+  static constexpr decltype(auto) call(Future &&future) {
+    return std::forward<Future>(future);
+  }
+};
+
+template <typename ExecutionPolicy>
+struct get_policy_result<ExecutionPolicy,
+                         std::enable_if_t<!is_async_execution_policy<
+                             std::decay_t<ExecutionPolicy>>::value>> {
+  static_assert(
+      is_kokkos_execution_policy<std::decay_t<ExecutionPolicy>>::value,
+      "get_policy_result can only be used with Kokkos execution policies");
+
+  template <typename Future> static constexpr auto call(Future &&future) {
+    return std::forward<Future>(future).get();
+  }
+};
+} // namespace detail
 } // namespace kokkos
 } // namespace hpx
 

@@ -13,9 +13,9 @@
 #include <hpx/kokkos/kokkos_algorithms.hpp>
 #include <hpx/kokkos/make_instance.hpp>
 
-#include <hpx/algorithm.hpp>
-#include <hpx/numeric.hpp>
-#include <hpx/tuple.hpp>
+#include <hpx/local/algorithm.hpp>
+#include <hpx/local/numeric.hpp>
+#include <hpx/local/tuple.hpp>
 
 #include <Kokkos_Core.hpp>
 
@@ -53,7 +53,7 @@ public:
 
   execution_space instance() const { return inst; }
 
-  template <typename F, typename... Ts> void post(F &&f, Ts &&... ts) {
+  template <typename F, typename... Ts> void post(F &&f, Ts &&...ts) {
     auto ts_pack = hpx::make_tuple(std::forward<Ts>(ts)...);
     parallel_for_async(
         Kokkos::Experimental::require(
@@ -63,7 +63,7 @@ public:
   }
 
   template <typename F, typename... Ts>
-  hpx::shared_future<void> async_execute(F &&f, Ts &&... ts) {
+  hpx::shared_future<void> async_execute(F &&f, Ts &&...ts) {
     auto ts_pack = hpx::make_tuple(std::forward<Ts>(ts)...);
     return parallel_for_async(
         Kokkos::Experimental::require(
@@ -74,14 +74,13 @@ public:
 
   template <typename F, typename S, typename... Ts>
   std::vector<hpx::shared_future<void>> bulk_async_execute(F &&f, S const &s,
-                                                           Ts &&... ts) {
+                                                           Ts &&...ts) {
     HPX_KOKKOS_DETAIL_LOG("bulk_async_execute");
     auto ts_pack = hpx::make_tuple(std::forward<Ts>(ts)...);
     auto size = hpx::util::size(s);
     auto b = hpx::util::begin(s);
 
-    std::vector<hpx::shared_future<void>> result;
-    result.push_back(parallel_for_async(
+    return {parallel_for_async(
         Kokkos::Experimental::require(
             Kokkos::RangePolicy<ExecutionSpace>(inst, 0, size),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
@@ -91,9 +90,7 @@ public:
               typename hpx::util::detail::fused_index_pack<decltype(
                   ts_pack)>::type;
           detail::invoke_helper(index_pack_type{}, f, *(b + i), ts_pack);
-        }));
-
-    return result;
+        })};
   }
 
   template <typename Parameters, typename F>

@@ -12,11 +12,11 @@
 
 #include "test.hpp"
 
-#include <hpx/algorithm.hpp>
-#include <hpx/chrono.hpp>
 #include <hpx/kokkos.hpp>
 #include <hpx/kokkos/detail/polling_helper.hpp>
-#include <hpx/wrap_main.hpp>
+#include <hpx/local/algorithm.hpp>
+#include <hpx/local/chrono.hpp>
+#include <hpx/local/init.hpp>
 
 template <typename ExecutionSpace>
 void test_kokkos_plain(ExecutionSpace &&inst, int const n,
@@ -194,7 +194,7 @@ void test_default(int const n, int const repetitions) {
   test_hpx_async(hpx::kokkos::executor<>(), n, repetitions);
 }
 
-int main(int argc, char *argv[]) {
+int hpx_main(int argc, char *argv[]) {
   int const n = 10000000;
   int const repetitions = 10;
 
@@ -202,6 +202,7 @@ int main(int argc, char *argv[]) {
 
   {
     hpx::kokkos::detail::polling_helper p;
+    (void)p;
 
     test(Kokkos::DefaultExecutionSpace(), n, repetitions);
     if (!std::is_same<Kokkos::DefaultExecutionSpace,
@@ -212,16 +213,11 @@ int main(int argc, char *argv[]) {
   }
 
   Kokkos::finalize();
+  hpx::local::finalize();
 
   return hpx::kokkos::detail::report_errors();
 }
 
-void f(int n)
-{
-    Kokkos::View<int*> a("a", n);
-    hpx::kokkos::default_executor executor(hpx::kokkos::execution_space_mode::independent);
-    auto policy = hpx::kokkos::kok(hpx::execution::task).on(executor);
-
-    hpx::shared_future<void> f = hpx::for_loop(policy, 0, n, KOKKOS_LAMBDA(int i) { a(i) = i; });
-    f.wait();
+int main(int argc, char *argv[]) {
+  return hpx::local::init(hpx_main, argc, argv);
 }

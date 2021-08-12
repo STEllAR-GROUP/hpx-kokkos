@@ -5,12 +5,13 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ///////////////////////////////////////////////////////////////////////////////
 
-/// \file Forwarding header. Includes all Kokkos helper functionality. Typically
-/// applications should include this header only.
+/// \file Forwarding header. Includes all Kokkos helper functionality.
+/// Applications should include this header only.
 
 #pragma once
 
 #include <hpx/kokkos/deep_copy.hpp>
+#include <hpx/kokkos/detail/version.hpp>
 #include <hpx/kokkos/execution_spaces.hpp>
 #include <hpx/kokkos/executors.hpp>
 #include <hpx/kokkos/future.hpp>

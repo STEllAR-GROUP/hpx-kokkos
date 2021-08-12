@@ -1,5 +1,9 @@
 # HPX/Kokkos interoperability library
 
+WARNING: This commit currently only works with [this
+branch](https://github.com/msimberg/kokkos/tree/hpx-update-deprecations). The
+branch is due for upstreaming to Kokkos.
+
 WARNING: This repo is work in progress and should not be relied on for
 anything. Please read the [known limitations](#known-limitations).
 

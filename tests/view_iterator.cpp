@@ -8,10 +8,10 @@
 
 #include "test.hpp"
 
-#include <hpx/algorithm.hpp>
-#include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
 #include <hpx/kokkos/detail/polling_helper.hpp>
+#include <hpx/local/algorithm.hpp>
+#include <hpx/local/init.hpp>
 
 template <typename Executor> void test_for_each(Executor &&exec) {
   int const n = 43;
@@ -50,8 +50,8 @@ template <typename Executor> void test_for_each(Executor &&exec) {
   Kokkos::deep_copy(for_each_result, for_each_result_host);
 
   auto f = hpx::for_each(
-      hpx::kokkos::kok(hpx::execution::task).on(exec),
-      for_each_index.data(), for_each_index.data() + for_each_result.size(),
+      hpx::kokkos::kok(hpx::execution::task).on(exec), for_each_index.data(),
+      for_each_index.data() + for_each_result.size(),
       KOKKOS_LAMBDA(int i) { for_each_result(i) = i; });
   f.get();
   Kokkos::deep_copy(for_each_result_host, for_each_result);
@@ -62,11 +62,12 @@ template <typename Executor> void test_for_each(Executor &&exec) {
 
 template <typename Executor> void test(Executor &&exec) { test_for_each(exec); }
 
-int main(int argc, char *argv[]) {
+int hpx_main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
     hpx::kokkos::detail::polling_helper p;
+    (void)p;
 
     test(hpx::kokkos::default_executor{});
     if (!std::is_same<hpx::kokkos::default_executor,
@@ -76,6 +77,11 @@ int main(int argc, char *argv[]) {
   }
 
   Kokkos::finalize();
+  hpx::local::finalize();
 
   return hpx::kokkos::detail::report_errors();
+}
+
+int main(int argc, char *argv[]) {
+  return hpx::local::init(hpx_main, argc, argv);
 }

@@ -9,10 +9,15 @@
 
 #include "test.hpp"
 
-#include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
+#include <hpx/local/init.hpp>
+
+int hpx_main(int argc, char *argv[]) {
+  HPX_KOKKOS_DETAIL_TEST(true);
+  hpx::local::finalize();
+  return hpx::kokkos::detail::report_errors();
+}
 
 int main(int argc, char *argv[]) {
-  HPX_KOKKOS_DETAIL_TEST(true);
-  return hpx::kokkos::detail::report_errors();
+  return hpx::local::init(hpx_main, argc, argv);
 }
