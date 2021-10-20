@@ -7,7 +7,7 @@
 
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
-set(CTEST_PROJECT_NAME "HPX-Kokkos")
+set(CTEST_PROJECT_NAME "HPXKokkos")
 set(CTEST_SUBMIT_URL "https://cdash.cscs.ch/submit.php?project=${CTEST_PROJECT_NAME}")
 set(CTEST_TEST_TIMEOUT 300)
 set(CTEST_BUILD_PARALLELISM 20)
