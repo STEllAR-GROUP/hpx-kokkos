@@ -32,10 +32,13 @@ int report_errors() {
   if (tests_done == 0) {
     std::cerr << "No tests run. Did you forget to add tests?" << std::endl;
     return 1;
+  } else if (tests_failed == 0) {
+    std::cerr << "All tests passed (" << tests_done << " tests run).";
+    return 0;
   } else {
     std::cerr << tests_failed << "/" << tests_done << " test"
               << (tests_done == 1 ? "" : "s") << " failed." << std::endl;
-    return tests_failed > 0;
+    return 1;
   }
 }
 } // namespace detail
