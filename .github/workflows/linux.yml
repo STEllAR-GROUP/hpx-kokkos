@@ -11,22 +11,44 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: stellargroup/hpx:dev
+    container: stellargroup/build_env:latest
 
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
       shell: bash
       run: |
-          mkdir -p /tmp/kokkos-develop
-          cd /tmp/kokkos-develop
-          git clone https://github.com/kokkos/kokkos.git
+          mkdir -p /tmp/hpx
+          cd /tmp/hpx
+          git clone \
+              --branch 1.6.0 \
+              --single-branch \
+              --depth 1 \
+              https://github.com/STEllAR-GROUP/hpx.git
+          mkdir -p build
+          cd build
+          cmake \
+              ../hpx \
+              -GNinja \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DHPX_WITH_UNITY_BUILD=ON \
+              -DHPX_WITH_MALLOC=system \
+              -DHPX_WITH_EXAMPLES=OFF \
+              -DHPX_WITH_NETWORKING=OFF
+          ninja install
+
+          mkdir -p /tmp/kokkos
+          cd /tmp/kokkos
+          git clone \
+              --branch 3.5.00 \
+              --single-branch \
+              --depth 1 \
+              https://github.com/kokkos/kokkos.git
           mkdir -p build
           cd build
           cmake \
               ../kokkos \
               -GNinja \
-              -DCMAKE_CXX_FLAGS="-Werror" \
               -DCMAKE_BUILD_TYPE=Debug \
               -DKokkos_ENABLE_HPX=ON \
               -DKokkos_ENABLE_HPX_ASYNC_DISPATCH=ON
@@ -38,6 +60,7 @@ jobs:
               . \
               -Bbuild \
               -GNinja \
+              -DCMAKE_CXX_FLAGS="-Werror" \
               -DCMAKE_BUILD_TYPE=Debug \
               -DHPX_KOKKOS_ENABLE_TESTS=ON
     - name: Build
