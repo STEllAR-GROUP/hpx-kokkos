@@ -9,7 +9,7 @@ export CXX_STD="14"
 
 module load daint-gpu
 module switch PrgEnv-cray PrgEnv-gnu
-module load cudatoolkit
+module load cudatoolkit/11.2.0_3.39-2.1__gf93aa1c
 module load Boost/1.78.0-CrayGNU-21.09
 module load hwloc/2.4.1
 spack load cmake@3.18.6
