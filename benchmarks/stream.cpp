@@ -285,7 +285,7 @@ void test_stream_kokkos_async_future(std::string const &label, view_type a,
 
 // Synchronous HPX for_loop.
 template <typename Step> void test_stream_hpx_impl(Step step) {
-  hpx::for_loop(hpx::kokkos::kok, 0, step.a.extent(0), step);
+  hpx::experimental::for_loop(hpx::kokkos::kok, 0, step.a.extent(0), step);
 }
 
 void test_stream_hpx(std::string const &label, view_type a, view_type b,
@@ -298,8 +298,8 @@ void test_stream_hpx(std::string const &label, view_type a, view_type b,
 
 // Asynchronous HPX for_loop.
 template <typename Step> void test_stream_hpx_future_impl(Step step) {
-  hpx::for_loop(hpx::kokkos::kok(hpx::execution::task), 0, step.a.extent(0),
-                step)
+  hpx::experimental::for_loop(hpx::kokkos::kok(hpx::execution::task), 0,
+                              step.a.extent(0), step)
       .get();
 }
 
@@ -356,7 +356,7 @@ int hpx_main(int argc, char *argv[]) {
     hpx::kokkos::detail::polling_helper p;
 
     print_header();
-    for (int size = 1024; size <= (1024 << 17); size *= 2) {
+    for (int size = 1024; size <= (1024 << 11); size *= 2) {
       test_stream(10, size);
     }
   }

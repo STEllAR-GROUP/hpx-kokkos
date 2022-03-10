@@ -121,9 +121,10 @@ prioritize getting it fixed for you.
   with other execution spaces always block and return a ready future (where
   appropriate).
 - Not all HPX parallel algorithms can be used with the Kokkos executors.
-  Currently the only available algorithms are `hpx::for_each`, `hpx::for_loop`,
-  and `hpx::reduce`. `hpx::for_loop` only supports integer ranges (no
-  iterators) and no induction or reduction objects.
+  Currently the only available algorithms are `hpx::for_each`,
+  `hpx::experimental::for_loop`, and `hpx::reduce`.
+  `hpx::experimental::for_loop` only supports integer ranges (no iterators) and
+  no induction or reduction objects.
 - `Kokkos::View` construction and destruction (when reference count goes to
   zero) are generally blocking operations and this library does not currently
   try to solve this problem. Workarounds are: create all required views upfront
