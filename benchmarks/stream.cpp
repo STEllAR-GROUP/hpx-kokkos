@@ -10,11 +10,11 @@
 // https://www.cs.virginia.edu/stream/ref.html
 
 #include <Kokkos_Core.hpp>
-#include <hpx/algorithm.hpp>
-#include <hpx/chrono.hpp>
-#include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
 #include <hpx/kokkos/detail/polling_helper.hpp>
+#include <hpx/local/algorithm.hpp>
+#include <hpx/local/chrono.hpp>
+#include <hpx/local/init.hpp>
 
 using elem_type = double;
 using view_type = Kokkos::View<elem_type *>;
@@ -322,8 +322,6 @@ void test_stream(int repetitions, int size) {
   host_view_type bh = Kokkos::create_mirror_view(b);
   host_view_type ch = Kokkos::create_mirror_view(c);
 
-  double scalar = 3.0;
-
   for (int i = 0; i < repetitions; ++i) {
     init(a, b, c, ah, bh, ch);
     test_stream_kokkos_fence("kokkos_fence", a, b, c);
@@ -351,7 +349,7 @@ void test_stream(int repetitions, int size) {
   }
 }
 
-int main(int argc, char *argv[]) {
+int hpx_main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
@@ -364,6 +362,11 @@ int main(int argc, char *argv[]) {
   }
 
   Kokkos::finalize();
+  hpx::local::finalize();
 
   return 0;
+}
+
+int main(int argc, char *argv[]) {
+  return hpx::local::init(hpx_main, argc, argv);
 }
