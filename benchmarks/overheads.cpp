@@ -49,7 +49,7 @@ void test_for_loop_kokkos(ExecutionSpace const &inst, Views const &views,
             Kokkos::RangePolicy<typename std::decay<ExecutionSpace>::type>(
                 inst, 0, n),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
-        [a] KOKKOS_IMPL_FUNCTION(int i) { a(i) = i; });
+        KOKKOS_LAMBDA(int i) { a(i) = i; });
   }
 
   inst.fence();
@@ -67,7 +67,7 @@ void test_for_loop_kokkos_future(ExecutionSpace const &inst, Views const &views,
             Kokkos::RangePolicy<typename std::decay<ExecutionSpace>::type>(
                 inst, 0, n),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
-        [a] KOKKOS_IMPL_FUNCTION(int i) { a(i) = i; });
+        KOKKOS_LAMBDA(int i) { a(i) = i; });
   }
 
   hpx::kokkos::get_future<typename std::decay<ExecutionSpace>::type>().get();
@@ -92,7 +92,7 @@ void test_for_loop_kokkos_async(ExecutionSpace const &inst, Views const &views,
             Kokkos::RangePolicy<typename std::decay<ExecutionSpace>::type>(
                 inst, 0, n),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
-        [a] KOKKOS_IMPL_FUNCTION(int i) { a(i) = i; }));
+        KOKKOS_LAMBDA(int i) { a(i) = i; }));
   }
 
   switch (s) {
