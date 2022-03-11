@@ -40,7 +40,7 @@ jobs:
           mkdir -p /tmp/kokkos
           cd /tmp/kokkos
           git clone \
-              --branch 3.5.00 \
+              --branch 3.4.00 \
               --single-branch \
               --depth 1 \
               https://github.com/kokkos/kokkos.git
