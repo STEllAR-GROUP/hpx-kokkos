@@ -11,6 +11,7 @@
 #include <hpx/kokkos/future.hpp>
 
 #include <hpx/include/compute.hpp>
+#include <hpx/future.hpp>
 
 #include <Kokkos_Concepts.hpp>
 #include <Kokkos_Core.hpp>

@@ -50,8 +50,8 @@ template <typename Executor> void test_for_each(Executor &&exec) {
   Kokkos::deep_copy(for_each_result, for_each_result_host);
 
   auto f = hpx::for_each(
-      hpx::kokkos::kok(hpx::execution::task).on(exec),
-      for_each_index.data(), for_each_index.data() + for_each_result.size(),
+      hpx::kokkos::kok(hpx::execution::task).on(exec), for_each_index.data(),
+      for_each_index.data() + for_each_result.size(),
       KOKKOS_LAMBDA(int i) { for_each_result(i) = i; });
   f.get();
   Kokkos::deep_copy(for_each_result_host, for_each_result);
