@@ -3,18 +3,18 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.19)
 
 project(HPXKokkos CXX)
 
 set(HPX_KOKKOS_VERSION_MAJOR 0)
-set(HPX_KOKKOS_VERSION_MINOR 0)
-set(HPX_KOKKOS_VERSION_PATCH 1)
+set(HPX_KOKKOS_VERSION_MINOR 2)
+set(HPX_KOKKOS_VERSION_PATCH 0)
 set(HPX_KOKKOS_VERSION_STRING "${HPX_KOKKOS_VERSION_MAJOR}.${HPX_KOKKOS_VERSION_MINOR}.${HPX_KOKKOS_VERSION_PATCH}.")
 
 # Dependencies
-find_package(HPX 1.7.0 REQUIRED)
-find_package(Kokkos 3.4.99 REQUIRED)
+find_package(HPX 1.7.0...<1.8.0 REQUIRED)
+find_package(Kokkos 3.6.00 REQUIRED)
 
 # Check that Kokkos and HPX options are consistent.
 kokkos_check(DEVICES HPX OPTIONS HPX_ASYNC_DISPATCH)
