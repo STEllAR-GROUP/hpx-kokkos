@@ -1,9 +1,5 @@
 # HPX/Kokkos interoperability library
 
-WARNING: This commit currently only works with [this
-branch](https://github.com/msimberg/kokkos/tree/hpx-update-deprecations). The
-branch is due for upstreaming to Kokkos.
-
 WARNING: This repo is work in progress and should not be relied on for
 anything. Please read the [known limitations](#known-limitations).
 
@@ -51,9 +47,9 @@ built using the `benchmarks` target.
 
 # Requirements
 
-- CMake version 3.13 or newer
-- HPX version 1.6.0 or newer
-- Kokkos version 3.2.0 or newer
+- CMake version 3.19 or newer
+- HPX version 1.8.0 or newer
+- Kokkos version 3.6.0 or newer
   - The build should have `Kokkos_ENABLE_HPX=ON` and
     `Kokkos_ENABLE_HPX_ASYNC_DISPATCH=ON`
 
