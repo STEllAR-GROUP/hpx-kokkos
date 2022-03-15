@@ -12,7 +12,7 @@ export BOOST_ROOT="${APPS_ROOT}/boost-1.75.0-gcc-10.1.0-c++17-debug/"
 
 module load daint-gpu
 module load cudatoolkit/11.0.2_3.38-8.1__g5b73779
-spack load cmake@3.18.6
+module load CMake
 spack load ninja@1.10.0
 
 export CXX=`which CC`
