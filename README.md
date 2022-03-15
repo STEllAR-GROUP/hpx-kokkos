@@ -48,8 +48,8 @@ built using the `benchmarks` target.
 # Requirements
 
 - CMake version 3.13 or newer
-- HPX version 1.6.0 or newer
-- Kokkos version 3.2.0 or newer
+- HPX version 1.6.0
+- Kokkos version 3.2.0 to 3.5.0 (3.5.0 only with patches)
   - The build should have `Kokkos_ENABLE_HPX=ON` and
     `Kokkos_ENABLE_HPX_ASYNC_DISPATCH=ON`
 
