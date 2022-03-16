@@ -13,7 +13,7 @@ module switch gcc gcc/9.3.0
 module load cudatoolkit/21.5_11.3
 module load Boost/1.78.0-CrayGNU-21.09
 module load hwloc/2.4.1
-spack load cmake@3.18.6
+module load CMake
 spack load ninja@1.10.0
 
 export CXX=`which CC`
