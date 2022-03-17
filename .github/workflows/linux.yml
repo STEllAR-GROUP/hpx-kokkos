@@ -21,7 +21,7 @@ jobs:
           mkdir -p /tmp/hpx
           cd /tmp/hpx
           git clone \
-              --branch master \
+              --branch 1.7.0 \
               --single-branch \
               --depth 1 \
               https://github.com/STEllAR-GROUP/hpx.git
@@ -40,7 +40,7 @@ jobs:
           mkdir -p /tmp/kokkos
           cd /tmp/kokkos
           git clone \
-              --branch 3.4.00 \
+              --branch develop \
               --single-branch \
               --depth 1 \
               https://github.com/kokkos/kokkos.git

@@ -52,7 +52,7 @@ pipeline {
                     }
                     axis {
                          name 'kokkos_version'
-                         values 'hpx-update-deprecations'
+                         values 'develop'
                     }
                     axis {
                          name 'future_type'
