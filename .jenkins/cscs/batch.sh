@@ -46,7 +46,7 @@ cmake \
     -DCMAKE_INSTALL_PREFIX=/dev/shm/kokkos/install \
     -DHPX_DIR=/dev/shm/hpx/install/lib64/cmake/HPX \
     ${kokkos_configure_extra_options}
-cmake --build /dev/shm/kokkos/build --target
+cmake --build /dev/shm/kokkos/build
 cmake --install /dev/shm/kokkos/build
 
 set +e
