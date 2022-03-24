@@ -23,7 +23,7 @@ configure_extra_options+=" -DHPX_KOKKOS_ENABLE_TESTS=ON"
 configure_extra_options+=" -DHPX_KOKKOS_CUDA_FUTURE_TYPE=${future_type}"
 configure_extra_options+=" -DKokkos_LAUNCH_COMPILER=OFF"
 
-hpx_configure_extra_options="-DCMAKE_BUILD_TYPE=Debug"
+hpx_configure_extra_options="-DCMAKE_BUILD_TYPE=${build_type}"
 hpx_configure_extra_options+=" -DHPX_WITH_EXAMPLES=OFF"
 hpx_configure_extra_options+=" -DHPX_WITH_UNITY_BUILD=ON"
 hpx_configure_extra_options+=" -DHPX_WITH_MALLOC=system"
