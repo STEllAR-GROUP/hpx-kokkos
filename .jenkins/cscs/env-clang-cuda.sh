@@ -45,13 +45,3 @@ kokkos_configure_extra_options+=" -DKokkos_ENABLE_CUDA_LAMBDA=ON"
 kokkos_configure_extra_options+=" -DKokkos_ENABLE_CUDA_CONSTEXPR=ON"
 kokkos_configure_extra_options+=" -DKokkos_ARCH_HSW=ON"
 kokkos_configure_extra_options+=" -DKokkos_ARCH_PASCAL60=ON"
-
-# This is a workaround for a bug in the Cray clang compiler and/or Boost. When
-# compiling in device mode, Boost detects that float128 is available, but
-# compilation later fails with an error message saying float128 is not
-# available for the target.
-#
-# This sets a custom Boost user configuration, which is a concatenation of the
-# clang and nvcc compiler configurations, with the exception that
-# BOOST_HAS_FLOAT128 is unconditionally disabled.
-export CXXFLAGS="-I/dev/shm/hpx/src/.jenkins/cscs/ -DBOOST_USER_CONFIG='<boost_user_config_cray_clang.hpp>'"
