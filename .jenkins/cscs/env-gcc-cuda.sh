@@ -5,13 +5,14 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 export CRAYPE_LINK_TYPE=dynamic
+export APPS_ROOT="/apps/daint/SSL/HPX/packages"
 export CXX_STD="14"
+export BOOST_ROOT="${APPS_ROOT}/boost-1.73.0-gcc-8.3.0-c++14-release/"
 
 module load daint-gpu
 module switch PrgEnv-cray PrgEnv-gnu
 module switch gcc gcc/9.3.0
 module load cudatoolkit/11.0.2_3.38-8.1__g5b73779
-module load Boost/1.78.0-CrayGNU-21.09
 module load hwloc/2.4.1
 module load CMake
 spack load ninja@1.10.0
