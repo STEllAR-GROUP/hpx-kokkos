@@ -2,11 +2,11 @@ get_filename_component(HPXKokkos_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 include(CMakeFindDependencyMacro)
 
 set(HPX_KOKKOS_VERSION_MAJOR 0)
-set(HPX_KOKKOS_VERSION_MINOR 0)
-set(HPX_KOKKOS_VERSION_PATCH 1)
+set(HPX_KOKKOS_VERSION_MINOR 3)
+set(HPX_KOKKOS_VERSION_PATCH 0)
 set(HPX_KOKKOS_VERSION_STRING "${HPX_KOKKOS_VERSION_MAJOR}.${HPX_KOKKOS_VERSION_MINOR}.${HPX_KOKKOS_VERSION_PATCH}.")
 
-find_dependency(HPX 1.7.0 REQUIRED)
-find_dependency(Kokkos 3.4.99 REQUIRED)
+find_dependency(HPX REQUIRED)
+find_dependency(Kokkos REQUIRED)
 
 include("${HPXKokkos_CMAKE_DIR}/HPXKokkosTargets.cmake")
