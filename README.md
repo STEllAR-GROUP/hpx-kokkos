@@ -1,9 +1,5 @@
 # HPX/Kokkos interoperability library
 
-WARNING: This commit currently only works with [this
-branch](https://github.com/msimberg/kokkos/tree/hpx-update-deprecations). The
-branch is due for upstreaming to Kokkos.
-
 WARNING: This repo is work in progress and should not be relied on for
 anything. Please read the [known limitations](#known-limitations).
 
@@ -51,9 +47,9 @@ built using the `benchmarks` target.
 
 # Requirements
 
-- CMake version 3.13 or newer
-- HPX version 1.6.0 or newer
-- Kokkos version 3.2.0 or newer
+- CMake version 3.19 or newer
+- HPX version 1.8.0 or newer
+- Kokkos version 3.6.0 or newer
   - The build should have `Kokkos_ENABLE_HPX=ON` and
     `Kokkos_ENABLE_HPX_ASYNC_DISPATCH=ON`
 
@@ -121,9 +117,10 @@ prioritize getting it fixed for you.
   with other execution spaces always block and return a ready future (where
   appropriate).
 - Not all HPX parallel algorithms can be used with the Kokkos executors.
-  Currently the only available algorithms are `hpx::for_each`, `hpx::for_loop`,
-  and `hpx::reduce`. `hpx::for_loop` only supports integer ranges (no
-  iterators) and no induction or reduction objects.
+  Currently the only available algorithms are `hpx::for_each`,
+  `hpx::experimental::for_loop`, and `hpx::reduce`.
+  `hpx::experimental::for_loop` only supports integer ranges (no iterators) and
+  no induction or reduction objects.
 - `Kokkos::View` construction and destruction (when reference count goes to
   zero) are generally blocking operations and this library does not currently
   try to solve this problem. Workarounds are: create all required views upfront

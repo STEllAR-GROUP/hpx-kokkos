@@ -39,14 +39,14 @@ git clone \
     --branch ${kokkos_version} \
     --single-branch \
     --depth 1 \
-    https://github.com/msimberg/kokkos.git /dev/shm/kokkos/src
+    https://github.com/kokkos/kokkos.git /dev/shm/kokkos/src
 cmake \
     -S /dev/shm/kokkos/src \
     -B /dev/shm/kokkos/build \
     -DCMAKE_INSTALL_PREFIX=/dev/shm/kokkos/install \
     -DHPX_DIR=/dev/shm/hpx/install/lib64/cmake/HPX \
     ${kokkos_configure_extra_options}
-cmake --build /dev/shm/kokkos/build --target
+cmake --build /dev/shm/kokkos/build
 cmake --install /dev/shm/kokkos/build
 
 set +e

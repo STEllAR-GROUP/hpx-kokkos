@@ -1,4 +1,4 @@
-//  Copyright (c) 2019-2020 ETH Zurich
+//  Copyright (c) 2019-2022 ETH Zurich
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -79,8 +79,8 @@ hpx::shared_future<T> reduce_helper(char const *label,
 template <typename ExecutionPolicy, typename Iter, typename T, typename F,
           typename Enable = std::enable_if_t<
               is_kokkos_execution_policy<std::decay_t<ExecutionPolicy>>::value>>
-auto tag_dispatch(hpx::reduce_t, ExecutionPolicy &&policy, Iter first,
-                  Iter last, T init, F &&f) {
+auto tag_invoke(hpx::reduce_t, ExecutionPolicy &&policy, Iter first, Iter last,
+                T init, F &&f) {
   return detail::get_policy_result<ExecutionPolicy>::call(
       detail::reduce_helper(policy.label(), policy.executor().instance(), first,
                             last, init, std::forward<F>(f)));

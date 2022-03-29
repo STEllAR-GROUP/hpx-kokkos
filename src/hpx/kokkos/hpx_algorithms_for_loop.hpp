@@ -1,4 +1,4 @@
-//  Copyright (c) 2020 ETH Zurich
+//  Copyright (c) 2020-2022 ETH Zurich
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -49,8 +49,8 @@ hpx::shared_future<void> for_loop_helper(char const *label,
 template <typename ExecutionPolicy, typename I, typename F,
           typename Enable = std::enable_if_t<
               is_kokkos_execution_policy<std::decay_t<ExecutionPolicy>>::value>>
-auto tag_dispatch(hpx::for_loop_t, ExecutionPolicy &&policy,
-                  typename std::decay<I>::type first, I last, F &&f) {
+auto tag_invoke(hpx::experimental::for_loop_t, ExecutionPolicy &&policy,
+                typename std::decay<I>::type first, I last, F &&f) {
   return detail::get_policy_result<ExecutionPolicy>::call(
       detail::for_loop_helper(policy.label(), policy.executor().instance(),
                               first, last, std::forward<F>(f)));
@@ -59,9 +59,9 @@ auto tag_dispatch(hpx::for_loop_t, ExecutionPolicy &&policy,
 template <typename ExecutionPolicy, typename I, std::size_t N, typename F,
           typename Enable = std::enable_if_t<
               is_kokkos_execution_policy<std::decay_t<ExecutionPolicy>>::value>>
-auto tag_dispatch(hpx::for_loop_t, ExecutionPolicy &&policy,
-                  Kokkos::Array<I, N> const &first,
-                  Kokkos::Array<I, N> const &last, F &&f) {
+auto tag_invoke(hpx::experimental::for_loop_t, ExecutionPolicy &&policy,
+                Kokkos::Array<I, N> const &first,
+                Kokkos::Array<I, N> const &last, F &&f) {
   return detail::get_policy_result<ExecutionPolicy>::call(
       detail::for_loop_helper(policy.label(), policy.executor().instance(),
                               first, last, std::forward<F>(f)));
@@ -70,9 +70,9 @@ auto tag_dispatch(hpx::for_loop_t, ExecutionPolicy &&policy,
 template <typename ExecutionPolicy, typename I, std::size_t N, typename F,
           typename Enable = std::enable_if_t<
               is_kokkos_execution_policy<std::decay_t<ExecutionPolicy>>::value>>
-auto tag_dispatch(hpx::for_loop_t, ExecutionPolicy &&policy,
-                  Kokkos::Array<I, N> const &first,
-                  std::initializer_list<I> last, F &&f) {
+auto tag_invoke(hpx::experimental::for_loop_t, ExecutionPolicy &&policy,
+                Kokkos::Array<I, N> const &first, std::initializer_list<I> last,
+                F &&f) {
   return detail::get_policy_result<ExecutionPolicy>::call(
       detail::for_loop_helper(policy.label(), policy.executor().instance(),
                               first, last, f));

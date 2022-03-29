@@ -13,7 +13,7 @@
 int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
-  auto p1 = hpx::kokkos::kok;
+  [[maybe_unused]] auto p1 = hpx::kokkos::kok;
   static_assert(std::is_same<std::decay<decltype(p1.executor())>::type,
                              hpx::kokkos::default_executor>::value,
                 "kok executor should be default_executor");
