@@ -93,6 +93,11 @@ public:
         })};
   }
 
+  hpx::shared_future<void> get_future() {
+    return detail::get_future<typename std::decay<ExecutionSpace>::type>::call(
+        std::forward<ExecutionSpace>(inst));
+  }
+
   template <typename Parameters, typename F>
   constexpr std::size_t get_chunk_size(Parameters &&params, F &&f,
                                        std::size_t cores,
