@@ -14,12 +14,12 @@
 /// of multiple launches.
 
 #include <Kokkos_Core.hpp>
-#include <hpx/algorithm.hpp>
-#include <hpx/chrono.hpp>
 #include <hpx/config.hpp>
-#include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
 #include <hpx/kokkos/detail/polling_helper.hpp>
+#include <hpx/local/algorithm.hpp>
+#include <hpx/local/chrono.hpp>
+#include <hpx/local/init.hpp>
 
 void print_header() {
   std::cout << "test_name,execution_space,subtest_name,vector_size,launches_"
@@ -172,7 +172,7 @@ void test_for_loop(ExecutionSpace const &inst, int const n,
   }
 }
 
-int main(int argc, char *argv[]) {
+int hpx_main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
@@ -188,6 +188,11 @@ int main(int argc, char *argv[]) {
   }
 
   Kokkos::finalize();
+  hpx::local::finalize();
 
   return 0;
+}
+
+int main(int argc, char *argv[]) {
+  return hpx::local::init(hpx_main, argc, argv);
 }

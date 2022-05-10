@@ -224,7 +224,7 @@ template <typename Executor> void test_for_loop(Executor &&exec) {
   }
   Kokkos::deep_copy(for_loop_data, for_loop_data_host);
 
-  hpx::for_loop(
+  hpx::experimental::for_loop(
       hpx::kokkos::kok.on(exec).label("for_loop sync"), 0, n,
       KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 2; });
 
@@ -234,7 +234,7 @@ template <typename Executor> void test_for_loop(Executor &&exec) {
     HPX_KOKKOS_DETAIL_TEST(for_loop_data_host(i) == 2 * i);
   }
 
-  auto f = hpx::for_loop(
+  auto f = hpx::experimental::for_loop(
       hpx::kokkos::kok(hpx::execution::task).on(exec).label("for_loop task"), 0,
       n, KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 3; });
 
@@ -262,7 +262,7 @@ template <typename Executor> void test_for_loop(Executor &&exec) {
 
   using limit_type = Kokkos::Array<long, 2>;
 
-  hpx::for_loop(
+  hpx::experimental::for_loop(
       hpx::kokkos::kok.on(exec).label("for_loop sync md"), limit_type({0, 0}),
       limit_type({n, m}),
       KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 2; });
@@ -275,7 +275,7 @@ template <typename Executor> void test_for_loop(Executor &&exec) {
     }
   }
 
-  auto f2 = hpx::for_loop(
+  auto f2 = hpx::experimental::for_loop(
       hpx::kokkos::kok(hpx::execution::task).on(exec).label("for_loop task md"),
       limit_type({0, 0}), limit_type({n, m}),
       KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 3; });
@@ -303,7 +303,7 @@ void test_for_loop_default() {
   }
   Kokkos::deep_copy(for_loop_data, for_loop_data_host);
 
-  hpx::for_loop(
+  hpx::experimental::for_loop(
       hpx::kokkos::kok.label("for_loop sync default"), 0, n,
       KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 2; });
 
@@ -313,7 +313,7 @@ void test_for_loop_default() {
     HPX_KOKKOS_DETAIL_TEST(for_loop_data_host(i) == 2 * i);
   }
 
-  auto f = hpx::for_loop(
+  auto f = hpx::experimental::for_loop(
       hpx::kokkos::kok(hpx::execution::task).label("for_loop task default"), 0,
       n, KOKKOS_LAMBDA(int i) { for_loop_data(i) *= 3; });
 
@@ -340,7 +340,7 @@ void test_for_loop_default() {
 
   using limit_type = Kokkos::Array<long, 2>;
 
-  hpx::for_loop(
+  hpx::experimental::for_loop(
       hpx::kokkos::kok.label("for_loop sync default md"), limit_type({0, 0}),
       limit_type({n, m}),
       KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 2; });
@@ -353,7 +353,7 @@ void test_for_loop_default() {
     }
   }
 
-  auto f2 = hpx::for_loop(
+  auto f2 = hpx::experimental::for_loop(
       hpx::kokkos::kok(hpx::execution::task).label("for_loop task default md"),
       limit_type({0, 0}), limit_type({n, m}),
       KOKKOS_LAMBDA(long i, long j) { for_loop_data2(i, j) *= 3; });

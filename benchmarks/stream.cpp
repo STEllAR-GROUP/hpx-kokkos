@@ -10,11 +10,11 @@
 // https://www.cs.virginia.edu/stream/ref.html
 
 #include <Kokkos_Core.hpp>
-#include <hpx/algorithm.hpp>
-#include <hpx/chrono.hpp>
-#include <hpx/hpx_main.hpp>
 #include <hpx/kokkos.hpp>
 #include <hpx/kokkos/detail/polling_helper.hpp>
+#include <hpx/local/algorithm.hpp>
+#include <hpx/local/chrono.hpp>
+#include <hpx/local/init.hpp>
 
 using elem_type = double;
 using view_type = Kokkos::View<elem_type *>;
@@ -285,7 +285,7 @@ void test_stream_kokkos_async_future(std::string const &label, view_type a,
 
 // Synchronous HPX for_loop.
 template <typename Step> void test_stream_hpx_impl(Step step) {
-  hpx::for_loop(hpx::kokkos::kok, 0, step.a.extent(0), step);
+  hpx::experimental::for_loop(hpx::kokkos::kok, 0, step.a.extent(0), step);
 }
 
 void test_stream_hpx(std::string const &label, view_type a, view_type b,
@@ -298,8 +298,8 @@ void test_stream_hpx(std::string const &label, view_type a, view_type b,
 
 // Asynchronous HPX for_loop.
 template <typename Step> void test_stream_hpx_future_impl(Step step) {
-  hpx::for_loop(hpx::kokkos::kok(hpx::execution::task), 0, step.a.extent(0),
-                step)
+  hpx::experimental::for_loop(hpx::kokkos::kok(hpx::execution::task), 0,
+                              step.a.extent(0), step)
       .get();
 }
 
@@ -321,8 +321,6 @@ void test_stream(int repetitions, int size) {
   host_view_type ah = Kokkos::create_mirror_view(a);
   host_view_type bh = Kokkos::create_mirror_view(b);
   host_view_type ch = Kokkos::create_mirror_view(c);
-
-  double scalar = 3.0;
 
   for (int i = 0; i < repetitions; ++i) {
     init(a, b, c, ah, bh, ch);
@@ -351,19 +349,24 @@ void test_stream(int repetitions, int size) {
   }
 }
 
-int main(int argc, char *argv[]) {
+int hpx_main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
     hpx::kokkos::detail::polling_helper p;
 
     print_header();
-    for (int size = 1024; size <= (1024 << 17); size *= 2) {
+    for (int size = 1024; size <= (1024 << 11); size *= 2) {
       test_stream(10, size);
     }
   }
 
   Kokkos::finalize();
+  hpx::local::finalize();
 
   return 0;
+}
+
+int main(int argc, char *argv[]) {
+  return hpx::local::init(hpx_main, argc, argv);
 }
