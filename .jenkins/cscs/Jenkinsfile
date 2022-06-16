@@ -48,11 +48,11 @@ pipeline {
                     }
                     axis {
                          name 'hpx_version'
-                         values 'master'
+                         values '1.8.0'
                     }
                     axis {
                          name 'kokkos_version'
-                         values 'develop'
+                         values 'hpx-sender-receiver'
                     }
                     axis {
                          name 'future_type'
