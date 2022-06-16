@@ -12,6 +12,7 @@
 #include <hpx/kokkos/execution_spaces.hpp>
 #include <hpx/kokkos/executors.hpp>
 #include <hpx/kokkos/make_instance.hpp>
+#include <hpx/local/runtime.hpp>
 
 #include <Kokkos_Core.hpp>
 
