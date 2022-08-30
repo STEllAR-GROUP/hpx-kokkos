@@ -24,20 +24,20 @@ void check_test(std::string filename, std::size_t linenumber, bool success) {
   if (!success) {
     ++tests_failed;
     std::cerr << "Test failed in " << filename << " on line " << linenumber
-              << std::endl;
+              << '\n';
   }
 }
 
 int report_errors() {
   if (tests_done == 0) {
-    std::cerr << "No tests run. Did you forget to add tests?" << std::endl;
+    std::cerr << "No tests run. Did you forget to add tests?\n";
     return 1;
   } else if (tests_failed == 0) {
-    std::cerr << "All tests passed (" << tests_done << " tests run).";
+    std::cerr << "All tests passed (" << tests_done << " tests run).\n";
     return 0;
   } else {
     std::cerr << tests_failed << "/" << tests_done << " test"
-              << (tests_done == 1 ? "" : "s") << " failed." << std::endl;
+              << (tests_done == 1 ? "" : "s") << " failed.\n";
     return 1;
   }
 }
