@@ -52,7 +52,7 @@ pipeline {
                     }
                     axis {
                          name 'kokkos_version'
-                         values 'develop'
+                         values '3.6.00'
                     }
                     axis {
                          name 'future_type'
