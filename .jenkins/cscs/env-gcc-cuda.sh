@@ -37,7 +37,7 @@ hpx_configure_extra_options+=" -DHWLOC_ROOT=${EBROOTHWLOC}"
 
 kokkos_configure_extra_options="-DCMAKE_BUILD_TYPE=${build_type}"
 kokkos_configure_extra_options+=" -DCMAKE_CXX_COMPILER=/dev/shm/kokkos/src/bin/nvcc_wrapper"
-kokkos_configure_extra_options+=" -DKokkos_CXX_STANDARD=${CXX_STD}"
+kokkos_configure_extra_options+=" -DCMAKE_CXX_STANDARD=${CXX_STD}"
 kokkos_configure_extra_options+=" -DKokkos_ENABLE_SERIAL=OFF"
 kokkos_configure_extra_options+=" -DKokkos_ENABLE_HPX=ON"
 kokkos_configure_extra_options+=" -DKokkos_ENABLE_CUDA=ON"

@@ -37,7 +37,7 @@ struct kokkos_task_policy {
 
   constexpr kokkos_task_policy() {}
 
-  kokkos_task_policy operator()(hpx::execution::task_policy_tag) const {
+  kokkos_task_policy operator()(hpx::execution::experimental::to_task_t) const {
     return *this;
   }
 
@@ -98,7 +98,7 @@ struct kokkos_task_policy_shim : kokkos_task_policy {
   };
 
   kokkos_task_policy_shim
-  operator()(hpx::execution::task_policy_tag tag) const {
+  operator()(hpx::execution::experimental::to_task_t tag) const {
     return *this;
   }
 
@@ -173,7 +173,7 @@ struct kokkos_policy {
 
   constexpr kokkos_policy() {}
 
-  kokkos_task_policy operator()(hpx::execution::task_policy_tag) const {
+  kokkos_task_policy operator()(hpx::execution::experimental::to_task_t) const {
     return kokkos_task_policy();
   }
 
@@ -235,7 +235,7 @@ struct kokkos_policy_shim : kokkos_policy {
   };
 
   kokkos_task_policy_shim<Executor, Parameters>
-  operator()(hpx::execution::task_policy_tag) const {
+  operator()(hpx::execution::experimental::to_task_t) const {
     return kokkos_task_policy_shim<Executor, Parameters>(exec_, params_);
   }
 

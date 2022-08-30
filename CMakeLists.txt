@@ -13,7 +13,7 @@ set(HPX_KOKKOS_VERSION_PATCH 0)
 set(HPX_KOKKOS_VERSION_STRING "${HPX_KOKKOS_VERSION_MAJOR}.${HPX_KOKKOS_VERSION_MINOR}.${HPX_KOKKOS_VERSION_PATCH}.")
 
 # Dependencies
-find_package(HPX 1.8.0 REQUIRED)
+find_package(HPX 1.8.1 REQUIRED)
 find_package(Kokkos 3.6.00 REQUIRED)
 
 # Check that Kokkos and HPX options are consistent.

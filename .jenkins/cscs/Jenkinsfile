@@ -48,11 +48,11 @@ pipeline {
                     }
                     axis {
                          name 'hpx_version'
-                         values 'master'
+                         values '1.8.1'
                     }
                     axis {
                          name 'kokkos_version'
-                         values 'develop'
+                         values '3.6.00'
                     }
                     axis {
                          name 'future_type'
