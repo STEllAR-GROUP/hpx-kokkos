@@ -11,16 +11,22 @@
 #pragma once
 
 #include <hpx/config.hpp>
-#if defined(HPX_HAVE_COMPUTE)
+#if defined(HPX_HAVE_CUDA) || defined(HPX_HAVE_HIP)
 #include <hpx/modules/async_cuda.hpp>
+#endif
+#if defined(HPX_HAVE_SYCL)
+#include <hpx/modules/async_sycl.hpp>
 #endif
 
 namespace hpx {
 namespace kokkos {
 namespace detail {
 struct polling_helper {
-#if defined(HPX_HAVE_COMPUTE) && (HPX_KOKKOS_CUDA_FUTURE_TYPE == 0)
+#if (defined(HPX_HAVE_CUDA) || defined(HPX_HAVE_HIP)) && (HPX_KOKKOS_CUDA_FUTURE_TYPE == 0)
   hpx::cuda::experimental::enable_user_polling p;
+#endif
+#if defined(HPX_HAVE_SYCL)
+  hpx::sycl::experimental::enable_user_polling p;
 #endif
 };
 } // namespace detail

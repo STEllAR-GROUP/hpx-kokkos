@@ -40,8 +40,22 @@ else()
   endif()
 endif()
 
+if(Kokkos_ENABLE_SYCL)
+  if(NOT HPX_WITH_SYCL)
+    message(FATAL_ERROR "Kokkos was built with SYCL support, HPX was not")
+  endif()
+else()
+  if(HPX_WITH_SYCL)
+    message(FATAL_ERROR "HPX was built with SYCL support, Kokkos was not")
+  endif()
+endif()
+
 if(HPX_WITH_HIP OR Kokkos_ENABLE_HIP)
   message(WARNING "HIP support in experimental in HPX, Kokkos, and HPX-Kokkos")
+endif()
+
+if(HPX_WITH_SYCL OR Kokkos_ENABLE_SYCL)
+  message(WARNING "SYCL support in experimental in HPX, Kokkos, and HPX-Kokkos")
 endif()
 
 # Main targets provided by this project

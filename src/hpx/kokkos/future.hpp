@@ -15,8 +15,11 @@
 #include <hpx/config.hpp>
 #include <hpx/local/future.hpp>
 
-#if defined(HPX_HAVE_COMPUTE)
+#if defined(HPX_HAVE_CUDA) || defined(HPX_HAVE_HIP)
 #include <hpx/modules/async_cuda.hpp>
+#endif
+#if defined(HPX_HAVE_SYCL)
+#include <hpx/modules/async_sycl.hpp>
 #endif
 
 #include <Kokkos_Core.hpp>
@@ -73,6 +76,16 @@ template <> struct get_future<Kokkos::Experimental::HIP> {
 #else
 #error "HPX_KOKKOS_CUDA_FUTURE_TYPE is invalid (must be callback or event)"
 #endif
+  }
+};
+#endif
+
+#if defined(KOKKOS_ENABLE_SYCL)
+template <> struct get_future<Kokkos::Experimental::SYCL> {
+  template <typename E> static hpx::shared_future<void> call(E &&inst) {
+    HPX_KOKKOS_DETAIL_LOG("getting future from SYCL queue %p", &(inst.sycl_queue()));
+    auto fut = hpx::sycl::experimental::detail::get_future(inst.sycl_queue());
+    return fut ;
   }
 };
 #endif

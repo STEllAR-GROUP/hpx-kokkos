@@ -45,6 +45,13 @@ template <> struct reduce_result_space<Kokkos::Experimental::HIP> {
 };
 #endif
 
+#if defined(KOKKOS_ENABLE_SYCL)
+// Needs to be a SYCL host space for async deep copies
+template <> struct reduce_result_space<Kokkos::Experimental::SYCL> {
+  using type = Kokkos::Experimental::SYCLHostUSMSpace;
+};
+#endif
+
 template <typename ExecutionSpace>
 using reduce_result_space_t =
     typename reduce_result_space<ExecutionSpace>::type;
