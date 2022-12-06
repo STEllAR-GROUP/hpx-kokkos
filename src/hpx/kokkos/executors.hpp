@@ -27,8 +27,8 @@ namespace detail {
 template <std::size_t... Is, typename F, typename A, typename Tuple>
 HPX_HOST_DEVICE void invoke_helper(hpx::util::index_pack<Is...>, F &&f, A &&a,
                                    Tuple &&t) {
-  hpx::util::invoke_r<void>(std::forward<F>(f), std::forward<A>(a),
-                            hpx::get<Is>(std::forward<Tuple>(t))...);
+  hpx::invoke_r<void>(std::forward<F>(f), std::forward<A>(a),
+                      hpx::get<Is>(std::forward<Tuple>(t))...);
 }
 } // namespace detail
 
@@ -59,7 +59,7 @@ public:
         Kokkos::Experimental::require(
             Kokkos::RangePolicy<execution_space>(inst, 0, 1),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
-        KOKKOS_LAMBDA(int) { hpx::util::invoke_fused_r<void>(f, ts_pack); });
+        KOKKOS_LAMBDA(int) { hpx::invoke_fused_r<void>(f, ts_pack); });
   }
 
   template <typename F, typename... Ts>
@@ -69,7 +69,7 @@ public:
         Kokkos::Experimental::require(
             Kokkos::RangePolicy<execution_space>(inst, 0, 1),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
-        KOKKOS_LAMBDA(int) { hpx::util::invoke_fused_r<void>(f, ts_pack); });
+        KOKKOS_LAMBDA(int) { hpx::invoke_fused_r<void>(f, ts_pack); });
   }
 
   template <typename F, typename S, typename... Ts>
@@ -87,8 +87,7 @@ public:
         KOKKOS_LAMBDA(int i) {
           HPX_KOKKOS_DETAIL_LOG("bulk_async_execute i = %d", i);
           using index_pack_type =
-              typename hpx::detail::fused_index_pack<decltype(
-                  ts_pack)>::type;
+              typename hpx::detail::fused_index_pack<decltype(ts_pack)>::type;
           detail::invoke_helper(index_pack_type{}, f, *(b + i), ts_pack);
         })};
   }
