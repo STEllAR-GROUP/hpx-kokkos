@@ -87,7 +87,7 @@ public:
         KOKKOS_LAMBDA(int i) {
           HPX_KOKKOS_DETAIL_LOG("bulk_async_execute i = %d", i);
           using index_pack_type =
-              typename hpx::util::detail::fused_index_pack<decltype(
+              typename hpx::detail::fused_index_pack<decltype(
                   ts_pack)>::type;
           detail::invoke_helper(index_pack_type{}, f, *(b + i), ts_pack);
         })};
