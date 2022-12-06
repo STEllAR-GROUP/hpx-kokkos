@@ -89,6 +89,7 @@ class default_host_executor;
 // The following are conditionally defined
 class cuda_executor;
 class hip_executor;
+class sycl_executor;
 class hpx_executor;
 class openmp_executor;
 class rocm_executor;
@@ -113,7 +114,7 @@ prioritize getting it fixed for you.
 
 - Compilation with `nvcc` is likely not to work. Prefer `clang` for compiling
   CUDA code.
-- Only the HPX and CUDA execution spaces are asynchronous. Parallel algorithms
+- Only the HPX, CUDA, HIP and SYCL execution spaces are asynchronous. Parallel algorithms
   with other execution spaces always block and return a ready future (where
   appropriate).
 - Not all HPX parallel algorithms can be used with the Kokkos executors.

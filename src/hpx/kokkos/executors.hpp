@@ -121,6 +121,10 @@ using cuda_executor = executor<Kokkos::Cuda>;
 using hip_executor = executor<Kokkos::Experimental::HIP>;
 #endif
 
+#if defined(KOKKOS_ENABLE_SYCL)
+using sycl_executor = executor<Kokkos::Experimental::SYCL>;
+#endif
+
 #if defined(KOKKOS_ENABLE_HPX)
 using hpx_executor = executor<Kokkos::Experimental::HPX>;
 #endif
