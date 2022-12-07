@@ -21,7 +21,7 @@
 template <typename ExecutionSpace>
 void test_kokkos_plain(ExecutionSpace &&inst, int const n,
                        int const repetitions) {
-  for (int r = 0; r < repetitions; ++r) {
+  for (int r = -1; r < repetitions; ++r) {
     Kokkos::View<int *, typename std::decay<ExecutionSpace>::type> a("a", n);
     Kokkos::View<int *, typename std::decay<ExecutionSpace>::type> b("b", n);
     Kokkos::parallel_for(
@@ -46,14 +46,16 @@ void test_kokkos_plain(ExecutionSpace &&inst, int const n,
     std::cout << "kokkos_plain: t_spawn = " << t_spawn << ", t_get = " << t_get
               << std::endl;
 
-    HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    if (r >= 0) {
+      HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    }
   }
 }
 
 template <typename ExecutionSpace>
 void test_kokkos_async(ExecutionSpace &&inst, int const n,
                        int const repetitions) {
-  for (int r = 0; r < repetitions; ++r) {
+  for (int r = -1; r < repetitions; ++r) {
     Kokkos::View<int *, typename std::decay<ExecutionSpace>::type> a("a", n);
     Kokkos::View<int *, typename std::decay<ExecutionSpace>::type> b("b", n);
     Kokkos::parallel_for(
@@ -78,7 +80,9 @@ void test_kokkos_async(ExecutionSpace &&inst, int const n,
     std::cout << "kokkos_async: t_spawn = " << t_spawn << ", t_get = " << t_get
               << std::endl;
 
-    HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    if (r >= 0) {
+      HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    }
   }
 }
 
@@ -87,7 +91,7 @@ void test_hpx_async(Executor &&exec, int const n, int const repetitions) {
   Kokkos::View<int *, typename std::decay<Executor>::type::execution_space> a(
       "a", n);
 
-  for (int r = 0; r < repetitions; ++r) {
+  for (int r = -1; r < repetitions; ++r) {
     hpx::chrono::high_resolution_timer timer;
     auto f = hpx::for_each(
         hpx::kokkos::kok(hpx::execution::task).on(exec), a.data(),
@@ -99,10 +103,12 @@ void test_hpx_async(Executor &&exec, int const n, int const repetitions) {
     std::cout << "hpx_async: t_spawn = " << t_spawn << ", t_get = " << t_get
               << std::endl;
 
-    HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    if (r >= 0) {
+      HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    }
   }
 
-  for (int r = 0; r < repetitions; ++r) {
+  for (int r = -1; r < repetitions; ++r) {
     hpx::chrono::high_resolution_timer timer;
     auto f = hpx::reduce(
         hpx::kokkos::kok(hpx::execution::task).on(exec), a.data(),
@@ -114,12 +120,14 @@ void test_hpx_async(Executor &&exec, int const n, int const repetitions) {
     std::cout << "hpx_async: t_spawn = " << t_spawn << ", t_get = " << t_get
               << std::endl;
 
-    HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    if (r >= 0) {
+      HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    }
   }
 }
 
 void test_kokkos_plain_default(int const n, int const repetitions) {
-  for (int r = 0; r < repetitions; ++r) {
+  for (int r = -1; r < repetitions; ++r) {
     Kokkos::View<int *> a("a", n);
     Kokkos::View<int *> b("b", n);
     Kokkos::parallel_for(
@@ -142,12 +150,14 @@ void test_kokkos_plain_default(int const n, int const repetitions) {
     std::cout << "kokkos_plain: t_spawn = " << t_spawn << ", t_get = " << t_get
               << std::endl;
 
-    HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    if (r >= 0) {
+      HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    }
   }
 }
 
 void test_kokkos_async_default(int const n, int const repetitions) {
-  for (int r = 0; r < repetitions; ++r) {
+  for (int r = -1; r < repetitions; ++r) {
     Kokkos::View<int *> a("a", n);
     Kokkos::View<int *> b("b", n);
     Kokkos::parallel_for(
@@ -170,7 +180,9 @@ void test_kokkos_async_default(int const n, int const repetitions) {
     std::cout << "kokkos_async: t_spawn = " << t_spawn << ", t_get = " << t_get
               << std::endl;
 
-    HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    if (r >= 0) {
+      HPX_KOKKOS_DETAIL_TEST(t_spawn < t_get);
+    }
   }
 }
 
