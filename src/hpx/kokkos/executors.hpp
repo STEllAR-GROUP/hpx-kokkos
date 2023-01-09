@@ -128,10 +128,6 @@ using hpx_executor = executor<Kokkos::Experimental::HPX>;
 using openmp_executor = executor<Kokkos::OpenMP>;
 #endif
 
-#if defined(KOKKOS_ENABLE_ROCM)
-using rocm_executor = executor<Kokkos::ROCm>;
-#endif
-
 #if defined(KOKKOS_ENABLE_SERIAL)
 using serial_executor = executor<Kokkos::Serial>;
 #endif
