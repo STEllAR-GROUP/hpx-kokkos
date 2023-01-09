@@ -91,7 +91,6 @@ class cuda_executor;
 class hip_executor;
 class hpx_executor;
 class openmp_executor;
-class rocm_executor;
 class serial_executor;
 }}
 ```
