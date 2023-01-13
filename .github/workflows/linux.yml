@@ -54,8 +54,7 @@ jobs:
               ../kokkos \
               -GNinja \
               -DCMAKE_BUILD_TYPE=Debug \
-              -DKokkos_ENABLE_HPX=ON \
-              -DKokkos_ENABLE_HPX_ASYNC_DISPATCH=ON
+              -DKokkos_ENABLE_HPX=ON
           ninja install
     - name: Configure
       shell: bash
