@@ -52,7 +52,7 @@ pipeline {
                     }
                     axis {
                          name 'kokkos_version'
-                         values '3.6.00'
+                         values 'hpx-sender-receiver'
                     }
                     axis {
                          name 'future_type'

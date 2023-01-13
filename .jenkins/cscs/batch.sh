@@ -39,7 +39,7 @@ git clone \
     --branch ${kokkos_version} \
     --single-branch \
     --depth 1 \
-    https://github.com/kokkos/kokkos.git /dev/shm/kokkos/src
+    https://github.com/msimberg/kokkos.git /dev/shm/kokkos/src
 cmake \
     -S /dev/shm/kokkos/src \
     -B /dev/shm/kokkos/build \
