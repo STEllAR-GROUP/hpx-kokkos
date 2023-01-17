@@ -20,7 +20,6 @@ template <typename ExecutionSpace, typename... Args,
 hpx::shared_future<void> deep_copy_async(ExecutionSpace &&space,
                                          Args &&...args) {
   Kokkos::deep_copy(space, std::forward<Args>(args)...);
-  printf("normal deep copy help!!!!");
   return detail::get_future<typename std::decay<ExecutionSpace>::type>::call(
       std::forward<ExecutionSpace>(space));
 }
