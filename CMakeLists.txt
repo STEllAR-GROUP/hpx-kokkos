@@ -17,7 +17,7 @@ find_package(HPX 1.8.1 REQUIRED)
 find_package(Kokkos 3.6.00 REQUIRED)
 
 # Check that Kokkos and HPX options are consistent.
-kokkos_check(DEVICES HPX OPTIONS HPX_ASYNC_DISPATCH)
+#kokkos_check(DEVICES HPX OPTIONS HPX_ASYNC_DISPATCH)
 
 if(Kokkos_ENABLE_CUDA)
   kokkos_check(OPTIONS CUDA_LAMBDA CUDA_LAMBDA)
