@@ -75,6 +75,16 @@ else()
   message(FATAL_ERROR "Invalid HPX_KOKKOS_CUDA_FUTURE_TYPE=\"${HPX_KOKKOS_CUDA_FUTURE_TYPE}\" (allowed values are \"event\" and \"callback\")")
 endif()
 
+set(HPX_KOKKOS_SYCL_FUTURE_TYPE "event" CACHE STRING
+  "Type of SYCL futures to use by default (\"event\" or \"host_task\").")
+if(HPX_KOKKOS_SYCL_FUTURE_TYPE STREQUAL "event")
+  target_compile_definitions(hpx_kokkos INTERFACE "HPX_KOKKOS_SYCL_FUTURE_TYPE=0")
+elseif(HPX_KOKKOS_SYCL_FUTURE_TYPE STREQUAL "host_task")
+  target_compile_definitions(hpx_kokkos INTERFACE "HPX_KOKKOS_SYCL_FUTURE_TYPE=1")
+else()
+  message(FATAL_ERROR "Invalid HPX_KOKKOS_SYCL_FUTURE_TYPE=\"${HPX_KOKKOS_SYCL_FUTURE_TYPE}\" (allowed values are \"event\" and \"callback\")")
+endif()
+
 include(GNUInstallDirs)
 install(
   TARGETS hpx_kokkos
