@@ -81,10 +81,23 @@ template <> struct get_future<Kokkos::Experimental::HIP> {
 #endif
 
 #if defined(KOKKOS_ENABLE_SYCL)
+#if !defined(HPX_KOKKOS_SYCL_FUTURE_TYPE)
+// polling is default (0) as it is simply faster)
+// 1 would be using host_tasks which is slower but useful for comparisons
+#define HPX_KOKKOS_SYCL_FUTURE_TYPE 0
+#warning "HPX_KOKKOS_SYCL_FUTURE_TYPE was not defined! Defining it to 0 (event)
+#endif
 template <> struct get_future<Kokkos::Experimental::SYCL> {
   template <typename E> static hpx::shared_future<void> call(E &&inst) {
     HPX_KOKKOS_DETAIL_LOG("getting future from SYCL queue %p", &(inst.sycl_queue()));
+#if HPX_KOKKOS_SYCL_FUTURE_TYPE == 0
     auto fut = hpx::sycl::experimental::detail::get_future(inst.sycl_queue());
+#elif HPX_KOKKOS_SYCL_FUTURE_TYPE == 1
+    auto fut = hpx::sycl::experimental::detail::
+      get_future_using_host_task(inst.sycl_queue());
+#else
+#error "HPX_KOKKOS_SYCL_FUTURE_TYPE is invalid (must be host_task or event)"
+#endif
     return fut ;
   }
 };
