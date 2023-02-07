@@ -44,10 +44,10 @@ jobs:
           mkdir -p /tmp/kokkos
           cd /tmp/kokkos
           git clone \
-              --branch hpx-sender-receiver \
+              --branch develop \
               --single-branch \
               --depth 1 \
-              https://github.com/msimberg/kokkos.git
+              https://github.com/kokkos/kokkos.git
           mkdir -p build
           cd build
           cmake \
