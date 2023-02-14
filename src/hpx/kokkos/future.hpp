@@ -77,8 +77,7 @@ template <> struct get_future<Kokkos::Experimental::HIP> {
 };
 #endif
 
-#if defined(KOKKOS_ENABLE_HPX) && KOKKOS_VERSION >= 30000 &&                   \
-    defined(KOKKOS_ENABLE_HPX_ASYNC_DISPATCH)
+#if defined(KOKKOS_ENABLE_HPX)
 template <> struct get_future<Kokkos::Experimental::HPX> {
   template <typename E> static hpx::shared_future<void> call(E &&inst) {
     HPX_KOKKOS_DETAIL_LOG("getting future from HPX instance %x",
