@@ -66,7 +66,7 @@ make_independent_execution_space_instance<Kokkos::Experimental::SYCL>() {
 }
 #endif
 
-#if defined(KOKKOS_ENABLE_HPX) && KOKKOS_VERSION >= 30000
+#if defined(KOKKOS_ENABLE_HPX) 
 template <>
 inline Kokkos::Experimental::HPX
 make_independent_execution_space_instance<Kokkos::Experimental::HPX>() {

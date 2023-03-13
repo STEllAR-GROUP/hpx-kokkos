@@ -49,9 +49,8 @@ built using the `benchmarks` target.
 
 - CMake version 3.19 or newer
 - HPX version 1.8.0 or newer
-- Kokkos version 3.6.0 or newer
-  - The build should have `Kokkos_ENABLE_HPX=ON` and
-    `Kokkos_ENABLE_HPX_ASYNC_DISPATCH=ON`
+- Kokkos develop (TODO: Update once released) or newer
+  - The build should have `Kokkos_ENABLE_HPX=ON`
 
 For CUDA support HPX and Kokkos should be built with CUDA support. See their
 respective documentation for enabling CUDA support. CUDA support requires
@@ -92,7 +91,6 @@ class hip_executor;
 class sycl_executor;
 class hpx_executor;
 class openmp_executor;
-class rocm_executor;
 class serial_executor;
 }}
 ```
