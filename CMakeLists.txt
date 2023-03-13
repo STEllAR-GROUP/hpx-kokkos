@@ -81,7 +81,7 @@ if(HPX_KOKKOS_SYCL_FUTURE_TYPE STREQUAL "event")
 elseif(HPX_KOKKOS_SYCL_FUTURE_TYPE STREQUAL "host_task")
   target_compile_definitions(hpx_kokkos INTERFACE "HPX_KOKKOS_SYCL_FUTURE_TYPE=1")
 else()
-  message(FATAL_ERROR "Invalid HPX_KOKKOS_SYCL_FUTURE_TYPE=\"${HPX_KOKKOS_SYCL_FUTURE_TYPE}\" (allowed values are \"event\" and \"callback\")")
+  message(FATAL_ERROR "Invalid HPX_KOKKOS_SYCL_FUTURE_TYPE=\"${HPX_KOKKOS_SYCL_FUTURE_TYPE}\" (allowed values are \"event\" and \"host_task\")")
 endif()
 
 include(GNUInstallDirs)
