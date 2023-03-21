@@ -67,7 +67,7 @@ hpx::shared_future<void> deep_copy_async(Kokkos::Experimental::SYCL &&instance,
   // Safety checks 2: Check that there's no dimension mismatch and that the memory is contiguous
   if (!t.span_is_contiguous() || !s.span_is_contiguous()) {
     Kokkos::Impl::throw_runtime_exception(
-        "deep_copy_async: Both source and target SYCL views must be contiguos");
+        "deep_copy_async: Both source and target SYCL views must be contiguous");
   }
   if ((s.extent(0) != t.extent(0)) || (s.extent(1) != t.extent(1)) ||
       (s.extent(2) != t.extent(2)) || (s.extent(3) != t.extent(3)) ||
