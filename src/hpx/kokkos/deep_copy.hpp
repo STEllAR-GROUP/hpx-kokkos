@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include <impl/Kokkos_Error.hpp>
-
 #include <hpx/kokkos/future.hpp>
+
+#include <stdexcept>
 
 namespace hpx {
 namespace kokkos {
@@ -66,14 +66,14 @@ hpx::shared_future<void> deep_copy_async(Kokkos::Experimental::SYCL &&instance,
 
   // Safety checks 2: Check that there's no dimension mismatch and that the memory is contiguous
   if (!t.span_is_contiguous() || !s.span_is_contiguous()) {
-    Kokkos::Impl::throw_runtime_exception(
+    throw std::runtime_error(
         "deep_copy_async: Both source and target SYCL views must be contiguous");
   }
   if ((s.extent(0) != t.extent(0)) || (s.extent(1) != t.extent(1)) ||
       (s.extent(2) != t.extent(2)) || (s.extent(3) != t.extent(3)) ||
       (s.extent(4) != t.extent(4)) || (s.extent(5) != t.extent(5)) ||
       (s.extent(6) != t.extent(6)) || (s.extent(7) != t.extent(7))) {
-    Kokkos::Impl::throw_runtime_exception(
+    throw std::runtime_error(
         "deep_copy_async: Error, dimension/size mismatch between source and target SYCL views");
   }
 
@@ -84,12 +84,12 @@ hpx::shared_future<void> deep_copy_async(Kokkos::Experimental::SYCL &&instance,
   typename std::decay<SourceSpace>::type::value_type* src_end   = s.data() + s.span();
   if (((std::ptrdiff_t)dst_start < (std::ptrdiff_t)src_end) &&
       ((std::ptrdiff_t)dst_end > (std::ptrdiff_t)src_start)) {
-    Kokkos::Impl::throw_runtime_exception(
+    throw std::runtime_error(
         "deep_copy_async: Error, SYCL views are overlapping");
   }
   auto& q = *instance.impl_internal_space_instance()->m_queue;
   if (!(q.is_in_order())) {
-    Kokkos::Impl::throw_runtime_exception(
+    throw std::runtime_error(
         "deep_copy_async: Error, underlying SYCL queue is not in-order");
   }
 
