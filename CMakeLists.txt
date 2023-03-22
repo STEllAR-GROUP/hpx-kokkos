@@ -39,8 +39,22 @@ else()
   endif()
 endif()
 
+if(Kokkos_ENABLE_SYCL)
+  if(NOT HPX_WITH_SYCL)
+    message(FATAL_ERROR "Kokkos was built with SYCL support, HPX was not")
+  endif()
+else()
+  if(HPX_WITH_SYCL)
+    message(FATAL_ERROR "HPX was built with SYCL support, Kokkos was not")
+  endif()
+endif()
+
 if(HPX_WITH_HIP OR Kokkos_ENABLE_HIP)
   message(WARNING "HIP support in experimental in HPX, Kokkos, and HPX-Kokkos")
+endif()
+
+if(HPX_WITH_SYCL OR Kokkos_ENABLE_SYCL)
+  message(WARNING "SYCL support in experimental in HPX, Kokkos, and HPX-Kokkos")
 endif()
 
 # Main targets provided by this project
@@ -58,6 +72,16 @@ elseif(HPX_KOKKOS_CUDA_FUTURE_TYPE STREQUAL "callback")
   target_compile_definitions(hpx_kokkos INTERFACE "HPX_KOKKOS_CUDA_FUTURE_TYPE=1")
 else()
   message(FATAL_ERROR "Invalid HPX_KOKKOS_CUDA_FUTURE_TYPE=\"${HPX_KOKKOS_CUDA_FUTURE_TYPE}\" (allowed values are \"event\" and \"callback\")")
+endif()
+
+set(HPX_KOKKOS_SYCL_FUTURE_TYPE "event" CACHE STRING
+  "Type of SYCL futures to use by default (\"event\" or \"host_task\").")
+if(HPX_KOKKOS_SYCL_FUTURE_TYPE STREQUAL "event")
+  target_compile_definitions(hpx_kokkos INTERFACE "HPX_KOKKOS_SYCL_FUTURE_TYPE=0")
+elseif(HPX_KOKKOS_SYCL_FUTURE_TYPE STREQUAL "host_task")
+  target_compile_definitions(hpx_kokkos INTERFACE "HPX_KOKKOS_SYCL_FUTURE_TYPE=1")
+else()
+  message(FATAL_ERROR "Invalid HPX_KOKKOS_SYCL_FUTURE_TYPE=\"${HPX_KOKKOS_SYCL_FUTURE_TYPE}\" (allowed values are \"event\" and \"host_task\")")
 endif()
 
 include(GNUInstallDirs)

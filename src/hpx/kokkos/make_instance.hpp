@@ -50,7 +50,23 @@ make_independent_execution_space_instance<Kokkos::Experimental::HIP>() {
 }
 #endif
 
-#if defined(KOKKOS_ENABLE_HPX)
+#if defined(KOKKOS_ENABLE_SYCL)
+template <>
+inline Kokkos::Experimental::SYCL
+make_independent_execution_space_instance<Kokkos::Experimental::SYCL>() {
+  try {
+    cl::sycl::queue q(cl::sycl::default_selector{},
+                cl::sycl::property::queue::in_order{});
+    return Kokkos::Experimental::SYCL{q};
+  } catch (exception const &e) {
+    HPX_THROW_EXCEPTION(
+        kernel_error, "hpx::kokkos::detail::initialize_instances",
+        std::string("sycl queue creation failed: ") + e.what());
+  }
+}
+#endif
+
+#if defined(KOKKOS_ENABLE_HPX) 
 template <>
 inline Kokkos::Experimental::HPX
 make_independent_execution_space_instance<Kokkos::Experimental::HPX>() {
