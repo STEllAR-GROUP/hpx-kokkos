@@ -27,8 +27,13 @@ namespace detail {
 template <std::size_t... Is, typename F, typename A, typename Tuple>
 HPX_HOST_DEVICE void invoke_helper(hpx::util::index_pack<Is...>, F &&f, A &&a,
                                    Tuple &&t) {
+#if HPX_VERSION_FULL > 0x010801
   hpx::invoke_r<void>(std::forward<F>(f), std::forward<A>(a),
                       hpx::get<Is>(std::forward<Tuple>(t))...);
+#else
+  hpx::util::invoke_r<void>(std::forward<F>(f), std::forward<A>(a),
+                      hpx::get<Is>(std::forward<Tuple>(t))...);
+#endif
 }
 } // namespace detail
 
@@ -59,7 +64,11 @@ public:
         Kokkos::Experimental::require(
             Kokkos::RangePolicy<execution_space>(inst, 0, 1),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
+#if HPX_VERSION_FULL > 0x010801
         KOKKOS_LAMBDA(int) { hpx::invoke_fused_r<void>(f, ts_pack); });
+#else
+        KOKKOS_LAMBDA(int) { hpx::util::invoke_fused_r<void>(f, ts_pack); });
+#endif
   }
 
   template <typename F, typename... Ts>
@@ -69,7 +78,11 @@ public:
         Kokkos::Experimental::require(
             Kokkos::RangePolicy<execution_space>(inst, 0, 1),
             Kokkos::Experimental::WorkItemProperty::HintLightWeight),
+#if HPX_VERSION_FULL > 0x010801
         KOKKOS_LAMBDA(int) { hpx::invoke_fused_r<void>(f, ts_pack); });
+#else
+        KOKKOS_LAMBDA(int) { hpx::util::invoke_fused_r<void>(f, ts_pack); });
+#endif
   }
 
   template <typename F, typename S, typename... Ts>
@@ -87,7 +100,11 @@ public:
         KOKKOS_LAMBDA(int i) {
           HPX_KOKKOS_DETAIL_LOG("bulk_async_execute i = %d", i);
           using index_pack_type =
-              typename hpx::detail::fused_index_pack<decltype(ts_pack)>::type;
+#if HPX_VERSION_FULL > 0x010801
+            typename hpx::detail::fused_index_pack<decltype(ts_pack)>::type;
+#else
+            typename hpx::util::detail::fused_index_pack<decltype(ts_pack)>::type;
+#endif
           detail::invoke_helper(index_pack_type{}, f, *(b + i), ts_pack);
         })};
   }
