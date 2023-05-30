@@ -14,9 +14,7 @@ set(HPX_KOKKOS_VERSION_STRING "${HPX_KOKKOS_VERSION_MAJOR}.${HPX_KOKKOS_VERSION_
 
 # Dependencies
 find_package(HPX 1.8.1 REQUIRED)
-# TODO: The version requirement needs to be bumped once
-# https://github.com/kokkos/kokkos/pull/5628 is merged and released.
-find_package(Kokkos 3.6.01 REQUIRED)
+find_package(Kokkos 3.6.00 REQUIRED)
 
 if(Kokkos_ENABLE_CUDA)
   kokkos_check(OPTIONS CUDA_LAMBDA CUDA_LAMBDA)
