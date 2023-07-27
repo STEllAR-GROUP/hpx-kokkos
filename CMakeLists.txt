@@ -16,6 +16,16 @@ set(HPX_KOKKOS_VERSION_STRING "${HPX_KOKKOS_VERSION_MAJOR}.${HPX_KOKKOS_VERSION_
 find_package(HPX 1.8.1 REQUIRED)
 find_package(Kokkos 3.6.00 REQUIRED)
 
+# Check that Kokkos and HPX options are consistent.
+
+if(Kokkos_VERSION VERSION_LESS 4.1.00)
+  message(INFO " Using Kokkos Version with HPX futures backend")
+  kokkos_check(DEVICES HPX OPTIONS HPX_ASYNC_DISPATCH)
+else()
+  message(INFO " Using Kokkos Version with HPX Sender/Receiver backend")
+  kokkos_check(DEVICES HPX)
+endif()
+
 if(Kokkos_ENABLE_CUDA)
   kokkos_check(OPTIONS CUDA_LAMBDA CUDA_LAMBDA)
   if(NOT HPX_WITH_CUDA)
