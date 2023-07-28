@@ -1,7 +1,7 @@
 # HPX/Kokkos interoperability library
 
 WARNING: This repo is work in progress and should not be relied on for
-anything. Please read the [known limitations](#known-limitations).
+anything. Please read the [known limitations](#known-issues-and-limitations).
 
 ## What?
 
