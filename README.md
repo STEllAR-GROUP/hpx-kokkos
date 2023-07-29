@@ -1,7 +1,7 @@
 # HPX/Kokkos interoperability library
 
 WARNING: This repo is work in progress and should not be relied on for
-anything. Please read the [known limitations](#known-limitations).
+anything. Please read the [known limitations](#known-issues-and-limitations).
 
 ## What?
 
@@ -49,8 +49,11 @@ built using the `benchmarks` target.
 
 - CMake version 3.19 or newer
 - HPX version 1.8.0 or newer
-- Kokkos develop (TODO: Update once released) or newer
+- Kokkos version 3.6.00 or newer
   - The build should have `Kokkos_ENABLE_HPX=ON`
+  - The build should have `Kokkos_ENABLE_HPX_ASYNC_DISPATCH=ON` for versions
+    older than 4.1.00 (starting from 4.1.00 the option has been removed and is
+    always enabled)
 
 For CUDA support HPX and Kokkos should be built with CUDA support. See their
 respective documentation for enabling CUDA support. CUDA support requires
