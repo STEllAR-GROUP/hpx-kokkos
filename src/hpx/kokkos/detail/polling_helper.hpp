@@ -26,7 +26,7 @@ struct polling_helper {
   hpx::cuda::experimental::enable_user_polling p;
 #endif
 #if defined(HPX_HAVE_SYCL)
-  hpx::sycl::experimental::enable_user_polling p;
+  hpx::sycl::experimental::enable_user_polling p_sycl;
 #endif
 };
 } // namespace detail
