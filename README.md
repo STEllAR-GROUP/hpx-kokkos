@@ -67,8 +67,8 @@ The only supported header is `hpx/kokkos.hpp`. All other headers may change
 without notice.
 
 The following functions follow the same API as the corresponding Kokkos
-functions. All execution spaces except HPX and CUDA are currently blocking and
-only return ready futures.
+functions. Only the HPX, CUDA, HIP, and SYCL execution spaces are asynchronous.
+Other spaces are blocking and only return ready futures.
 
 ```
 namespace hpx { namespace kokkos {
