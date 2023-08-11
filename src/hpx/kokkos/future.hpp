@@ -41,9 +41,6 @@ struct get_future {
 };
 
 #if defined(KOKKOS_ENABLE_CUDA)
-#if !defined(HPX_KOKKOS_CUDA_FUTURE_TYPE)
-#define HPX_KOKKOS_CUDA_FUTURE_TYPE callback
-#endif
 template <> struct get_future<Kokkos::Cuda> {
   template <typename E> static hpx::shared_future<void> call(E &&inst) {
     HPX_KOKKOS_DETAIL_LOG("getting future from stream %p", inst.cuda_stream());
@@ -54,16 +51,13 @@ template <> struct get_future<Kokkos::Cuda> {
     return hpx::cuda::experimental::detail::get_future_with_callback(
         inst.cuda_stream());
 #else
-#error "HPX_KOKKOS_CUDA_FUTURE_TYPE is invalid (must be callback or event)"
+#error "HPX_KOKKOS_CUDA_FUTURE_TYPE is invalid (must be 0 (event) or 1 (callback))"
 #endif
   }
 };
 #endif
 
 #if defined(KOKKOS_ENABLE_HIP)
-#if !defined(HPX_KOKKOS_CUDA_FUTURE_TYPE)
-#define HPX_KOKKOS_CUDA_FUTURE_TYPE callback
-#endif
 template <> struct get_future<Kokkos::Experimental::HIP> {
   template <typename E> static hpx::shared_future<void> call(E &&inst) {
     HPX_KOKKOS_DETAIL_LOG("getting future from stream %p", inst.hip_stream());
@@ -74,19 +68,13 @@ template <> struct get_future<Kokkos::Experimental::HIP> {
     return hpx::cuda::experimental::detail::get_future_with_callback(
         inst.hip_stream());
 #else
-#error "HPX_KOKKOS_CUDA_FUTURE_TYPE is invalid (must be callback or event)"
+#error "HPX_KOKKOS_CUDA_FUTURE_TYPE is invalid (must be 0 (event) or 1 (callback))"
 #endif
   }
 };
 #endif
 
 #if defined(KOKKOS_ENABLE_SYCL)
-#if !defined(HPX_KOKKOS_SYCL_FUTURE_TYPE)
-// polling is default (0) as it is simply faster)
-// 1 would be using host_tasks which is slower but useful for comparisons
-#define HPX_KOKKOS_SYCL_FUTURE_TYPE 0
-#warning "HPX_KOKKOS_SYCL_FUTURE_TYPE was not defined! Defining it to 0 (event)"
-#endif
 template <> struct get_future<Kokkos::Experimental::SYCL> {
   template <typename E> static hpx::shared_future<void> call(E &&inst) {
     HPX_KOKKOS_DETAIL_LOG("getting future from SYCL queue %p", &(inst.sycl_queue()));
@@ -96,7 +84,7 @@ template <> struct get_future<Kokkos::Experimental::SYCL> {
     auto fut = hpx::sycl::experimental::detail::
       get_future_using_host_task(inst.sycl_queue());
 #else
-#error "HPX_KOKKOS_SYCL_FUTURE_TYPE is invalid (must be host_task or event)"
+#error "HPX_KOKKOS_SYCL_FUTURE_TYPE is invalid (must be 0 (event) or 1 (host_task))"
 #endif
     return fut ;
   }
