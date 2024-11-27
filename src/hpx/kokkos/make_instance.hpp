@@ -70,7 +70,7 @@ make_independent_execution_space_instance<Kokkos::Experimental::SYCL>() {
 template <>
 inline Kokkos::Experimental::HPX
 make_independent_execution_space_instance<Kokkos::Experimental::HPX>() {
-  return {Kokkos::Experimental::HPX::instance_mode::independent};
+  return Kokkos::Experimental::HPX(Kokkos::Experimental::HPX::instance_mode::independent);
 }
 #endif
 } // namespace detail
