@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <hpx/kokkos/config.hpp>
 #include <hpx/kokkos/deep_copy.hpp>
 #include <hpx/kokkos/detail/logging.hpp>
 #include <hpx/kokkos/kokkos_algorithms.hpp>
@@ -160,9 +161,7 @@ struct is_kokkos_executor<executor<ExecutionSpace>> : std::true_type {};
 } // namespace kokkos
 } // namespace hpx
 
-namespace hpx {
-namespace parallel {
-namespace execution {
+namespace HPXKOKKOS_HPX_EXECUTOR_NS {
 template <typename ExecutionSpace>
 struct is_one_way_executor<hpx::kokkos::executor<ExecutionSpace>>
     : std::true_type {};
@@ -174,6 +173,4 @@ struct is_two_way_executor<hpx::kokkos::executor<ExecutionSpace>>
 template <typename ExecutionSpace>
 struct is_bulk_two_way_executor<hpx::kokkos::executor<ExecutionSpace>>
     : std::true_type {};
-} // namespace execution
-} // namespace parallel
-} // namespace hpx
+} // namespace HPXKOKKOS_HPX_EXECUTOR_NS
