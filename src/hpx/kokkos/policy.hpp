@@ -12,8 +12,8 @@
 #include <hpx/kokkos/detail/logging.hpp>
 #include <hpx/kokkos/executors.hpp>
 
-#include <hpx/local/execution.hpp>
-#include <hpx/local/future.hpp>
+#include <hpx/execution.hpp>
+#include <hpx/future.hpp>
 
 namespace hpx {
 namespace kokkos {

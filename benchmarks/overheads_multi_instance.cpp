@@ -8,11 +8,11 @@
 /// for all launches it uses the instances provided by kokkos_instance_helper.
 
 #include <Kokkos_Core.hpp>
+#include <hpx/algorithm.hpp>
+#include <hpx/chrono.hpp>
+#include <hpx/hpx_init.hpp>
 #include <hpx/kokkos.hpp>
 #include <hpx/kokkos/detail/polling_helper.hpp>
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/init.hpp>
 
 void print_header() {
   std::cout << "test_name,execution_space,subtest_name,vector_size,launches_"
@@ -167,11 +167,11 @@ int hpx_main(int argc, char *argv[]) {
   }
 
   Kokkos::finalize();
-  hpx::local::finalize();
+  hpx::finalize();
 
   return 0;
 }
 
 int main(int argc, char *argv[]) {
-  return hpx::local::init(hpx_main, argc, argv);
+  return hpx::init(hpx_main, argc, argv);
 }

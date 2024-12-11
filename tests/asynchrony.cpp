@@ -12,11 +12,11 @@
 
 #include "test.hpp"
 
+#include <hpx/algorithm.hpp>
+#include <hpx/chrono.hpp>
+#include <hpx/hpx_init.hpp>
 #include <hpx/kokkos.hpp>
 #include <hpx/kokkos/detail/polling_helper.hpp>
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/init.hpp>
 
 template <typename ExecutionSpace>
 void test_kokkos_plain(ExecutionSpace &&inst, int const n,
@@ -225,11 +225,11 @@ int hpx_main(int argc, char *argv[]) {
   }
 
   Kokkos::finalize();
-  hpx::local::finalize();
+  hpx::finalize();
 
   return hpx::kokkos::detail::report_errors();
 }
 
 int main(int argc, char *argv[]) {
-  return hpx::local::init(hpx_main, argc, argv);
+  return hpx::init(hpx_main, argc, argv);
 }
