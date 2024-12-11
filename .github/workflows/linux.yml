@@ -19,6 +19,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Update apt repositories for ccache
+      run: apt update
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ccache-linux
     - name: Install HPX
       shell: bash
       run: |
@@ -34,6 +40,7 @@ jobs:
           cmake \
               ../hpx \
               -GNinja \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
               -DHPX_WITH_UNITY_BUILD=ON \
               -DHPX_WITH_MALLOC=system \
@@ -55,6 +62,7 @@ jobs:
           cmake \
               ../kokkos \
               -GNinja \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
               -DKokkos_ENABLE_HPX=ON
           ninja install
@@ -65,6 +73,7 @@ jobs:
               . \
               -Bbuild \
               -GNinja \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_CXX_FLAGS="-Werror" \
               -DCMAKE_BUILD_TYPE=Debug \
               -DHPX_KOKKOS_ENABLE_TESTS=ON
