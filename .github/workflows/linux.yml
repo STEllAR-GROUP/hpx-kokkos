@@ -19,7 +19,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Install dependencies
+    - name: Install HPX
       shell: bash
       run: |
           mkdir -p /tmp/hpx
@@ -40,7 +40,9 @@ jobs:
               -DHPX_WITH_EXAMPLES=OFF \
               -DHPX_WITH_NETWORKING=OFF
           ninja install
-
+    - name: Install Kokkos
+      shell: bash
+      run: |
           mkdir -p /tmp/kokkos
           cd /tmp/kokkos
           git clone \
