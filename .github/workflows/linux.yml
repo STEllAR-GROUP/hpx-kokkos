@@ -17,6 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     container: stellargroup/build_env:latest
 
+    strategy:
+      matrix:
+        hpx_version: ["1.8.1", "v1.9.0", "v1.10.0"]
+        kokkos_version: ["3.6.00", "4.0.00"]
+
     steps:
     - uses: actions/checkout@v2
     - name: Update apt repositories for ccache
@@ -24,14 +29,14 @@ jobs:
     - name: Setup ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
-        key: ccache-linux
+        key: ccache-linux-${{ matrix.hpx_version }}-${{ matrix.kokkos_version }}
     - name: Install HPX
       shell: bash
       run: |
           mkdir -p /tmp/hpx
           cd /tmp/hpx
           git clone \
-              --branch v1.9.0 \
+              --branch ${{ matrix.hpx_version }} \
               --single-branch \
               --depth 1 \
               https://github.com/STEllAR-GROUP/hpx.git
@@ -53,7 +58,7 @@ jobs:
           mkdir -p /tmp/kokkos
           cd /tmp/kokkos
           git clone \
-              --branch 4.5.00 \
+              --branch ${{ matrix.kokkos_version }} \
               --single-branch \
               --depth 1 \
               https://github.com/kokkos/kokkos.git
