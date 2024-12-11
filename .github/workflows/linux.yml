@@ -69,7 +69,8 @@ jobs:
               -GNinja \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
-              -DKokkos_ENABLE_HPX=ON
+              -DKokkos_ENABLE_HPX=ON \
+              -DKokkos_ENABLE_HPX_ASYNC_DISPATCH=ON
           ninja install
     - name: Configure
       shell: bash
