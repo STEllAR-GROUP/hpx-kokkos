@@ -105,7 +105,7 @@ template <typename ExecutionSpace> void test(ExecutionSpace &&inst) {
   test_parallel_scan(inst);
 }
 
-int hpx_main(int argc, char *argv[]) {
+int test_main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
@@ -126,5 +126,5 @@ int hpx_main(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  return hpx::init(hpx_main, argc, argv);
+  return hpx::init(test_main, argc, argv);
 }

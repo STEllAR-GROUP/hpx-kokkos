@@ -12,12 +12,12 @@
 #include <hpx/hpx_init.hpp>
 #include <hpx/kokkos.hpp>
 
-int hpx_main(int argc, char *argv[]) {
+int test_main(int argc, char *argv[]) {
   HPX_KOKKOS_DETAIL_TEST(true);
   hpx::finalize();
   return hpx::kokkos::detail::report_errors();
 }
 
 int main(int argc, char *argv[]) {
-  return hpx::init(hpx_main, argc, argv);
+  return hpx::init(test_main, argc, argv);
 }
