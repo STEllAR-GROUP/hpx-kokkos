@@ -8,11 +8,11 @@
 
 #include "test.hpp"
 
+#include <hpx/algorithm.hpp>
+#include <hpx/hpx_init.hpp>
 #include <hpx/kokkos.hpp>
 #include <hpx/kokkos/detail/polling_helper.hpp>
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/local/numeric.hpp>
+#include <hpx/numeric.hpp>
 
 template <typename Executor> void test_for_each(Executor &&exec) {
   int const n = 43;
@@ -453,7 +453,7 @@ void test_default() {
   test_reduce_default();
 }
 
-int hpx_main(int argc, char *argv[]) {
+int test_main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
 
   {
@@ -469,11 +469,11 @@ int hpx_main(int argc, char *argv[]) {
   }
 
   Kokkos::finalize();
-  hpx::local::finalize();
+  hpx::finalize();
 
   return hpx::kokkos::detail::report_errors();
 }
 
 int main(int argc, char *argv[]) {
-  return hpx::local::init(hpx_main, argc, argv);
+  return hpx::init(test_main, argc, argv);
 }

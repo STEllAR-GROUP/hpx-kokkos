@@ -12,11 +12,11 @@
 
 #include "test.hpp"
 
+#include <hpx/algorithm.hpp>
+#include <hpx/chrono.hpp>
+#include <hpx/hpx_init.hpp>
 #include <hpx/kokkos.hpp>
 #include <hpx/kokkos/detail/polling_helper.hpp>
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/init.hpp>
 
 template <typename ExecutionSpace>
 void test_kokkos_plain(ExecutionSpace &&inst, int const n,
@@ -206,7 +206,7 @@ void test_default(int const n, int const repetitions) {
   test_hpx_async(hpx::kokkos::executor<>(), n, repetitions);
 }
 
-int hpx_main(int argc, char *argv[]) {
+int test_main(int argc, char *argv[]) {
   int const n = 10000000;
   int const repetitions = 10;
 
@@ -225,11 +225,11 @@ int hpx_main(int argc, char *argv[]) {
   }
 
   Kokkos::finalize();
-  hpx::local::finalize();
+  hpx::finalize();
 
   return hpx::kokkos::detail::report_errors();
 }
 
 int main(int argc, char *argv[]) {
-  return hpx::local::init(hpx_main, argc, argv);
+  return hpx::init(test_main, argc, argv);
 }

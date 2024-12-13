@@ -13,7 +13,7 @@
 #include <hpx/kokkos/detail/logging.hpp>
 
 #include <hpx/config.hpp>
-#include <hpx/local/future.hpp>
+#include <hpx/future.hpp>
 
 #if defined(HPX_HAVE_CUDA) || defined(HPX_HAVE_HIP)
 #include <hpx/modules/async_cuda.hpp>
