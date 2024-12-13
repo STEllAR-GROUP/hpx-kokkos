@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <hpx/kokkos/config.hpp>
 #include <hpx/kokkos/detail/logging.hpp>
 #include <hpx/kokkos/executors.hpp>
 
@@ -27,7 +28,7 @@ template <typename Executor, typename Parameters> struct kokkos_policy_shim;
 struct kokkos_task_policy {
   using executor_type = default_executor;
   using executor_parameters_type =
-      hpx::parallel::execution::extract_executor_parameters<
+      HPXKOKKOS_HPX_EXECUTOR_NS::extract_executor_parameters<
           executor_type>::type;
   using execution_category = hpx::execution::parallel_execution_tag;
 
@@ -42,7 +43,7 @@ struct kokkos_task_policy {
   }
 
   template <typename Executor>
-  typename hpx::parallel::execution::rebind_executor<
+  typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
       kokkos_task_policy, Executor, executor_parameters_type>::type
   on(Executor &&exec) const {
     using executor_type = typename std::decay<Executor>::type;
@@ -50,18 +51,18 @@ struct kokkos_task_policy {
     static_assert(is_kokkos_executor<executor_type>::value,
                   "hpx::kokkos::is_kokkos_executor<Executor>::value");
 
-    using rebound_type = typename hpx::parallel::execution::rebind_executor<
+    using rebound_type = typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
         kokkos_task_policy, Executor, executor_parameters_type>::type;
     return rebound_type(std::forward<Executor>(exec), parameters());
   }
 
   template <typename... Parameters,
-            typename ParametersType = typename hpx::parallel::execution::
+            typename ParametersType = typename HPXKOKKOS_HPX_EXECUTOR_NS::
                 executor_parameters_join<Parameters...>::type>
-  typename hpx::parallel::execution::rebind_executor<
+  typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
       kokkos_task_policy, executor_type, ParametersType>::type
   with(Parameters &&...params) const {
-    using rebound_type = typename hpx::parallel::execution::rebind_executor<
+    using rebound_type = typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
         kokkos_task_policy, executor_type, ParametersType>::type;
     return rebound_type(executor(), join_executor_parameters(
                                         std::forward<Parameters>(params)...));
@@ -103,7 +104,7 @@ struct kokkos_task_policy_shim : kokkos_task_policy {
   }
 
   template <typename Executor_>
-  typename hpx::parallel::execution::rebind_executor<
+  typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
       kokkos_task_policy_shim, Executor_, executor_parameters_type>::type
   on(Executor_ &&exec) const {
     using executor_type = typename std::decay<Executor>::type;
@@ -111,18 +112,18 @@ struct kokkos_task_policy_shim : kokkos_task_policy {
     static_assert(is_kokkos_executor<executor_type>::value,
                   "hpx::kokkos::is_kokkos_executor<Executor>::value");
 
-    using rebound_type = typename hpx::parallel::execution::rebind_executor<
+    using rebound_type = typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
         kokkos_task_policy_shim, Executor_, executor_parameters_type>::type;
     return rebound_type(std::forward<Executor_>(exec), params_);
   }
 
   template <typename... Parameters_,
-            typename ParametersType = typename hpx::parallel::execution::
+            typename ParametersType = typename HPXKOKKOS_HPX_EXECUTOR_NS::
                 executor_parameters_join<Parameters_...>::type>
-  typename hpx::parallel::execution::rebind_executor<
+  typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
       kokkos_task_policy_shim, executor_type, ParametersType>::type
   with(Parameters_ &&...params) const {
-    using rebound_type = typename hpx::parallel::execution::rebind_executor<
+    using rebound_type = typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
         kokkos_task_policy_shim, executor_type, ParametersType>::type;
     return rebound_type(
         exec_, join_executor_parameters(std::forward<Parameters_>(params)...));
@@ -163,7 +164,7 @@ private:
 struct kokkos_policy {
   using executor_type = default_executor;
   using executor_parameters_type =
-      hpx::parallel::execution::extract_executor_parameters<
+      HPXKOKKOS_HPX_EXECUTOR_NS::extract_executor_parameters<
           executor_type>::type;
   using execution_category = hpx::execution::parallel_execution_tag;
 
@@ -178,7 +179,7 @@ struct kokkos_policy {
   }
 
   template <typename Executor>
-  typename hpx::parallel::execution::rebind_executor<
+  typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
       kokkos_policy, Executor, executor_parameters_type>::type
   on(Executor &&exec) const {
     typedef typename std::decay<Executor>::type executor_type;
@@ -186,18 +187,18 @@ struct kokkos_policy {
     static_assert(is_kokkos_executor<executor_type>::value,
                   "hpx::kokkos::is_kokkos_executor<Executor>::value");
 
-    using rebound_type = typename hpx::parallel::execution::rebind_executor<
+    using rebound_type = typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
         kokkos_policy, Executor, executor_parameters_type>::type;
     return rebound_type(std::forward<Executor>(exec), parameters());
   }
 
   template <typename... Parameters,
-            typename ParametersType = typename hpx::parallel::execution::
+            typename ParametersType = typename HPXKOKKOS_HPX_EXECUTOR_NS::
                 executor_parameters_join<Parameters...>::type>
-  typename hpx::parallel::execution::rebind_executor<
+  typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
       kokkos_policy, executor_type, ParametersType>::type
   with(Parameters &&...params) const {
-    using rebound_type = typename hpx::parallel::execution::rebind_executor<
+    using rebound_type = typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
         kokkos_policy, executor_type, ParametersType>::type;
     return rebound_type(executor(), join_executor_parameters(
                                         std::forward<Parameters>(params)...));
@@ -240,7 +241,7 @@ struct kokkos_policy_shim : kokkos_policy {
   }
 
   template <typename Executor_>
-  typename hpx::parallel::execution::rebind_executor<
+  typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
       kokkos_policy_shim, Executor_, executor_parameters_type>::type
   on(Executor_ &&exec) const {
     using executor_type = typename std::decay<Executor>::type;
@@ -248,18 +249,18 @@ struct kokkos_policy_shim : kokkos_policy {
     static_assert(is_kokkos_executor<executor_type>::value,
                   "hpx::kokkos::is_kokkos_executor<Executor>::value");
 
-    using rebound_type = typename hpx::parallel::execution::rebind_executor<
+    using rebound_type = typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
         kokkos_policy_shim, Executor_, executor_parameters_type>::type;
     return rebound_type(std::forward<Executor_>(exec), params_);
   }
 
   template <typename... Parameters_,
-            typename ParametersType = typename hpx::parallel::execution::
+            typename ParametersType = typename HPXKOKKOS_HPX_EXECUTOR_NS::
                 executor_parameters_join<Parameters_...>::type>
-  typename hpx::parallel::execution::rebind_executor<
+  typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
       kokkos_policy_shim, executor_type, ParametersType>::type
   with(Parameters_ &&...params) const {
-    using rebound_type = typename hpx::parallel::execution::rebind_executor<
+    using rebound_type = typename HPXKOKKOS_HPX_EXECUTOR_NS::rebind_executor<
         kokkos_policy_shim, executor_type, ParametersType>::type;
     return rebound_type(
         exec_, join_executor_parameters(std::forward<Parameters_>(params)...));

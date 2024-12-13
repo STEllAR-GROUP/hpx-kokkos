@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <hpx/kokkos/config.hpp>
 #include <hpx/kokkos/deep_copy.hpp>
 #include <hpx/kokkos/detail/version.hpp>
 #include <hpx/kokkos/execution_spaces.hpp>

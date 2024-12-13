@@ -31,7 +31,7 @@ inline Kokkos::Cuda make_independent_execution_space_instance<Kokkos::Cuda>() {
         kernel_error, "hpx::kokkos::detail::initialize_instances",
         std::string("cudaStreamCreate failed: ") + cudaGetErrorString(error));
   }
-  return {s};
+  return Kokkos::Cuda{s};
 }
 #endif
 
@@ -46,7 +46,7 @@ make_independent_execution_space_instance<Kokkos::Experimental::HIP>() {
         kernel_error, "hpx::kokkos::detail::initialize_instances",
         std::string("cudaStreamCreate failed: ") + cudaGetErrorString(error));
   }
-  return {s};
+  return Kokkos::Experimental::HIP{s};
 }
 #endif
 
@@ -70,7 +70,7 @@ make_independent_execution_space_instance<Kokkos::Experimental::SYCL>() {
 template <>
 inline Kokkos::Experimental::HPX
 make_independent_execution_space_instance<Kokkos::Experimental::HPX>() {
-  return {Kokkos::Experimental::HPX::instance_mode::independent};
+  return Kokkos::Experimental::HPX(Kokkos::Experimental::HPX::instance_mode::independent);
 }
 #endif
 } // namespace detail
