@@ -17,15 +17,26 @@ jobs:
     runs-on: ubuntu-latest
     container: stellargroup/build_env:latest
 
+    strategy:
+      matrix:
+        hpx_version: ["1.8.1", "v1.9.0", "v1.10.0"]
+        kokkos_version: ["3.6.00", "4.0.00"]
+
     steps:
     - uses: actions/checkout@v2
-    - name: Install dependencies
+    - name: Update apt repositories for ccache
+      run: apt update
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ccache-linux-${{ matrix.hpx_version }}-${{ matrix.kokkos_version }}
+    - name: Install HPX
       shell: bash
       run: |
           mkdir -p /tmp/hpx
           cd /tmp/hpx
           git clone \
-              --branch v1.9.0 \
+              --branch ${{ matrix.hpx_version }} \
               --single-branch \
               --depth 1 \
               https://github.com/STEllAR-GROUP/hpx.git
@@ -34,17 +45,20 @@ jobs:
           cmake \
               ../hpx \
               -GNinja \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
               -DHPX_WITH_UNITY_BUILD=ON \
               -DHPX_WITH_MALLOC=system \
               -DHPX_WITH_EXAMPLES=OFF \
               -DHPX_WITH_NETWORKING=OFF
           ninja install
-
+    - name: Install Kokkos
+      shell: bash
+      run: |
           mkdir -p /tmp/kokkos
           cd /tmp/kokkos
           git clone \
-              --branch develop \
+              --branch ${{ matrix.kokkos_version }} \
               --single-branch \
               --depth 1 \
               https://github.com/kokkos/kokkos.git
@@ -53,8 +67,10 @@ jobs:
           cmake \
               ../kokkos \
               -GNinja \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
-              -DKokkos_ENABLE_HPX=ON
+              -DKokkos_ENABLE_HPX=ON \
+              -DKokkos_ENABLE_HPX_ASYNC_DISPATCH=ON
           ninja install
     - name: Configure
       shell: bash
@@ -63,7 +79,8 @@ jobs:
               . \
               -Bbuild \
               -GNinja \
-              -DCMAKE_CXX_FLAGS="-Werror" \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_CXX_FLAGS="-Werror -Wno-error=#warnings" \
               -DCMAKE_BUILD_TYPE=Debug \
               -DHPX_KOKKOS_ENABLE_TESTS=ON
     - name: Build
