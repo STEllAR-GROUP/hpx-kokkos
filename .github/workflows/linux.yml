@@ -21,6 +21,13 @@ jobs:
       matrix:
         hpx_version: ["1.8.1", "v1.9.0", "v1.10.0"]
         kokkos_version: ["3.6.00", "4.0.00"]
+        include:
+          - hpx_version: "v1.10.0"
+            kokkos_version: "3.6.00"
+            cxxflags: "-Wno-error=#warnings"
+          - hpx_version: "v1.10.0"
+            kokkos_version: "4.0.00"
+            cxxflags: "-Wno-error=#warnings"
 
     steps:
     - uses: actions/checkout@v2
@@ -80,7 +87,7 @@ jobs:
               -Bbuild \
               -GNinja \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_CXX_FLAGS="-Werror -Wno-error=#warnings" \
+              -DCMAKE_CXX_FLAGS="-Werror ${{ matrix.cxxflags }}" \
               -DCMAKE_BUILD_TYPE=Debug \
               -DHPX_KOKKOS_ENABLE_TESTS=ON
     - name: Build

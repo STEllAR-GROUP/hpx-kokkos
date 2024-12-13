@@ -11,8 +11,8 @@
 #include <hpx/kokkos/detail/logging.hpp>
 #include <hpx/kokkos/policy.hpp>
 
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/functional.hpp>
+#include <hpx/algorithm.hpp>
+#include <hpx/functional.hpp>
 
 #include <Kokkos_Core.hpp>
 

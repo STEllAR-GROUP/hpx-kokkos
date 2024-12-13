@@ -10,7 +10,7 @@
 #include <hpx/kokkos/detail/logging.hpp>
 #include <hpx/kokkos/future.hpp>
 
-#include <hpx/local/future.hpp>
+#include <hpx/future.hpp>
 
 #include <Kokkos_Core.hpp>
 

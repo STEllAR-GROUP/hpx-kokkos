@@ -13,9 +13,9 @@
 #include <hpx/kokkos/kokkos_algorithms.hpp>
 #include <hpx/kokkos/make_instance.hpp>
 
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/numeric.hpp>
-#include <hpx/local/tuple.hpp>
+#include <hpx/algorithm.hpp>
+#include <hpx/numeric.hpp>
+#include <hpx/tuple.hpp>
 
 #include <Kokkos_Core.hpp>
 
