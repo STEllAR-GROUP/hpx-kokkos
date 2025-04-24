@@ -55,8 +55,8 @@ template <>
 inline Kokkos::Experimental::SYCL
 make_independent_execution_space_instance<Kokkos::Experimental::SYCL>() {
   try {
-    cl::sycl::queue q(cl::sycl::default_selector{},
-                cl::sycl::property::queue::in_order{});
+    ::sycl::queue q(::sycl::default_selector_v,
+                ::sycl::property::queue::in_order{});
     return Kokkos::Experimental::SYCL{q};
   } catch (exception const &e) {
     HPX_THROW_EXCEPTION(
